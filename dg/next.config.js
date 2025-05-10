@@ -1,7 +1,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.cache = false;
+    
+    // Ignorar módulos problemáticos
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'undici': false,
+      'pg-native': false,
+      'pg-cloudflare': false,
+      'cloudflare:sockets': false
+    };
+
+    // Configuração para ignorar erros de módulos específicos
+    config.module.rules.push({
+      test: /\.js$/,
+      include: /node_modules\/(undici|pg-cloudflare)/,
+      use: {
+        loader: 'ignore-loader'
+      }
+    });
+
     return config;
   },
   reactStrictMode: true,
