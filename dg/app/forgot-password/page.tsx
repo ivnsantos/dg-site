@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function ForgotPasswordPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')

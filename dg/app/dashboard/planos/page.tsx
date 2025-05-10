@@ -71,6 +71,8 @@ const CustomIMaskInput = forwardRef((props: any, ref: any) => (
 ))
 CustomIMaskInput.displayName = 'CustomIMaskInput'
 
+export const dynamic = 'force-dynamic'
+
 export default function PlanosPage() {
   const { data: session, status } = useSession({
     required: true,

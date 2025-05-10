@@ -33,6 +33,8 @@ interface OrcamentoForm {
   itens: ItemOrcamentoForm[]
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function NovoOrcamentoPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [orcamento, setOrcamento] = useState<OrcamentoForm>({

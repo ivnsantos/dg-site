@@ -8,6 +8,8 @@ import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 import { VerifyForm } from './verify-form'
 
+export const dynamic = 'force-dynamic'
+
 export default function VerifyPage() {
   return (
     <Suspense fallback={<div>Carregando...</div>}>

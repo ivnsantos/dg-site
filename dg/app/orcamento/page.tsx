@@ -1,6 +1,8 @@
 import React from 'react'
 
-export default function OrcamentoPage() {
+export const dynamic = 'force-dynamic'
+
+export default function OrcamentoPublicoPage() {
   // Exemplo de dados (pode ser substituído por props ou fetch)
   const dados = {
     numero: '01234',

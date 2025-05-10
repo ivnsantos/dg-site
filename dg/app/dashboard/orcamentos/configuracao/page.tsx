@@ -19,6 +19,8 @@ interface FooterOrcamentoForm {
   pix?: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function ConfiguracaoOrcamento() {
   const [header, setHeader] = useState<HeaderOrcamentoForm>({
     nomeFantasia: "",

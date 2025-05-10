@@ -38,6 +38,8 @@ interface MenuForm {
   imageUrlBackground?: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function NovoMenuPage() {
   const [menu, setMenu] = useState<MenuForm>({
     name: '',

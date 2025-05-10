@@ -133,6 +133,8 @@ const formSchema = z.object({
   sellingPrice: z.number().min(0, 'Preço de venda deve ser maior que 0'),
 })
 
+export const dynamic = 'force-dynamic'
+
 export default function NovoProdutoPage() {
   const router = useRouter()
   const [ingredients, setIngredients] = useState<Ingredient[]>([])
