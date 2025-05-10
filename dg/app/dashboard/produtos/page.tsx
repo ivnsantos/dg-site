@@ -1,3 +1,5 @@
+'use client'
+
 import ProdutosClient from './ProdutosClient'
 
 export const dynamic = 'force-dynamic'

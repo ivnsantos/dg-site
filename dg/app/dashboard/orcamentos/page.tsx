@@ -1,3 +1,5 @@
+'use client'
+
 import OrcamentosClient from './OrcamentosClient'
 
 export const dynamic = 'force-dynamic'

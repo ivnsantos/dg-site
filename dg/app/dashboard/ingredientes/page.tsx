@@ -1,3 +1,5 @@
+'use client'
+
 import IngredientesClient from './IngredientesClient'
 
 export const dynamic = 'force-dynamic'
