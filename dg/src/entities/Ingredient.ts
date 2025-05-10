@@ -1,4 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm'
+import type { User } from './User'
+import type { FichaTecnica } from './FichaTecnica'
 
 @Entity('ingredients')
 export class Ingredient {
@@ -23,10 +25,10 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
-  @ManyToOne('User', 'ingredients')
+  @ManyToOne('User', (user: User) => user.ingredients)
   @JoinColumn({ name: 'user_id' })
-  user!: any
+  user!: User
 
-  @OneToMany('FichaTecnica', 'ingredient')
-  fichaTecnicas!: any[]
+  @OneToMany('FichaTecnica', (fichaTecnica: FichaTecnica) => fichaTecnica.ingredient)
+  fichaTecnicas!: FichaTecnica[]
 } 

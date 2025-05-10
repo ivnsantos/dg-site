@@ -1,4 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import type { Product } from "./Product"
+import type { Ingredient } from "./Ingredient"
 
 @Entity("fichaTecnica")
 export class FichaTecnica {
@@ -23,13 +25,13 @@ export class FichaTecnica {
     @Column()
     unit!: string // Unidade de medida (g, kg, ml, etc)
 
-    @ManyToOne("Product", "fichaTecnicas")
+    @ManyToOne("Product", (product: Product) => product.fichaTecnicas)
     @JoinColumn({ name: "productId" })
-    product!: any
+    product!: Product
 
-    @ManyToOne("Ingredient", "fichaTecnicas")
+    @ManyToOne("Ingredient", (ingredient: Ingredient) => ingredient.fichaTecnicas)
     @JoinColumn({ name: "ingredientId" })
-    ingredient!: any
+    ingredient!: Ingredient
 
     @Column()
     productId!: number
