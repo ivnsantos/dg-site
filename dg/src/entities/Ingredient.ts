@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm'
 
-@Entity()
+@Entity('ingredients')
 export class Ingredient {
   @PrimaryGeneratedColumn()
   id!: number
@@ -24,6 +24,7 @@ export class Ingredient {
   lastUpdate!: Date
 
   @ManyToOne('User', 'ingredients')
+  @JoinColumn({ name: 'user_id' })
   user!: any
 
   @OneToMany('FichaTecnica', 'ingredient')

@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"
-import { Ingredient } from "./Ingredient"
 
 @Entity("fichaTecnica")
 export class FichaTecnica {
@@ -28,9 +27,9 @@ export class FichaTecnica {
     @JoinColumn({ name: "productId" })
     product!: any
 
-    @ManyToOne(() => Ingredient, ingredient => ingredient.fichaTecnicas)
+    @ManyToOne("Ingredient", "fichaTecnicas")
     @JoinColumn({ name: "ingredientId" })
-    ingredient!: Ingredient
+    ingredient!: any
 
     @Column()
     productId!: number
