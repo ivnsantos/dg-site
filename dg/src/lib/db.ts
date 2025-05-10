@@ -33,22 +33,7 @@ export const AppDataSource = new DataSource({
     username: DB_USER,
     password: DB_PASSWORD,
     database: DB_NAME,
-    entities: [
-        User,
-        Cupom,
-        Orcamento,
-        Product,
-        Ingredient,
-        Confeitaria,
-        Menu,
-        MenuSection,
-        MenuItem,
-        Cliente,
-        ItemOrcamento,
-        HeaderOrcamento,
-        FooterOrcamento,
-        FichaTecnica
-    ],
+    entities: [__dirname + '/../entities/*.{ts,js}'],
     synchronize: process.env.NODE_ENV === 'development',
     logging: process.env.NODE_ENV === 'development',
     extra: {
