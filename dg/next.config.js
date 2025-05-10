@@ -94,6 +94,12 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   reactStrictMode: true,
+  // Desabilita a geração estática da página not-found
+  generateStaticParams: async () => {
+    return {
+      notFound: true
+    }
+  }
 }
 
 module.exports = nextConfig 
