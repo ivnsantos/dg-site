@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { User } from "../entities/User"
@@ -26,7 +28,16 @@ export const AppDataSource = new DataSource({
     logging: process.env.NODE_ENV !== "production",
     entities: [User, Product, Confeitaria, Cupom, Ingredient, FichaTecnica, Menu, MenuSection, MenuItem, Cliente, Orcamento, ItemOrcamento, HeaderOrcamento, FooterOrcamento],
     migrations: [],
-    subscribers: []
+    subscribers: [],
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    extra: {
+        // Desabilita drivers desnecessários
+        driver: 'pg',
+        // Otimizações para PostgreSQL
+        max: 20, // Máximo de conexões no pool
+        idleTimeoutMillis: 30000, // Tempo máximo que uma conexão pode ficar ociosa
+        connectionTimeoutMillis: 2000 // Tempo máximo para estabelecer uma conexão
+    }
 });
 
 // Função para inicializar o banco de dados

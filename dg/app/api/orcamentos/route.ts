@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server'
 import { Orcamento } from '../../../src/entities/Orcamento'
 import { ItemOrcamento } from '../../../src/entities/ItemOrcamento'

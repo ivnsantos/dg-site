@@ -33,7 +33,7 @@ declare module 'next-auth' {
   }
 }
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -80,7 +80,7 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         return {
           ...token,
@@ -94,7 +94,7 @@ export const authOptions: AuthOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       return {
         ...session,
         user: {
@@ -108,7 +108,7 @@ export const authOptions: AuthOptions = {
         }
       }
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       // Se for signout, redireciona para o login
       if (url.includes('signout')) {
         return '/login'
@@ -130,7 +130,7 @@ export const authOptions: AuthOptions = {
     signOut: '/login'
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 30 * 24 * 60 * 60 // 30 dias
   },
   secret: process.env.NEXTAUTH_SECRET,

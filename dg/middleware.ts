@@ -1,6 +1,11 @@
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
-import { UserStatus } from './src/entities/User'
+
+// Enum local para evitar dependência do TypeORM
+enum UserStatus {
+  ATIVO = 'ATIVO',
+  INATIVO = 'INATIVO'
+}
 
 export default withAuth(
   function middleware(request) {

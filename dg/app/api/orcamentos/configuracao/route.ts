@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server'
 import { HeaderOrcamento } from '../../../../src/entities/HeaderOrcamento'
 import { FooterOrcamento } from '../../../../src/entities/FooterOrcamento'

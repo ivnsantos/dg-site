@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initialize } from '@/src/data-source'
-import { Cupom, StatusCupom } from '@/src/entities/Cupom'
+import { initializeDB } from '../../../../src/lib/db'
+import { Cupom, StatusCupom } from '../../../../src/entities/Cupom'
+
+export const runtime = 'nodejs'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { codigo: string } }
 ) {
   try {
-    // Aguarda os parâmetros da rota
-    const { codigo } = await params
+    const { codigo } = params
     
-    const dataSource = await initialize()
+    const dataSource = await initializeDB()
     const cupomRepository = dataSource.getRepository(Cupom)
     
     const cupom = await cupomRepository.findOne({

@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '../../auth/[...nextauth]/route'
-import { initialize } from '@/src/data-source'
-import { User } from '@/src/entities/User'
+import { User } from '../../../../src/entities/User'
+import { initializeDB } from '../../../../src/lib/db' 
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Markup inválido' }, { status: 400 })
     }
 
-    const AppDataSource = await initialize()
+    const AppDataSource = await initializeDB()
     const userRepository = AppDataSource.getRepository(User)
 
     const user = await userRepository.findOne({

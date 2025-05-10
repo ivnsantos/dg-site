@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server'
 import { AppDataSource, initializeDB } from '@/src/lib/db'
 import { User, TipoPlano, UserStatus } from '@/src/entities/User'
