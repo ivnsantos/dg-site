@@ -30,6 +30,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
+  // Configuração para páginas dinâmicas
+  output: 'standalone',
+  experimental: {
+    serverActions: true,
+  },
+  // Configuração para páginas que não devem ser geradas estaticamente
   async rewrites() {
     return [
       {

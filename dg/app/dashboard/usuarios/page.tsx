@@ -9,6 +9,8 @@ import { UserCircle, Calculator, Pencil, CheckCircle } from 'lucide-react'
 import { AssinaturaCard } from './components/AssinaturaCard'
 import { MarkupSection } from './components/MarkupSection'
 
+export const dynamic = 'force-dynamic'
+
 export default async function UsuariosPage() {
   const session = await getServerSession(authOptions)
 
