@@ -35,15 +35,7 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
-  // Configuração para páginas que não devem ser geradas estaticamente
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:3002/:path*'
-      }
-    ]
-  },
+
   images: {
     remotePatterns: [
       {
