@@ -2,20 +2,22 @@ export const runtime = 'nodejs'
 
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
-import { User } from '../entities/User'
-import { Cupom } from '../entities/Cupom'
-import { Orcamento } from '../entities/Orcamento'
-import { Product } from '../entities/Product'
-import { Ingredient } from '../entities/Ingredient'
-import { Confeitaria } from '../entities/Confeitaria'
-import { Menu } from '../entities/Menu'
-import { MenuSection } from '../entities/MenuSection'
-import { MenuItem } from '../entities/MenuItem'
-import { Cliente } from '../entities/Cliente'
-import { ItemOrcamento } from '../entities/ItemOrcamento'
-import { HeaderOrcamento } from '../entities/HeaderOrcamento'
-import { FooterOrcamento } from '../entities/FooterOrcamento'
-import { FichaTecnica } from '../entities/FichaTecnica'
+import {
+    User,
+    Cupom,
+    Orcamento,
+    Product,
+    Ingredient,
+    Confeitaria,
+    Menu,
+    MenuSection,
+    MenuItem,
+    Cliente,
+    ItemOrcamento,
+    HeaderOrcamento,
+    FooterOrcamento,
+    FichaTecnica
+} from '../entities'
 
 // Garantir que as variáveis de ambiente existam
 const DB_HOST = '34.95.241.82'
