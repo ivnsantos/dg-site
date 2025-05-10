@@ -1,12 +1,13 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
-import { UserStatus } from '../../src/entities/User'
+import { UserStatus } from '@/src/entities/User'
 import { Sidebar } from './components/Sidebar'
-import { toast } from 'sonner'
-import { uploadFile } from '@/src/lib/firebase'
 import PhoneVerificationModal from '@/components/PhoneVerificationModal'
+import { toast } from 'react-hot-toast'
+import { uploadFile } from '@/src/lib/firebase'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -17,6 +18,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const { data: session, status } = useSession()
+  const pathname = usePathname()
 
   if (status === 'loading') {
     return <div>Carregando...</div>
