@@ -4,35 +4,26 @@ const nextConfig = {
     config.cache = false;
     return config;
   },
-    reactStrictMode: true,
-    typescript: {
-      ignoreBuildErrors: true
-    },
-    eslint: {
-      ignoreDuringBuilds: true
-    },
-    experimental: {
-      missingSuspenseWithCSRBailout: false
-    },
-  
+  reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true
+  },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
   async rewrites() {
     return [
-    
       {
         source: '/api/:path*',
         destination: 'http://localhost:3002/:path*'
       }
-      // {
-      //   source: '/api/:path*',
-      //   destination: 'https://clipapi.vercel.app/:path*'
-      // }
     ]
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Permite qualquer hostname https
+        hostname: '**',
       },
     ],
   },
