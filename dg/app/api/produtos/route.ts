@@ -2,7 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/auth'
 import { AppDataSource } from '../../../src/lib/db'
 import { Product } from '../../../src/entities/Product'
 import { FichaTecnica } from '../../../src/entities/FichaTecnica'

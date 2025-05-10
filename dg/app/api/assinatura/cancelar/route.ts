@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/auth'
 import { initializeDB } from '@/src/lib/db'
 import { TipoPlano, User, UserStatus } from '@/src/entities/User'
 import { asaasService } from '@/src/services/AsaasService'

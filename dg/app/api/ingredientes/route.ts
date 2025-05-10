@@ -2,7 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/auth'
 import { AppDataSource, initializeDB } from '../../../src/lib/db'
 import { Ingredient } from '../../../src/entities/Ingredient'
 import { User } from '../../../src/entities/User'

@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { User } from "@/src/entities/User";
 import { initializeDB } from "@/src/lib/db";
 import { NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from '@/app/api/auth/auth'
 import { Confeitaria } from "@/src/entities/Confeitaria";
 
 export async function POST(request: Request) {
