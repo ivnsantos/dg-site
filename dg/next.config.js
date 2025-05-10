@@ -4,9 +4,7 @@ const nextConfig = {
     domains: ['lh3.googleusercontent.com'],
   },
   experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:3000'],
-    },
+    serverActions: true,
   },
   // Desabilita o Edge Runtime globalmente
   runtime: 'nodejs',
