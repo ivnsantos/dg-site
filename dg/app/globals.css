@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #0B7A48;
+  --secondary-color: #2D1810;
+  --text-color: #333333;
+  --background-color: #FFFFFF;
+  --accent-color: #4CAF50;
+}
+
+body {
+  color: var(--text-color);
+  background: var(--background-color);
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.section {
+  @apply py-16;
+}
+
+.title {
+  @apply text-4xl md:text-5xl font-bold mb-8 text-center text-white;
+}
+
+.subtitle {
+  @apply text-xl md:text-2xl text-gray-200 mb-12 text-center max-w-3xl mx-auto;
+}
+
+.button-primary {
+  @apply bg-[#0B7A48] text-white px-8 py-3 rounded-full font-semibold 
+         hover:bg-[#096038] transition-colors duration-300;
+}
+
+.button-secondary {
+  @apply bg-white text-[#0B7A48] border-2 border-[#0B7A48] px-8 py-3 rounded-full 
+         font-semibold hover:bg-[#0B7A48] hover:text-white transition-colors duration-300;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-lg p-8;
+}
+
+.feature-card {
+  @apply flex flex-col items-start p-6 bg-[#0B7A48] text-white rounded-xl;
+}
+
+.step-card {
+  @apply flex items-start gap-4 text-white;
+}
+
+.price-card {
+  @apply bg-[#2D1810] p-8 rounded-xl text-white;
+}
+
+.review-card {
+  @apply bg-[#0B7A48] p-6 rounded-xl text-white;
+}
+
+.input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 
+         focus:ring-[#0B7A48] focus:border-transparent;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 142.1 83.1% 26.1%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142.1 83.1% 26.1%;
+ 
+    --radius: 0.5rem;
+    --color-dark-green: #0F5132;
+    --color-black: #000000;
+    --color-brown: #654321;
+    --color-light-green: #90C290;
+    --color-cream: #FFFDF7;
+  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 142.1 83.1% 26.1%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142.1 83.1% 26.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .button-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all;
+  }
+
+  .step-card {
+    @apply bg-white bg-opacity-5 p-6 rounded-lg flex gap-6 items-start hover:bg-opacity-10 transition-all;
+  }
+
+  .price-card {
+    @apply bg-white bg-opacity-5 p-6 rounded-lg text-white hover:bg-opacity-10 transition-all;
+  }
+
+  .review-card {
+    @apply bg-white bg-opacity-10 p-6 rounded-lg text-white hover:bg-opacity-15 transition-all;
+  }
+}
+
+/* Estilos para imagens */
+.hero-image {
+  @apply object-cover brightness-50 transition-all duration-700;
+}
+
+.feature-image {
+  @apply object-cover rounded-lg shadow-xl hover:scale-105 transition-all duration-500;
+}
+
+.price-image {
+  @apply object-cover w-full h-64 rounded-lg shadow-xl hover:scale-105 transition-all duration-500;
+}
+
+.chef-image {
+  @apply object-cover rounded-full shadow-xl border-2 border-primary;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+} 
