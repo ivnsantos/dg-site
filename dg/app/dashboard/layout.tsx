@@ -1,21 +1,31 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { UserStatus } from '../../src/entities/User'
 import { Sidebar } from './components/Sidebar'
 import { toast } from 'sonner'
 import { uploadFile } from '@/src/lib/firebase'
 import PhoneVerificationModal from '@/components/PhoneVerificationModal'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { data: session } = useSession()
-  const pathname = usePathname()
-  
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') {
+    return <div>Carregando...</div>
+  }
+
+  if (!session) {
+    redirect('/login')
+  }
+
   const isInactive = session?.user?.status === UserStatus.INATIVO || !session?.user?.plano
   const isPlansPage = pathname === '/dashboard/planos'
 

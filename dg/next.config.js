@@ -64,6 +64,13 @@ const nextConfig = {
         ]
       }
     ]
+  },
+  // Configuração para páginas dinâmicas
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Configuração para ignorar erros de build em páginas específicas
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   }
 }
 
