@@ -52,8 +52,8 @@ export function getDataSource() {
                 FooterOrcamento,
                 FichaTecnica
             ],
-            synchronize: process.env.NODE_ENV === 'development',
-            logging: process.env.NODE_ENV === 'development',
+            synchronize: false,
+            logging: true, // Ativar logging para debug
             extra: {
                 max: 20,
                 min: 5,
@@ -69,8 +69,26 @@ export async function initializeDB() {
     const dataSource = getDataSource()
     if (!dataSource.isInitialized) {
         try {
+            console.log("Initializing database connection...")
+            console.log("Entities to be loaded:", [
+                'User',
+                'Cupom',
+                'Orcamento',
+                'Product',
+                'Ingredient',
+                'Confeitaria',
+                'Menu',
+                'MenuSection',
+                'MenuItem',
+                'Cliente',
+                'ItemOrcamento',
+                'HeaderOrcamento',
+                'FooterOrcamento',
+                'FichaTecnica'
+            ])
             await dataSource.initialize()
             console.log("Database connection initialized successfully")
+            console.log("Loaded entities:", dataSource.entityMetadatas.map(metadata => metadata.name))
         } catch (error) {
             console.error("Error during database initialization:", error)
             throw error
