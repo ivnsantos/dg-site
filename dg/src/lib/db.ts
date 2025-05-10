@@ -61,7 +61,7 @@ export async function initializeDB() {
     if (!AppDataSource.isInitialized) {
         try {
             await AppDataSource.initialize()
-            console.log("Database connection initialized")
+            console.log("Database connection initialized successfully")
         } catch (error) {
             console.error("Error during database initialization:", error)
             throw error

@@ -46,35 +46,40 @@ export const authOptions: AuthOptions = {
           throw new Error('Credenciais inválidas')
         }
 
-        const connection = await initializeDB()
-        const userRepository = connection.getRepository(User)
+        try {
+          const connection = await initializeDB()
+          const userRepository = connection.getRepository(User)
 
-        const user = await userRepository.findOne({
-          where: { email: credentials.email }
-        })
+          const user = await userRepository.findOne({
+            where: { email: credentials.email }
+          })
 
-        if (!user) {
-          throw new Error('Usuário não encontrado')
-        }
+          if (!user) {
+            throw new Error('Usuário não encontrado')
+          }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
-        if (!isPasswordValid) {
-          throw new Error('Senha incorreta')
-        }
+          if (!isPasswordValid) {
+            throw new Error('Senha incorreta')
+          }
 
-        // Verifica se o telefone foi validado, mas não bloqueia o login
-        const phoneVerified = user.verificationCode === true
+          // Verifica se o telefone foi validado, mas não bloqueia o login
+          const phoneVerified = user.verificationCode === true
 
-        await connection.destroy()
+          await connection.destroy()
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          status: user.status,
-          plano: user.plano,
-          phoneVerified
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            status: user.status,
+            plano: user.plano,
+            phoneVerified
+          }
+        } catch (error) {
+          console.error('Erro durante autenticação:', error)
+          throw new Error('Erro ao autenticar usuário')
         }
       }
     })
@@ -133,6 +138,6 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt' as const,
     maxAge: 30 * 24 * 60 * 60 // 30 dias
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key',
   debug: process.env.NODE_ENV === 'development'
 } 
