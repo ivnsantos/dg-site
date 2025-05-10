@@ -18,11 +18,11 @@ import { FooterOrcamento } from '../entities/FooterOrcamento'
 import { FichaTecnica } from '../entities/FichaTecnica'
 
 // Garantir que as variáveis de ambiente existam
-const DB_HOST = process.env.DB_HOST 
-const DB_PORT = parseInt(process.env.DB_PORT || '5432')
-const DB_USER = process.env.DB_USER
-const DB_PASSWORD = process.env.DB_PASSWORD
-const DB_NAME = process.env.DB_NAME
+const DB_HOST = '34.95.241.82'
+const DB_PORT = 5432
+const DB_USER = 'postgres'
+const DB_PASSWORD = 'dg77pyuio'
+const DB_NAME = 'postgres'
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
