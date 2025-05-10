@@ -4,6 +4,9 @@ import { authOptions } from '@/app/api/auth/auth'
 import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
@@ -16,7 +19,7 @@ export async function GET() {
     const userRepository = connection.getRepository(User)
 
     const user = await userRepository.findOne({
-      where: { id: session.user.id }
+      where: { id: Number(session.user.id) }
     })
 
     await connection.destroy()

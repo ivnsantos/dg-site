@@ -63,6 +63,14 @@ const nextConfig = {
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
+  },
+  // Configuração para forçar renderização dinâmica
+  staticPageGenerationTimeout: 120,
+  // Configuração para rotas dinâmicas
+  async generateStaticParams() {
+    return {
+      dynamicParams: true
+    }
   }
 }
 
