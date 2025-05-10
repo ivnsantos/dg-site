@@ -17,13 +17,20 @@ import { HeaderOrcamento } from '../entities/HeaderOrcamento'
 import { FooterOrcamento } from '../entities/FooterOrcamento'
 import { FichaTecnica } from '../entities/FichaTecnica'
 
+// Garantir que as variáveis de ambiente existam
+const DB_HOST = process.env.DB_HOST 
+const DB_PORT = parseInt(process.env.DB_PORT || '5432')
+const DB_USER = process.env.DB_USER
+const DB_PASSWORD = process.env.DB_PASSWORD
+const DB_NAME = process.env.DB_NAME
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'dg',
+    host: DB_HOST,
+    port: DB_PORT,
+    username: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
     entities: [
         User,
         Cupom,
@@ -52,7 +59,13 @@ export const AppDataSource = new DataSource({
 
 export async function initializeDB() {
     if (!AppDataSource.isInitialized) {
-        await AppDataSource.initialize()
+        try {
+            await AppDataSource.initialize()
+            console.log("Database connection initialized")
+        } catch (error) {
+            console.error("Error during database initialization:", error)
+            throw error
+        }
     }
     return AppDataSource
 }
