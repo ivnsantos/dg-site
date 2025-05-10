@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColum
 import { User } from './User'
 import { FichaTecnica } from './FichaTecnica'
 
-@Entity('ingredients')
+@Entity({ name: 'ingredients' })
 export class Ingredient {
   @PrimaryGeneratedColumn()
   id!: number
@@ -25,10 +25,10 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
-  @ManyToOne("User", "ingredients")
+  @ManyToOne(() => User, user => user.ingredients)
   @JoinColumn({ name: 'user_id' })
   user!: User
 
-  @OneToMany("FichaTecnica", "ingredient")
+  @OneToMany(() => FichaTecnica, fichaTecnica => fichaTecnica.ingredient)
   fichaTecnicas!: FichaTecnica[]
 } 
