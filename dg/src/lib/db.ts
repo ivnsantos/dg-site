@@ -24,9 +24,9 @@ const DB_USER = 'postgres'
 const DB_PASSWORD = 'dg77pyuio'
 const DB_NAME = 'postgres'
 
-// Criar uma instância única do DataSource
-export const AppDataSource = new DataSource({
-    type: 'postgres',
+// Configuração do DataSource
+const dataSourceConfig = {
+    type: 'postgres' as const,
     host: DB_HOST,
     port: DB_PORT,
     username: DB_USER,
@@ -56,12 +56,24 @@ export const AppDataSource = new DataSource({
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 2000
     }
-})
+}
+
+// Criar uma instância única do DataSource
+let AppDataSource: DataSource | null = null
+
+// Função para obter a instância do DataSource
+export function getDataSource() {
+    if (!AppDataSource) {
+        AppDataSource = new DataSource(dataSourceConfig)
+    }
+    return AppDataSource
+}
 
 // Função para inicializar o banco de dados
 export async function initializeDB() {
     try {
-        if (!AppDataSource.isInitialized) {
+        const dataSource = getDataSource()
+        if (!dataSource.isInitialized) {
             console.log("Initializing database connection...")
             console.log("Entities to be loaded:", [
                 'User',
@@ -80,11 +92,11 @@ export async function initializeDB() {
                 'FichaTecnica'
             ])
             
-            await AppDataSource.initialize()
+            await dataSource.initialize()
             console.log("Database connection initialized successfully")
-            console.log("Loaded entities:", AppDataSource.entityMetadatas.map(metadata => metadata.name))
+            console.log("Loaded entities:", dataSource.entityMetadatas.map(metadata => metadata.name))
         }
-        return AppDataSource
+        return dataSource
     } catch (error) {
         console.error("Error during database initialization:", error)
         throw error
@@ -94,8 +106,9 @@ export async function initializeDB() {
 // Função para fechar a conexão
 export async function closeDB() {
     try {
-        if (AppDataSource.isInitialized) {
-            await AppDataSource.destroy()
+        const dataSource = getDataSource()
+        if (dataSource.isInitialized) {
+            await dataSource.destroy()
             console.log("Database connection closed")
         }
     } catch (error) {

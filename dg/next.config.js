@@ -4,7 +4,13 @@ const nextConfig = {
     config.cache = false;
     
     if (isServer) {
-      config.externals = [...(config.externals || []), 'typeorm', 'pg-native', 'pg', 'pg-query-stream']
+      config.externals = [...(config.externals || []), 
+        'typeorm',
+        'pg-native',
+        'pg',
+        'pg-query-stream',
+        'reflect-metadata'
+      ]
     }
 
     // Ignorar módulos problemáticos
@@ -14,7 +20,7 @@ const nextConfig = {
       'pg-native': false,
       'pg-cloudflare': false,
       'cloudflare:sockets': false
-    };
+    }
 
     // Configuração para ignorar erros de módulos específicos
     config.module.rules.push({
@@ -23,35 +29,29 @@ const nextConfig = {
       use: {
         loader: 'ignore-loader'
       }
-    });
+    })
 
     // Configuração para o TypeORM
     if (isServer) {
-      config.externals = [...(config.externals || []), {
-        'typeorm': 'commonjs typeorm',
-        'pg': 'commonjs pg',
-        'reflect-metadata': 'commonjs reflect-metadata'
-      }];
-    }
-
-    config.module.rules.push({
-      test: /\.ts$/,
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true,
-            compilerOptions: {
-              module: 'esnext',
-              moduleResolution: 'node'
+      config.module.rules.push({
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              compilerOptions: {
+                module: 'commonjs',
+                moduleResolution: 'node'
+              }
             }
           }
-        }
-      ]
-    })
+        ]
+      })
+    }
 
-    return config;
+    return config
   },
   reactStrictMode: true,
   typescript: {
