@@ -27,7 +27,6 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/dashboard',
         redirect: false
       })
 
@@ -46,7 +45,7 @@ export default function LoginPage() {
 
       if (result?.ok) {
         console.log('Login bem-sucedido, redirecionando para dashboard...')
-        window.location.href = '/dashboard'
+        router.push('/dashboard')
         return
       }
     } catch (err) {

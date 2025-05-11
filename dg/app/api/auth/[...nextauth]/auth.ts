@@ -122,9 +122,9 @@ export const authOptions: AuthOptions = {
       // Se for uma URL absoluta externa, mantém o comportamento padrão
       if (url.startsWith('http')) return url
       
-      // Se for uma URL relativa, adiciona o baseUrl
+      // Se for uma URL relativa, retorna apenas a URL
       if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
+        return url
       }
       
       return url
