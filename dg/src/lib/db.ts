@@ -25,50 +25,42 @@ const DB_PASSWORD = 'dg77pyuio'
 const DB_NAME = 'postgres'
 
 // Criar uma instância única do DataSource
-let AppDataSource: DataSource | null = null
-
-export function getDataSource() {
-    if (!AppDataSource) {
-        AppDataSource = new DataSource({
-            type: 'postgres',
-            host: DB_HOST,
-            port: DB_PORT,
-            username: DB_USER,
-            password: DB_PASSWORD,
-            database: DB_NAME,
-            entities: [
-                User,
-                Cupom,
-                Orcamento,
-                Product,
-                Ingredient,
-                Confeitaria,
-                Menu,
-                MenuSection,
-                MenuItem,
-                Cliente,
-                ItemOrcamento,
-                HeaderOrcamento,
-                FooterOrcamento,
-                FichaTecnica
-            ],
-            synchronize: false,
-            logging: true, // Ativar logging para debug
-            extra: {
-                max: 20,
-                min: 5,
-                idleTimeoutMillis: 30000,
-                connectionTimeoutMillis: 2000
-            }
-        })
+export const AppDataSource = new DataSource({
+    type: 'postgres',
+    host: DB_HOST,
+    port: DB_PORT,
+    username: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    entities: [
+        User,
+        Cupom,
+        Orcamento,
+        Product,
+        Ingredient,
+        Confeitaria,
+        Menu,
+        MenuSection,
+        MenuItem,
+        Cliente,
+        ItemOrcamento,
+        HeaderOrcamento,
+        FooterOrcamento,
+        FichaTecnica
+    ],
+    synchronize: false,
+    logging: true, // Ativar logging para debug
+    extra: {
+        max: 20,
+        min: 5,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000
     }
-    return AppDataSource
-}
+})
 
 export async function initializeDB() {
     try {
-        const dataSource = getDataSource()
-        if (!dataSource.isInitialized) {
+        if (!AppDataSource.isInitialized) {
             console.log("Initializing database connection...")
             console.log("Entities to be loaded:", [
                 'User',
@@ -87,12 +79,11 @@ export async function initializeDB() {
                 'FichaTecnica'
             ])
             
-            // Forçar carregamento de metadados antes da inicialização
-            await dataSource.initialize()
+            await AppDataSource.initialize()
             console.log("Database connection initialized successfully")
-            console.log("Loaded entities:", dataSource.entityMetadatas.map(metadata => metadata.name))
+            console.log("Loaded entities:", AppDataSource.entityMetadatas.map(metadata => metadata.name))
         }
-        return dataSource
+        return AppDataSource
     } catch (error) {
         console.error("Error during database initialization:", error)
         throw error
@@ -101,9 +92,8 @@ export async function initializeDB() {
 
 export async function closeDB() {
     try {
-        const dataSource = getDataSource()
-        if (dataSource.isInitialized) {
-            await dataSource.destroy()
+        if (AppDataSource.isInitialized) {
+            await AppDataSource.destroy()
             console.log("Database connection closed")
         }
     } catch (error) {

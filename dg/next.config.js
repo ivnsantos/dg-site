@@ -28,23 +28,6 @@ const nextConfig = {
         'pg': 'commonjs pg',
         'reflect-metadata': 'commonjs reflect-metadata'
       }];
-
-      // Configuração para evitar problemas de inicialização
-      config.module.rules.push({
-        test: /\.(ts|tsx)$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              compilerOptions: {
-                module: 'esnext',
-                moduleResolution: 'node'
-              }
-            }
-          }
-        ]
-      });
     }
 
     return config;
@@ -56,12 +39,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  // Configuração para páginas dinâmicas
   output: 'standalone',
-  experimental: {
-    serverActions: true,
-  },
-
   images: {
     remotePatterns: [
       {
@@ -83,21 +61,12 @@ const nextConfig = {
       }
     ]
   },
-  // Configuração para páginas dinâmicas
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  // Configuração para ignorar erros de build em páginas específicas
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-  // Configuração para forçar renderização dinâmica
-  staticPageGenerationTimeout: 120,
-  // Configuração para rotas dinâmicas
-  async generateStaticParams() {
-    return {
-      dynamicParams: true
-    }
-  }
+  staticPageGenerationTimeout: 120
 }
 
 module.exports = nextConfig 
