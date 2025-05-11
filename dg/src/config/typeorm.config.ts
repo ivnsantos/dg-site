@@ -13,7 +13,6 @@ import { ItemOrcamento } from '../entities/ItemOrcamento'
 import { HeaderOrcamento } from '../entities/HeaderOrcamento'
 import { FooterOrcamento } from '../entities/FooterOrcamento'
 import { FichaTecnica } from '../entities/FichaTecnica'
-import { AddUserIdToIngredient1710000000000 } from '../migrations/1710000000000-AddUserIdToIngredient'
 
 // Garantir que as variáveis de ambiente existam
 const DB_HOST = '34.95.241.82'
@@ -45,8 +44,7 @@ const AppDataSource = new DataSource({
         FooterOrcamento,
         FichaTecnica
     ],
-    migrations: [AddUserIdToIngredient1710000000000],
-    migrationsRun: true,
+    migrations: ['src/migrations/*.ts'],
     synchronize: false,
     logging: true
 })

@@ -8,8 +8,7 @@
     "start": "next start",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:run": "npm run typeorm migration:run -- -d src/config/typeorm.config.ts",
-    "migration:revert": "npm run typeorm migration:revert -- -d src/config/typeorm.config.ts",
-    "migration:generate": "npm run typeorm migration:generate -- -d src/config/typeorm.config.ts"
+    "migration:revert": "npm run typeorm migration:revert -- -d src/config/typeorm.config.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",

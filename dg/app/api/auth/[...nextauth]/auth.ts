@@ -6,7 +6,7 @@ import { User, UserStatus, TipoPlano } from '@/src/entities/User'
 
 declare module 'next-auth' {
   interface User {
-    id: number
+    id: string
     name: string
     email: string
     status: UserStatus
@@ -15,18 +15,11 @@ declare module 'next-auth' {
   }
 
   interface Session {
-    user: {
-      id: number
-      name: string
-      email: string
-      status: UserStatus
-      plano: TipoPlano
-      phoneVerified: boolean
-    }
+    user: User
   }
 
   interface Token {
-    id: number
+    id: string
     status: UserStatus
     plano: TipoPlano
     phoneVerified: boolean
@@ -70,13 +63,13 @@ export const authOptions: AuthOptions = {
           await connection.destroy()
 
           return {
-            id: user.id,
+            id: String(user.id),
             name: user.name,
             email: user.email,
             status: user.status,
             plano: user.plano,
             phoneVerified
-          }
+          } as any // Força o tipo para alinhar com o esperado pelo NextAuth
         } catch (error) {
           console.error('Erro durante autenticação:', error)
           throw new Error('Erro ao autenticar usuário')
