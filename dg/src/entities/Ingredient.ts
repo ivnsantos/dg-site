@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColum
 import { User } from './User'
 import { FichaTecnica } from './FichaTecnica'
 
-@Entity({ name: 'ingredients' })
+@Entity({ name: 'ingredient' })
 export class Ingredient {
   @PrimaryGeneratedColumn()
   id!: number
