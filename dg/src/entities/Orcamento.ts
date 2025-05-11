@@ -34,7 +34,7 @@ export class Orcamento {
   @Column({ type: 'varchar', length: 20, default: 'PENDENTE' })
   status!: string;
 
-  @OneToMany('ItemOrcamento', (item: ItemOrcamento) => item.orcamento)
+  @OneToMany(() => ItemOrcamento, (item: ItemOrcamento) => item.orcamento)
   itens!: ItemOrcamento[];
 
   @CreateDateColumn()
