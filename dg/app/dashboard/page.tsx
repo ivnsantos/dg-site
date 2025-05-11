@@ -2,8 +2,6 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../api/auth/[...nextauth]/route'
 import { LogoutButton } from './components/LogoutButton'
-import { initializeDB } from '@/src/lib/db'
-import { TipoPlano, User } from '@/src/entities/User'
 import { MarkupAlert } from './components/MarkupAlert'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -19,13 +17,7 @@ import {
   LockClosedIcon
 } from '@heroicons/react/24/outline'
 import { ExpandableSection } from './components/ExpandableSection'
-import { ReactNode } from 'react'
 import Link from 'next/link'
-import { Ingredient } from '@/src/entities/Ingredient'
-import { Product } from '@/src/entities/Product'
-import { Menu } from '@/src/entities/Menu'
-import { Orcamento } from '@/src/entities/Orcamento'
-import { Cliente } from '@/src/entities/Cliente'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,8 +41,8 @@ export default async function DashboardPage() {
   //   redirect('/login')
   // }
 
-  const userPlano = session.user.plano || TipoPlano.BASICO
-  const isPlanoBasico = userPlano === TipoPlano.BASICO
+  // const userPlano = session.user.plano || TipoPlano.BASICO
+  // const isPlanoBasico = userPlano === TipoPlano.BASICO
   
   // // Busca dados de produtos
   // const productsCount = await AppDataSource.getRepository(Product).count({

@@ -3,7 +3,6 @@
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
-import { UserStatus } from '@/src/entities/User'
 import { Sidebar } from './components/Sidebar'
 import PhoneVerificationModal from '@/components/PhoneVerificationModal'
 import { toast } from 'react-hot-toast'
@@ -28,9 +27,8 @@ export default function DashboardLayout({
     redirect('/login')
   }
 
-  const isInactive = session?.user?.status === UserStatus.INATIVO || !session?.user?.plano
+  const isInactive = session?.user?.status.toString() === 'INATIVO' || !session?.user?.plano
   const isPlansPage = pathname === '/dashboard/planos'
-
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
