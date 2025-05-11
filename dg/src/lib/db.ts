@@ -6,7 +6,7 @@ import { User } from '../entities/User'
 import { Cupom } from '../entities/Cupom'
 import { Orcamento } from '../entities/Orcamento'
 import { Product } from '../entities/Product'
-import { Ingredient } from '../entities/Ingredient'
+import { Ingredient } from './Ingredient'
 import { Confeitaria } from '../entities/Confeitaria'
 import { Menu } from '../entities/Menu'
 import { MenuSection } from '../entities/MenuSection'
@@ -33,11 +33,11 @@ const dataSourceConfig = {
     password: DB_PASSWORD,
     database: DB_NAME,
     entities: [
+        Ingredient,
         User,
         Cupom,
         Orcamento,
         Product,
-        Ingredient,
         Confeitaria,
         Menu,
         MenuSection,
