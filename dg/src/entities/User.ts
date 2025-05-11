@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, OneToOne, OneToMany } from 'typeorm'
-import type { Confeitaria } from './Confeitaria'
+import { Confeitaria } from './Confeitaria'
 import type { IUser } from '../interfaces/entities'
-import type { Ingredient } from './Ingredient'
-import type { Product } from './Product'
+import { Ingredient } from './Ingredient'
+import { Product } from './Product'
 import { Menu } from './Menu'
 
 export enum TipoPlano {

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import type { Orcamento } from './Orcamento';
+import { Orcamento } from './Orcamento';
 
 @Entity('itens_orcamento')
 export class ItemOrcamento {

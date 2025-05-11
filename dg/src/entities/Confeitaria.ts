@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, ManyToOne } from 'typeorm';
-import type { User } from "./User";
+import { User } from "./User";
 import type { IConfeitaria } from '../interfaces/entities';
 
 @Entity("confeitarias")
