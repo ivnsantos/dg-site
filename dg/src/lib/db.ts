@@ -33,7 +33,6 @@ const dataSourceConfig = {
     password: DB_PASSWORD,
     database: DB_NAME,
     entities: [
-        Ingredient,
         User,
         Cupom,
         Orcamento,
@@ -46,6 +45,7 @@ const dataSourceConfig = {
         ItemOrcamento,
         HeaderOrcamento,
         FooterOrcamento,
+        Ingredient,
         FichaTecnica
     ],
     synchronize: false,

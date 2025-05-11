@@ -10,5 +10,6 @@ export * from './Cliente';
 export * from './ItemOrcamento';
 export * from './HeaderOrcamento';
 export * from './FooterOrcamento';
-export * from './FichaTecnica'; 
 export * from './Ingredient';
+export * from './FichaTecnica'; 
+
