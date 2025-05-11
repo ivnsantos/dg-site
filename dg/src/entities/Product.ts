@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm'
 import { User } from './User'
+import { FichaTecnica } from './FichaTecnica'
 
 @Entity("products")
 export class Product {
@@ -51,6 +52,6 @@ export class Product {
   @ManyToOne(() => User, user => user.products)
   user!: User
 
-  @OneToMany("FichaTecnica", "product")
-  fichaTecnicas!: any[]
+  @OneToMany(() => FichaTecnica, (fichaTecnica: FichaTecnica) => fichaTecnica.product)
+  fichaTecnicas!: FichaTecnica[]
 } 
