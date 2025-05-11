@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { User } from "./User";
 import type { IConfeitaria } from '../interfaces/entities';
 
@@ -10,8 +10,9 @@ export class Confeitaria implements IConfeitaria {
   @Column({ length: 255 })
   nome: string;
 
-  @OneToOne('User', (user: User) => user.confeitaria)
-  usuario?: User;
+  @OneToOne(() => User, user => user.confeitaria)
+  @JoinColumn({ name: 'userId' }) 
+  usuario!: User;
 
   @Column({ type: 'text', nullable: true })
   endereco: string;
@@ -72,7 +73,4 @@ export class Confeitaria implements IConfeitaria {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @ManyToOne('User', (user: User) => user.confeitarias)
-  user?: User;
 } 

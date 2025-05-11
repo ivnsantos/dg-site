@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './User';
 import { Cliente } from './Cliente';
-import type { ItemOrcamento } from './ItemOrcamento';
+import { ItemOrcamento } from './ItemOrcamento';
 
 @Entity('orcamentos')
 export class Orcamento {
