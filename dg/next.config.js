@@ -3,6 +3,10 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     config.cache = false;
     
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'typeorm', 'pg-native', 'pg', 'pg-query-stream']
+    }
+
     // Ignorar módulos problemáticos
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -29,6 +33,23 @@ const nextConfig = {
         'reflect-metadata': 'commonjs reflect-metadata'
       }];
     }
+
+    config.module.rules.push({
+      test: /\.ts$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            compilerOptions: {
+              module: 'esnext',
+              moduleResolution: 'node'
+            }
+          }
+        }
+      ]
+    })
 
     return config;
   },
@@ -66,7 +87,10 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-  staticPageGenerationTimeout: 120
+  staticPageGenerationTimeout: 120,
+  experimental: {
+    serverActions: true
+  }
 }
 
 module.exports = nextConfig 
