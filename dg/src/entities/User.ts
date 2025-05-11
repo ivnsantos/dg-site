@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, OneToOne, OneToMany } from 'typeorm'
 import { Confeitaria } from './Confeitaria'
-import type { IUser } from '../interfaces/entities'
+// import type { IUser } from '../interfaces/entities'
 import { Ingredient } from './Ingredient'
 import { Product } from './Product'
 import { Menu } from './Menu'
@@ -17,7 +17,7 @@ export enum UserStatus {
 }
 
 @Entity("users")
-export class User implements IUser {
+export class User{
   @PrimaryGeneratedColumn()
   id!: number
 
