@@ -52,46 +52,46 @@ export default async function DashboardPage() {
   const userPlano = user.plano || TipoPlano.BASICO
   const isPlanoBasico = userPlano === TipoPlano.BASICO
   
-  // Busca dados de produtos
-  const productsCount = await AppDataSource.getRepository(Product).count({
-    where: { user: { id: user.id } }
-  })
+  // // Busca dados de produtos
+  // const productsCount = await AppDataSource.getRepository(Product).count({
+  //   where: { user: { id: user.id } }
+  // })
 
-  // Busca dados de ingredientes
-  const ingredientsCount = await AppDataSource.getRepository(Ingredient).count({
-    where: { user: { id: user.id } }
-  })
+  // // Busca dados de ingredientes
+  // const ingredientsCount = await AppDataSource.getRepository(Ingredient).count({
+  //   where: { user: { id: user.id } }
+  // })
 
-  // Busca dados de menus online
-  const menusCount = await AppDataSource.getRepository(Menu).count({
-    where: { user: { id: user.id } }
-  })
+  // // Busca dados de menus online
+  // const menusCount = await AppDataSource.getRepository(Menu).count({
+  //   where: { user: { id: user.id } }
+  // })
 
-  // Busca dados de orçamentos
-  const orcamentosRepository = AppDataSource.getRepository(Orcamento)
-  const totalOrcamentos = await orcamentosRepository.count({
-    where: { user: { id: user.id } }
-  })
+  // // Busca dados de orçamentos
+  // const orcamentosRepository = AppDataSource.getRepository(Orcamento)
+  // const totalOrcamentos = await orcamentosRepository.count({
+  //   where: { user: { id: user.id } }
+  // })
 
-  // Busca orçamentos agrupados por status
-  const orcamentosStatus = await orcamentosRepository
-    .createQueryBuilder('orcamento')
-    .select('orcamento.status', 'status')
-    .addSelect('COUNT(orcamento.id)', 'count')
-    .where('orcamento.user = :userId', { userId: user.id })
-    .groupBy('orcamento.status')
-    .getRawMany()
+  // // Busca orçamentos agrupados por status
+  // const orcamentosStatus = await orcamentosRepository
+  //   .createQueryBuilder('orcamento')
+  //   .select('orcamento.status', 'status')
+  //   .addSelect('COUNT(orcamento.id)', 'count')
+  //   .where('orcamento.user = :userId', { userId: user.id })
+  //   .groupBy('orcamento.status')
+  //   .getRawMany()
 
-  // Converte para um objeto mais fácil de usar
-  const statusCounts = orcamentosStatus.reduce((acc, item) => {
-    acc[item.status] = parseInt(item.count)
-    return acc
-  }, {})
+  // // Converte para um objeto mais fácil de usar
+  // const statusCounts = orcamentosStatus.reduce((acc, item) => {
+  //   acc[item.status] = parseInt(item.count)
+  //   return acc
+  // }, {})
 
-  // Busca dados de clientes
-  const clientesCount = await AppDataSource.getRepository(Cliente).count({
-    where: { user: { id: user.id } }
-  })
+  // // Busca dados de clientes
+  // const clientesCount = await AppDataSource.getRepository(Cliente).count({
+  //   where: { user: { id: user.id } }
+  // })
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -111,126 +111,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        {/* Cartas de resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard 
-            title="Produtos" 
-            value={productsCount} 
-            icon={<CubeIcon className="h-8 w-8 text-[#0B7A48]" />} 
-            href="/dashboard/produtos"
-          />
-          <StatCard 
-            title="Ingredientes" 
-            value={ingredientsCount} 
-            icon={<BeakerIcon className="h-8 w-8 text-[#0B7A48]" />} 
-            href="/dashboard/ingredientes"
-          />
-          {!isPlanoBasico && (
-            <>
-              <StatCard 
-                title="Menus Online" 
-                value={menusCount} 
-                icon={<Squares2X2Icon className="h-8 w-8 text-[#0B7A48]" />} 
-                href="/dashboard/menu-online"
-              />
-              <StatCard 
-                title="Clientes" 
-                value={clientesCount} 
-                icon={<UserGroupIcon className="h-8 w-8 text-[#0B7A48]" />} 
-                href="/dashboard/usuarios"
-              />
-            </>
-          )}
-          {isPlanoBasico && (
-            <>
-              <div className="col-span-2 bg-gray-50 rounded-lg p-6 flex flex-col justify-center items-center border border-gray-200">
-                <div className="bg-gray-100 p-3 rounded-full mb-3">
-                  <LockClosedIcon className="h-6 w-6 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-500 mb-2">Recursos PRO bloqueados</h3>
-                <p className="text-sm text-gray-400 text-center mb-4">
-                  Acesse Menu Online, Orçamentos, Gerenciamento de Clientes e muito mais
-                </p>
-                <Link href="/dashboard/planos">
-                  <button className="px-4 py-2 bg-[#0B7A48] text-white rounded-lg text-sm hover:bg-[#0ea65f] transition-colors">
-                    Desbloquear agora
-                  </button>
-                </Link>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Seção de Orçamentos - visível apenas para plano PRO */}
-        {!isPlanoBasico && (
-          <div className="bg-white rounded-lg shadow mb-8">
-            <div className="p-6 border-b">
-              <div className="flex items-center gap-3">
-                <DocumentTextIcon className="h-6 w-6 text-[#0B7A48]" />
-                <h2 className="text-xl font-semibold text-gray-900">Orçamentos</h2>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium">Total de orçamentos: {totalOrcamentos}</h3>
-                <a 
-                  href="/dashboard/orcamentos" 
-                  className="text-[#0B7A48] hover:underline font-medium flex items-center gap-1"
-                >
-                  Ver todos
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-              {totalOrcamentos > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <StatusCard label="Pendentes" value={statusCounts['PENDENTE'] || 0} color="bg-yellow-100 text-yellow-800" />
-                  <StatusCard label="Aprovados" value={statusCounts['APROVADO'] || 0} color="bg-green-100 text-green-800" />
-                  <StatusCard label="Recusados" value={statusCounts['RECUSADO'] || 0} color="bg-red-100 text-red-800" />
-                  <StatusCard label="Finalizados" value={statusCounts['FINALIZADO'] || 0} color="bg-blue-100 text-blue-800" />
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>Você ainda não possui orçamentos cadastrados.</p>
-                    Criar seu primeiro orçamento
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Seção de Orçamentos - versão bloqueada para plano BÁSICO */}
-        {isPlanoBasico && (
-          <div className="bg-gray-50 rounded-lg shadow mb-8 border border-gray-200 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gray-200/50 backdrop-blur-[1px] flex items-center justify-center z-10">
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">
-                <div className="bg-gray-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                  <LockClosedIcon className="h-6 w-6 text-gray-500" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Recurso disponível no plano PRO</h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Faça orçamentos profissionais, acompanhe status e fidelize seus clientes
-                </p>
-                <Link href="/dashboard/planos">
-                  <button className="bg-[#0B7A48] text-white px-4 py-2 rounded-lg hover:bg-[#0ea65f] transition-colors">
-                    Atualizar para PRO
-                  </button>
-                </Link>
-              </div>
-            </div>
-            <div className="p-6 border-b">
-              <div className="flex items-center gap-3">
-                <DocumentTextIcon className="h-6 w-6 text-[#0B7A48]" />
-                <h2 className="text-xl font-semibold text-gray-900">Orçamentos</h2>
-              </div>
-            </div>
-            <div className="p-6 min-h-[200px]">
-              {/* Conteúdo borrado para plano básico */}
-            </div>
-          </div>
-        )}
-
+ 
         {/* Tendências Culinárias - Em breve - visível para todos */}
         <ExpandableSection 
           title="Tendências Culinárias" 
