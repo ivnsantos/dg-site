@@ -21,6 +21,7 @@ import {
 import { ExpandableSection } from './components/ExpandableSection'
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { Ingredient } from '@/src/entities/Ingredient'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,7 +54,7 @@ export default async function DashboardPage() {
   })
 
   // Busca dados de ingredientes
-  const ingredientsCount = await AppDataSource.getRepository('Ingredient').count({
+  const ingredientsCount = await AppDataSource.getRepository(Ingredient).count({
     where: { user: { id: user.id } }
   })
 
