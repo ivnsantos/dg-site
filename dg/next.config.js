@@ -89,7 +89,8 @@ const nextConfig = {
   },
   staticPageGenerationTimeout: 120,
   experimental: {
-    serverActions: true
+    serverActions: true,
+    serverMinification: false,
   }
 }
 
