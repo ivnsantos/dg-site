@@ -36,20 +36,20 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  // Inicializa o banco de dados
-  const AppDataSource = await initializeDB()
+  // // Inicializa o banco de dados
+  // const AppDataSource = await initializeDB()
   
-  // Busca dados do usuário no banco
-  const userRepository = AppDataSource.getRepository(User)
-  const user = await userRepository.findOne({
-    where: { email: session.user.email }
-  })
+  // // Busca dados do usuário no banco
+  // const userRepository = AppDataSource.getRepository(User)
+  // const user = await userRepository.findOne({
+  //   where: { email: session.user.email }
+  // })
 
-  if (!user) {
-    redirect('/login')
-  }
+  // if (!user) {
+  //   redirect('/login')
+  // }
 
-  const userPlano = user.plano || TipoPlano.BASICO
+  const userPlano = session.user.plano || TipoPlano.BASICO
   const isPlanoBasico = userPlano === TipoPlano.BASICO
   
   // // Busca dados de produtos
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Alerta de Markup não configurado */}
-        {!user?.markupIdeal && <MarkupAlert />}
+        {/* {!session.user.markupIdeal && <MarkupAlert />} */}
 
 
         <div className="bg-white p-6 rounded-lg shadow mb-8">
