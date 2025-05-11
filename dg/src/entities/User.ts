@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, OneToOne, OneToMany } from 'typeorm'
 import { Confeitaria } from './Confeitaria'
-// import type { IUser } from '../interfaces/entities'
 import { Ingredient } from './Ingredient'
 import { Product } from './Product'
 import { Menu } from './Menu'
@@ -109,19 +108,19 @@ export class User{
   })
   markupIdeal: number;
 
-  @OneToMany('Ingredient', (ingredient: Ingredient) => ingredient.user)
+  @OneToMany(() => Ingredient, (ingredient: Ingredient) => ingredient.user)
   ingredients?: Ingredient[]
 
-  @OneToMany('Product', (product: Product) => product.user)
+  @OneToMany(() => Product, (product: Product) => product.user)
   products?: Product[]
 
-  @OneToMany('Confeitaria', (confeitaria: Confeitaria) => confeitaria.user)
+  @OneToMany(() => Confeitaria, (confeitaria: Confeitaria) => confeitaria.user)
   confeitarias?: Confeitaria[]
 
-  @OneToMany('Menu', 'user')
+  @OneToMany(() => Menu, 'user')
   menus?: Menu[]
 
-  @OneToOne('Confeitaria', (confeitaria: Confeitaria) => confeitaria.usuario)
+  @OneToOne(() => Confeitaria, (confeitaria: Confeitaria) => confeitaria.usuario)
   @JoinColumn()
   confeitaria?: Confeitaria;
 
