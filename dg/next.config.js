@@ -21,6 +21,15 @@ const nextConfig = {
       }
     });
 
+    // Configuração para o TypeORM
+    if (isServer) {
+      config.externals.push({
+        'typeorm': 'commonjs typeorm',
+        'pg': 'commonjs pg',
+        'reflect-metadata': 'commonjs reflect-metadata'
+      });
+    }
+
     return config;
   },
   reactStrictMode: true,
