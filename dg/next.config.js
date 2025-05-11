@@ -38,7 +38,8 @@ const nextConfig = {
             options: {
               transpileOnly: true,
               compilerOptions: {
-                module: 'commonjs'
+                module: 'esnext',
+                moduleResolution: 'node'
               }
             }
           }
