@@ -23,10 +23,26 @@ const nextConfig = {
 
     // Configuração para o TypeORM
     if (isServer) {
-      config.externals.push({
+      config.externals = [...(config.externals || []), {
         'typeorm': 'commonjs typeorm',
         'pg': 'commonjs pg',
         'reflect-metadata': 'commonjs reflect-metadata'
+      }];
+
+      // Configuração para evitar problemas de inicialização
+      config.module.rules.push({
+        test: /\.(ts|tsx)$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              compilerOptions: {
+                module: 'commonjs'
+              }
+            }
+          }
+        ]
       });
     }
 

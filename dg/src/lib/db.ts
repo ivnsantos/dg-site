@@ -66,9 +66,9 @@ export function getDataSource() {
 }
 
 export async function initializeDB() {
-    const dataSource = getDataSource()
-    if (!dataSource.isInitialized) {
-        try {
+    try {
+        const dataSource = getDataSource()
+        if (!dataSource.isInitialized) {
             console.log("Initializing database connection...")
             console.log("Entities to be loaded:", [
                 'User',
@@ -86,21 +86,28 @@ export async function initializeDB() {
                 'FooterOrcamento',
                 'FichaTecnica'
             ])
+            
+            // Forçar carregamento de metadados antes da inicialização
             await dataSource.initialize()
             console.log("Database connection initialized successfully")
             console.log("Loaded entities:", dataSource.entityMetadatas.map(metadata => metadata.name))
-        } catch (error) {
-            console.error("Error during database initialization:", error)
-            throw error
         }
+        return dataSource
+    } catch (error) {
+        console.error("Error during database initialization:", error)
+        throw error
     }
-    return dataSource
 }
 
 export async function closeDB() {
-    const dataSource = getDataSource()
-    if (dataSource.isInitialized) {
-        await dataSource.destroy()
-        console.log("Database connection closed")
+    try {
+        const dataSource = getDataSource()
+        if (dataSource.isInitialized) {
+            await dataSource.destroy()
+            console.log("Database connection closed")
+        }
+    } catch (error) {
+        console.error("Error closing database connection:", error)
+        throw error
     }
 } 
