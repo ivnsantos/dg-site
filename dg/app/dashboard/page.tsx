@@ -22,6 +22,10 @@ import { ExpandableSection } from './components/ExpandableSection'
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { Ingredient } from '@/src/entities/Ingredient'
+import { Product } from '@/src/entities/Product'
+import { Menu } from '@/src/entities/Menu'
+import { Orcamento } from '@/src/entities/Orcamento'
+import { Cliente } from '@/src/entities/Cliente'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,7 +53,7 @@ export default async function DashboardPage() {
   const isPlanoBasico = userPlano === TipoPlano.BASICO
   
   // Busca dados de produtos
-  const productsCount = await AppDataSource.getRepository('Product').count({
+  const productsCount = await AppDataSource.getRepository(Product).count({
     where: { user: { id: user.id } }
   })
 
@@ -59,12 +63,12 @@ export default async function DashboardPage() {
   })
 
   // Busca dados de menus online
-  const menusCount = await AppDataSource.getRepository('Menu').count({
+  const menusCount = await AppDataSource.getRepository(Menu).count({
     where: { user: { id: user.id } }
   })
 
   // Busca dados de orçamentos
-  const orcamentosRepository = AppDataSource.getRepository('Orcamento')
+  const orcamentosRepository = AppDataSource.getRepository(Orcamento)
   const totalOrcamentos = await orcamentosRepository.count({
     where: { user: { id: user.id } }
   })
@@ -85,7 +89,7 @@ export default async function DashboardPage() {
   }, {})
 
   // Busca dados de clientes
-  const clientesCount = await AppDataSource.getRepository('Cliente').count({
+  const clientesCount = await AppDataSource.getRepository(Cliente).count({
     where: { user: { id: user.id } }
   })
 
