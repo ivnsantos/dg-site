@@ -5,72 +5,72 @@ import type { IConfeitaria } from '../interfaces/entities';
 @Entity("confeitarias")
 export class Confeitaria implements IConfeitaria {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ length: 255 })
-  nome: string;
+  nome!: string;
 
-  @OneToOne(() => User, user => user.confeitaria)
-  @JoinColumn({ name: 'userId' }) 
+  @OneToOne(() => User, { cascade: true })
+  @JoinColumn({ name: 'userId' })
   usuario!: User;
 
   @Column({ type: 'text', nullable: true })
-  endereco: string;
+  endereco?: string;
 
   @Column({ length: 255, nullable: true })
-  logo: string;
+  logo?: string;
 
   @Column({ length: 100, nullable: true })
-  horarioFuncionamento: string;
+  horarioFuncionamento?: string;
 
   @Column({ type: 'decimal', precision: 4, scale: 2, nullable: true })
-  horasTrabalhoDiarias: number;
+  horasTrabalhoDiarias?: number;
 
   @Column({ type: 'integer', nullable: true })
-  quantidadeFuncionarios: number;
+  quantidadeFuncionarios?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  folhaPagamentoTotal: number;
+  folhaPagamentoTotal?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  faturamentoMedio: number;
+  faturamentoMedio?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  faturamentoDesejado: number;
+  faturamentoDesejado?: number;
 
   @Column({ length: 50, nullable: true })
-  regimeTributario: string;
+  regimeTributario?: string;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  porcentagemImposto: number;
+  porcentagemImposto?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  custosFixos: number;
+  custosFixos?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  proLabore: number;
+  proLabore?: number;
 
   @Column({ type: 'integer', nullable: true })
-  diasTrabalhadosMes: number;
+  diasTrabalhadosMes?: number;
 
   @Column({ type: 'boolean', default: false, nullable: true })
-  pagaComissao: boolean;
+  pagaComissao?: boolean;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  porcentagemComissao: number;
+  porcentagemComissao?: number;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  taxaMaquininha: number;
+  taxaMaquininha?: number;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  porcentagemLucroDesejado: number;
+  porcentagemLucroDesejado?: number;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  markupIdeal: number;
+  markupIdeal?: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 } 

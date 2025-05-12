@@ -28,7 +28,7 @@ export class User{
     nullable: true,
     name: 'image_url',
   })
-  imageUrl: string;
+  imageUrl!: string;
 
   @Column({ nullable: true })
   telefone?: string
@@ -46,14 +46,14 @@ export class User{
   password!: string
 
   @Column({ length: 50, nullable: true })
-  nivelAcesso: string; // admin, vendedor, cozinha
+  nivelAcesso!: string; // admin, vendedor, cozinha
 
   @Column({
     type: 'enum',
     enum: TipoPlano,
     default: TipoPlano.BASICO
   })
-  plano: TipoPlano;
+  plano!: TipoPlano;
 
   @Column({
     type: 'decimal',
@@ -61,28 +61,28 @@ export class User{
     scale: 2,
     nullable: true
   })
-  valorPlano: number;
+  valorPlano!: number;
 
   @Column({
     length: 255,
     nullable: true,
     name: 'id_assinatura',
   })
-  idAssinatura: string;
+  idAssinatura!: string;
 
   @Column({
     length: 255,
     nullable: true,
     name: 'id_customer',
   })
-  idCustomer: string;
+  idCustomer!: string;
 
   @Column({
     length: 50,
     nullable: true,
     name: 'cupom_desconto'
   })
-  cupomDesconto: string;
+  cupomDesconto!: string;
 
   @Column({
     length: 50,
@@ -90,7 +90,7 @@ export class User{
     name: 'cpf_ou_cnpj',
     unique: true
   })
-  cpfOuCnpj: string;
+  cpfOuCnpj!: string;
 
   @Column({
     type: 'enum',
@@ -98,7 +98,7 @@ export class User{
     default: UserStatus.ATIVO,
     name: 'status'
   })
-  status: UserStatus;
+  status!: UserStatus;
   
   @Column({
     type: 'decimal',
@@ -106,23 +106,7 @@ export class User{
     scale: 2,
     nullable: true
   })
-  markupIdeal: number;
-
-  @OneToMany(() => Ingredient, (ingredient: Ingredient) => ingredient.user)
-  ingredients?: Ingredient[]
-
-  @OneToMany(() => Product, (product: Product) => product.user)
-  products?: Product[]
-
-  @OneToMany(() => Confeitaria, (confeitaria: Confeitaria) => confeitaria.user)
-  confeitarias?: Confeitaria[]
-
-  @OneToMany(() => Menu, 'user')
-  menus?: Menu[]
-
-  @OneToOne(() => Confeitaria, (confeitaria: Confeitaria) => confeitaria.usuario)
-  @JoinColumn()
-  confeitaria?: Confeitaria;
+  markupIdeal!: number;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date
