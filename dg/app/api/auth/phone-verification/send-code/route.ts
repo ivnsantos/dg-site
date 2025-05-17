@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 import { smsService } from '@/src/services/SmsService'
 
 export async function POST(request: Request) {
+  let dataSource;
   try {
     // Inicializa o banco de dados
-    await initializeDB()
+    dataSource = await initializeDB()
     
     const body = await request.json()
     const { email } = body
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    const userRepository = AppDataSource.getRepository(User)
+    const userRepository = dataSource.getRepository(User)
     
     // Busca o usuário pelo email
     const user = await userRepository.findOne({
@@ -68,5 +69,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       message: 'Erro ao processar o envio do código de verificação' 
     }, { status: 500 })
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy()
+    }
   }
 } 
