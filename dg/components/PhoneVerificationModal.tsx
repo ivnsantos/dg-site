@@ -132,7 +132,9 @@ export default function PhoneVerificationModal() {
       // Fechará o modal após alguns segundos
       setTimeout(() => {
         setIsOpen(false)
-      }, 3000)
+        // Força uma atualização da sessão para garantir que o estado está sincronizado
+        window.location.reload()
+      }, 2000)
       
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Erro ao verificar código')
@@ -188,7 +190,7 @@ export default function PhoneVerificationModal() {
               Seu telefone foi verificado com sucesso. Você já pode utilizar o sistema.
             </p>
           </div>
-        ) :
+        ) : (
           <>
             {step === 'send' ? (
               <div className="py-4">
@@ -273,7 +275,7 @@ export default function PhoneVerificationModal() {
               </div>
             )}
           </>
-        }
+        )}
       </DialogContent>
     </Dialog>
   )
