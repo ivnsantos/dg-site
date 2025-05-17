@@ -14,20 +14,9 @@ import { HeaderOrcamento } from '../entities/HeaderOrcamento'
 import { FooterOrcamento } from '../entities/FooterOrcamento'
 import { FichaTecnica } from '../entities/FichaTecnica'
 
-// Garantir que as variáveis de ambiente existam
-const DB_HOST = '34.95.241.82'
-const DB_PORT = 5432
-const DB_USER = 'postgres'
-const DB_PASSWORD = 'dg77pyuio'
-const DB_NAME = 'postgres'
-
 const AppDataSource = new DataSource({
     type: 'postgres',
-    host: DB_HOST,
-    port: DB_PORT,
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME,
+    url: process.env.DATABASE_URL,
     entities: [
         User,
         Cupom,
@@ -46,7 +35,10 @@ const AppDataSource = new DataSource({
     ],
     migrations: ['src/migrations/*.ts'],
     synchronize: false,
-    logging: true
+    logging: true,
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
 
 export default AppDataSource 

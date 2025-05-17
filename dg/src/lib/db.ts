@@ -9,7 +9,7 @@ import { Product } from './../entities/Product'
 import { Ingredient } from './../entities/Ingredient'
 import { Confeitaria } from './../entities/Confeitaria'
 import { Menu } from './../entities/Menu'
-    import { MenuSection } from './../entities/MenuSection'
+import { MenuSection } from './../entities/MenuSection'
 import { MenuItem } from './../entities/MenuItem'
 import { Cliente } from './../entities/Cliente'
 import { ItemOrcamento } from './../entities/ItemOrcamento'
@@ -17,21 +17,10 @@ import { HeaderOrcamento } from './../entities/HeaderOrcamento'
 import { FooterOrcamento } from './../entities/FooterOrcamento'
 import { FichaTecnica } from './../entities/FichaTecnica'
 
-// Garantir que as variáveis de ambiente existam
-const DB_HOST = '34.95.241.82'
-const DB_PORT = 5432
-const DB_USER = 'postgres'
-const DB_PASSWORD = 'dg77pyuio'
-const DB_NAME = 'postgres'
-
 // Configuração do DataSource
 const dataSourceConfig = {
     type: 'postgres' as const,
-    host: DB_HOST,
-    port: DB_PORT,
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME,
+    url: process.env.DATABASE_URL,
     entities: [
         User,
         Cupom,
