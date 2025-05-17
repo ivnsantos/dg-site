@@ -1,7 +1,7 @@
 export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { User, TipoPlano, UserStatus } from '@/src/entities/User'
 import { Cupom, StatusCupom } from '@/src/entities/Cupom'
 import { asaasService } from '@/src/services/AsaasService'
@@ -14,16 +14,16 @@ const VALORES_PLANO = {
 }
 
 export async function POST(request: Request) {
+  let dataSource;
   try {
     // Inicializa a conexão com o banco
-    await initializeDB()
+    dataSource = await initializeDB()
     
     const data = await request.json()
     let descontoAplicado = 0;
 
-    // Inicializa a conexão com o banco
-    const userRepository = AppDataSource.getRepository(User)
-    const cupomRepository = AppDataSource.getRepository(Cupom)
+    const userRepository = dataSource.getRepository(User)
+    const cupomRepository = dataSource.getRepository(Cupom)
 
     // Verifica se já existe usuário com este email
     const existingEmail = await userRepository.findOne({
@@ -156,5 +156,9 @@ export async function POST(request: Request) {
       { message: 'Erro ao processar dados do registro' },
       { status: 500 }
     )
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy()
+    }
   }
 }
