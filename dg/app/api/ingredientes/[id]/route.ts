@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { Ingredient } from '@/src/entities/Ingredient'
 import { FichaTecnica } from '@/src/entities/FichaTecnica'
 import { Product } from '@/src/entities/Product'
@@ -16,9 +16,9 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    await initializeDB()
+    const dataSource = await initializeDB()
 
-    const ingredient = await AppDataSource
+    const ingredient = await dataSource
       .getRepository(Ingredient)
       .createQueryBuilder('ingredient')
       .leftJoinAndSelect('ingredient.fichaTecnicas', 'fichaTecnica')

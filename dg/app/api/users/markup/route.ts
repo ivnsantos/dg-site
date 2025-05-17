@@ -18,8 +18,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Markup inválido' }, { status: 400 })
     }
 
-    const AppDataSource = await initializeDB()
-    const userRepository = AppDataSource.getRepository(User)
+    const dataSource = await initializeDB()
+    const userRepository = dataSource.getRepository(User)
 
     const user = await userRepository.findOne({
       where: { email: session.user.email }

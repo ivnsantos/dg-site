@@ -54,7 +54,10 @@ const dataSourceConfig = {
         max: 20,
         min: 5,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000
+        connectionTimeoutMillis: 5000,
+        ssl: {
+            rejectUnauthorized: false
+        }
     }
 }
 

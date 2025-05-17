@@ -1,14 +1,14 @@
 export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 import * as bcrypt from 'bcrypt'
 
 export async function POST(request: Request) {
   try {
     // Inicializa o banco de dados
-    await initializeDB()
+    const dataSource = await initializeDB()
     
     const body = await request.json()
     const { email, token, password } = body
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    const userRepository = AppDataSource.getRepository(User)
+    const userRepository = dataSource.getRepository(User)
     
     // Busca o usuário pelo email
     const user = await userRepository.findOne({

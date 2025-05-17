@@ -15,14 +15,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    const connection = await initializeDB()
-    const userRepository = connection.getRepository(User)
+    const dataSource = await initializeDB()
+    const userRepository = dataSource.getRepository(User)
 
     const user = await userRepository.findOne({
       where: { id: Number(session.user.id) }
     })
 
-    await connection.destroy()
+    await dataSource.destroy()
 
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })

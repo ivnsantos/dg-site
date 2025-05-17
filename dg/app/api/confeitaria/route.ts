@@ -6,7 +6,7 @@ import { authOptions } from '@/app/api/auth/auth'
 import { Confeitaria } from "@/src/entities/Confeitaria";
 
 export async function POST(request: Request) {
-  let connection;
+  let dataSource;
   try {
     const session = await getServerSession(authOptions);
 
@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     const data = await request.json();
     console.log('Dados recebidos:', data);
 
-    connection = await initializeDB();
-    const userRepository = connection.getRepository(User);
-    const confeitariaRepository = connection.getRepository(Confeitaria);
+    dataSource = await initializeDB();
+    const userRepository = dataSource.getRepository(User);
+    const confeitariaRepository = dataSource.getRepository(Confeitaria);
 
     const user = await userRepository.findOne({
       where: { email: session.user.email },
@@ -108,8 +108,8 @@ export async function POST(request: Request) {
       }
     );
   } finally {
-    if (connection && connection.isConnected) {
-      await connection.destroy();
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy();
     }
   }
 }

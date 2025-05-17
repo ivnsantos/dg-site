@@ -37,10 +37,10 @@ export default async function DashboardPage() {
   }
 
   // Inicializa o banco de dados
-  const AppDataSource = await initializeDB()
+  const dataSource = await initializeDB()
   
   // Busca dados do usuário no banco
-  const userRepository = AppDataSource.getRepository(User)
+  const userRepository = dataSource.getRepository(User)
   const user = await userRepository.findOne({
     where: { email: session.user.email }
   })
@@ -53,22 +53,22 @@ export default async function DashboardPage() {
   const isPlanoBasico = userPlano === TipoPlano.BASICO
   
   // Busca dados de produtos
-  const productsCount = await AppDataSource.getRepository(Product).count({
+  const productsCount = await dataSource.getRepository(Product).count({
     where: { user: { id: user.id } }
   })
 
   // Busca dados de ingredientes
-  const ingredientsCount = await AppDataSource.getRepository(Ingredient).count({
+  const ingredientsCount = await dataSource.getRepository(Ingredient).count({
     where: { user: { id: user.id } }
   })
 
   // Busca dados de menus online
-  const menusCount = await AppDataSource.getRepository(Menu).count({
+  const menusCount = await dataSource.getRepository(Menu).count({
     where: { user: { id: user.id } }
   })
 
   // Busca dados de orçamentos
-  const orcamentosRepository = AppDataSource.getRepository(Orcamento)
+  const orcamentosRepository = dataSource.getRepository(Orcamento)
   const totalOrcamentos = await orcamentosRepository.count({
     where: { user: { id: user.id } }
   })
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
   }, {})
 
   // Busca dados de clientes
-  const clientesCount = await AppDataSource.getRepository(Cliente).count({
+  const clientesCount = await dataSource.getRepository(Cliente).count({
     where: { user: { id: user.id } }
   })
 

@@ -1,7 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 
 declare module 'next-auth' {
@@ -37,8 +37,8 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        await initializeDB()
-        const userRepository = AppDataSource.getRepository(User)
+        const dataSource = await initializeDB()
+        const userRepository = dataSource.getRepository(User)
         const user = await userRepository.findOne({
           where: { email: credentials.email }
         })
@@ -56,11 +56,7 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        return {
-          id: user.id.toString(),
-          email: user.email,
-          name: user.name
-        }
+        return user
       }
     })
   ],
