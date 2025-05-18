@@ -26,6 +26,6 @@ export class MenuSection {
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  // @OneToMany(() => MenuItem, (item: MenuItem) => item.section, { cascade: true, eager: true })
-  // items?: MenuItem[];
+  @OneToMany(() => MenuItem, (item: MenuItem) => item.section, { cascade: true, eager: true })
+  items?: MenuItem[];
 } 

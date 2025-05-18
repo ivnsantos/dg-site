@@ -3,12 +3,13 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { Orcamento } from '../../../src/entities/Orcamento'
 import { ItemOrcamento } from '../../../src/entities/ItemOrcamento'
-import { AppDataSource } from '../../../src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { HeaderOrcamento } from '../../../src/entities/HeaderOrcamento'
 import { FooterOrcamento } from '../../../src/entities/FooterOrcamento'
 import { User } from '../../../src/entities/User'
 
 export async function GET(request: Request) {
+  let dataSource;
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
@@ -17,12 +18,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Usuário não fornecido' }, { status: 400 })
     }
 
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const orcamentoRepository = AppDataSource.getRepository(Orcamento)
-    const headerRepo = AppDataSource.getRepository(HeaderOrcamento)
-    const footerRepo = AppDataSource.getRepository(FooterOrcamento)
+    dataSource = await initializeDB()
+    const orcamentoRepository = dataSource.getRepository(Orcamento)
+    const headerRepo = dataSource.getRepository(HeaderOrcamento)
+    const footerRepo = dataSource.getRepository(FooterOrcamento)
 
     const orcamentos = await orcamentoRepository.find({
       where: { user: { id: Number(userId) } },
@@ -41,41 +40,59 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let dataSource;
   try {
-    const body = await request.json()
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const orcamentoRepository = AppDataSource.getRepository(Orcamento)
-    const itemOrcamentoRepository = AppDataSource.getRepository(ItemOrcamento)
+    const data = await request.json()
+    const { orcamento, itens, userId } = data
 
-    // Criar o orçamento
-    const orcamento = orcamentoRepository.create({
-      numero: body.numero,
-      codigo: body.codigo,
-      cliente: { id: body.clienteId },
-      user: { id: body.userId },
-      dataValidade: new Date(body.dataValidade),
-      valorTotal: body.valorTotal,
-      observacoes: body.observacoes,
-      status: body.status
+    if (!userId) {
+      return NextResponse.json({ error: 'Usuário não fornecido' }, { status: 400 })
+    }
+
+    dataSource = await initializeDB()
+    const orcamentoRepository = dataSource.getRepository(Orcamento)
+    const itemOrcamentoRepository = dataSource.getRepository(ItemOrcamento)
+    const userRepository = dataSource.getRepository(User)
+    const clienteRepository = dataSource.getRepository(require('../../../src/entities/Cliente').Cliente)
+
+    const user = await userRepository.findOne({
+      where: { id: Number(userId) }
     })
 
-    const savedOrcamento = await orcamentoRepository.save(orcamento)
+    if (!user) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
+    }
+
+    // Buscar o cliente pelo ID
+    const cliente = await clienteRepository.findOne({ where: { id: orcamento.clienteId } })
+    if (!cliente) {
+      return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 404 })
+    }
+
+    // Criar o orçamento com o objeto cliente
+    const novoOrcamento = orcamentoRepository.create({
+      ...orcamento,
+      user,
+      cliente
+    })
+
+    const savedOrcamento = await orcamentoRepository.save(novoOrcamento)
 
     // Criar os itens do orçamento
-    const itens = body.itens.map((item: any) => ({
-      descricao: item.descricao,
-      quantidade: item.quantidade,
-      valorUnitario: item.valorUnitario,
-      valorTotal: item.valorTotal,
-      observacoes: item.observacoes,
-      orcamento: { id: savedOrcamento.id }
-    }))
+    const savedItens = await Promise.all(
+      itens.map(async (item: any) => {
+        const novoItem = itemOrcamentoRepository.create({
+          ...item,
+          orcamento: savedOrcamento
+        })
+        return itemOrcamentoRepository.save(novoItem)
+      })
+    )
 
-    await itemOrcamentoRepository.save(itens)
-
-    return NextResponse.json({ orcamento: savedOrcamento })
+    return NextResponse.json({
+      orcamento: savedOrcamento,
+      itens: savedItens
+    })
   } catch (error) {
     console.error('Erro ao criar orçamento:', error)
     return NextResponse.json({ error: 'Erro ao criar orçamento' }, { status: 500 })
@@ -89,12 +106,10 @@ export async function PUT(request: Request) {
     if (!userId || !header || !footer) {
       return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 })
     }
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const userRepo = AppDataSource.getRepository(User)
-    const headerRepo = AppDataSource.getRepository(HeaderOrcamento)
-    const footerRepo = AppDataSource.getRepository(FooterOrcamento)
+    const dataSource = await initializeDB()
+    const userRepo = dataSource.getRepository(User)
+    const headerRepo = dataSource.getRepository(HeaderOrcamento)
+    const footerRepo = dataSource.getRepository(FooterOrcamento)
     const user = await userRepo.findOne({ where: { id: Number(userId) } })
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })

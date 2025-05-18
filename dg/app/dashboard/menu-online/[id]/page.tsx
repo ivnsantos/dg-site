@@ -20,8 +20,8 @@ export default function MenuDetalhePage() {
     fetch(`/api/menus/${id}`)
       .then(res => res.json())
       .then(data => {
-        setMenu(data)
-        setForm(data)
+        setMenu(data.menu)
+        setForm(data.menu)
         setLoading(false)
       })
       .catch(() => setLoading(false))

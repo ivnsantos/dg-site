@@ -3,21 +3,20 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { Orcamento } from '../../../../src/entities/Orcamento'
 import { ItemOrcamento } from '../../../../src/entities/ItemOrcamento'
-import { AppDataSource } from '../../../../src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  let dataSource;
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const orcamentoRepository = AppDataSource.getRepository(Orcamento)
+    dataSource = await initializeDB()
+    const orcamentoRepository = dataSource.getRepository(Orcamento)
 
     const orcamento = await orcamentoRepository.findOne({
       where: { id: Number(params.id) },
-      relations: ['cliente', 'itens']
+      relations: ['cliente', 'itens', 'user']
     })
 
     if (!orcamento) {
@@ -35,50 +34,48 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  let dataSource;
   try {
-    const body = await request.json()
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const orcamentoRepository = AppDataSource.getRepository(Orcamento)
-    const itemOrcamentoRepository = AppDataSource.getRepository(ItemOrcamento)
+    const data = await request.json()
+    const { orcamento, itens } = data
 
-    // Atualizar o orçamento
-    const orcamento = await orcamentoRepository.findOne({
+    dataSource = await initializeDB()
+    const orcamentoRepository = dataSource.getRepository(Orcamento)
+    const itemOrcamentoRepository = dataSource.getRepository(ItemOrcamento)
+
+    const existingOrcamento = await orcamentoRepository.findOne({
       where: { id: Number(params.id) },
       relations: ['itens']
     })
 
-    if (!orcamento) {
+    if (!existingOrcamento) {
       return NextResponse.json({ error: 'Orçamento não encontrado' }, { status: 404 })
     }
 
-    orcamento.numero = body.numero
-    orcamento.codigo = body.codigo
-    orcamento.cliente = body.clienteId
-    orcamento.dataValidade = new Date(body.dataValidade)
-    orcamento.valorTotal = body.valorTotal
-    orcamento.observacoes = body.observacoes
-    orcamento.status = body.status
+    // Atualizar o orçamento
+    Object.assign(existingOrcamento, orcamento)
+    const updatedOrcamento = await orcamentoRepository.save(existingOrcamento)
 
-    const updatedOrcamento = await orcamentoRepository.save(orcamento)
-
-    // Remover itens antigos
-    await itemOrcamentoRepository.remove(orcamento.itens)
+    // Remover itens existentes
+    if (existingOrcamento.itens) {
+      await itemOrcamentoRepository.remove(existingOrcamento.itens)
+    }
 
     // Criar novos itens
-    const itens = body.itens.map((item: any) => ({
-      descricao: item.descricao,
-      quantidade: item.quantidade,
-      valorUnitario: item.valorUnitario,
-      valorTotal: item.valorTotal,
-      observacoes: item.observacoes,
-      orcamento: { id: updatedOrcamento.id }
-    }))
+    const savedItens = await Promise.all(
+      itens.map(async (item: any) => {
+        const novoItem = itemOrcamentoRepository.create({
+          ...item,
+          orcamento: updatedOrcamento
+        })
+        return itemOrcamentoRepository.save(novoItem)
+      })
+    )
 
-    await itemOrcamentoRepository.save(itens)
-
-    return NextResponse.json({ orcamento: updatedOrcamento })
+    return NextResponse.json({
+      orcamento: updatedOrcamento,
+      itens: savedItens
+    })
   } catch (error) {
     console.error('Erro ao atualizar orçamento:', error)
     return NextResponse.json({ error: 'Erro ao atualizar orçamento' }, { status: 500 })
@@ -89,14 +86,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  let dataSource;
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const orcamentoRepository = AppDataSource.getRepository(Orcamento)
+    dataSource = await initializeDB()
+    const orcamentoRepository = dataSource.getRepository(Orcamento)
 
     const orcamento = await orcamentoRepository.findOne({
-      where: { id: Number(params.id) }
+      where: { id: Number(params.id) },
+      relations: ['itens']
     })
 
     if (!orcamento) {
@@ -104,10 +101,9 @@ export async function DELETE(
     }
 
     await orcamentoRepository.remove(orcamento)
-
-    return NextResponse.json({ message: 'Orçamento removido com sucesso' })
+    return NextResponse.json({ message: 'Orçamento excluído com sucesso' })
   } catch (error) {
-    console.error('Erro ao remover orçamento:', error)
-    return NextResponse.json({ error: 'Erro ao remover orçamento' }, { status: 500 })
+    console.error('Erro ao excluir orçamento:', error)
+    return NextResponse.json({ error: 'Erro ao excluir orçamento' }, { status: 500 })
   }
 } 

@@ -3,12 +3,13 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/auth'
-import { AppDataSource } from '../../../src/lib/db'
+import { initializeDB } from '@/src/lib/db'
 import { Product } from '../../../src/entities/Product'
 import { FichaTecnica } from '../../../src/entities/FichaTecnica'
 import { User } from '../../../src/entities/User'
 
 export async function POST(request: Request) {
+  let dataSource;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions)
@@ -17,13 +18,13 @@ export async function POST(request: Request) {
     }
 
     // Inicializar conexão com o banco
-    await AppDataSource.initialize()
-    const productRepository = AppDataSource.getRepository(Product)
-    const fichaTecnicaRepository = AppDataSource.getRepository(FichaTecnica)
-    const userRepository = AppDataSource.getRepository(User)
+    dataSource = await initializeDB()
+    const productRepository = dataSource.getRepository(Product)
+    const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
+    const userRepository = dataSource.getRepository(User)
 
     // Buscar usuário para obter o markup ideal
-    const user = await userRepository.findOne({ where: { id: session.user.id } })
+    const user = await userRepository.findOne({ where: { id: Number(session.user.id) } })
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
@@ -70,23 +71,25 @@ export async function POST(request: Request) {
       return fichaTecnicaRepository.save(fichaTecnica)
     }))
 
-    await AppDataSource.destroy()
-
     return NextResponse.json({
       product: savedProduct,
       fichasTecnicas
     })
   } catch (error) {
     console.error('Erro ao criar produto:', error)
-    await AppDataSource.destroy()
     return NextResponse.json({ 
       error: 'Erro ao criar produto',
       details: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 })
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy()
+    }
   }
 }
 
 export async function GET() {
+  let dataSource;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions)
@@ -95,20 +98,22 @@ export async function GET() {
     }
 
     // Inicializar conexão com o banco
-    await AppDataSource.initialize()
-    const productRepository = AppDataSource.getRepository(Product)
+    dataSource = await initializeDB()
+    const productRepository = dataSource.getRepository(Product)
 
     // Buscar produtos do usuário
     const products = await productRepository.find({
-      where: { user: { id: session.user.id } },
+      where: { user: { id: Number(session.user.id) } },
       order: { name: 'ASC' }
     })
 
-    await AppDataSource.destroy()
     return NextResponse.json(products)
   } catch (error) {
     console.error('Erro ao buscar produtos:', error)
-    await AppDataSource.destroy()
     return NextResponse.json({ error: 'Erro ao buscar produtos' }, { status: 500 })
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy()
+    }
   }
 } 

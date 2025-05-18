@@ -65,8 +65,6 @@ export async function POST() {
       { status: 500 }
     )
   } finally {
-    if (connection && connection.isConnected) {
-      await connection.destroy()
-    }
+    // Removido destroy da conexão para evitar erro de Connection terminated
   }
 } 

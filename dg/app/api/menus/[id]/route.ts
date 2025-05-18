@@ -13,9 +13,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       relations: ['sections', 'sections.items', 'user'],
     })
     if (!menu) return NextResponse.json({ error: 'Menu não encontrado' }, { status: 404 })
-    return NextResponse.json(menu)
+    return NextResponse.json({ success: true, menu })
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao buscar menu' }, { status: 500 })
+    console.error('ERRO AO BUSCAR MENU:', error)
+    return NextResponse.json({ error: 'Erro ao buscar menu', detalhe: String(error) }, { status: 500 })
   }
 }
 

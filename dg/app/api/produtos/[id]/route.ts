@@ -19,10 +19,10 @@ export async function PUT(
     }
 
     // Inicializar conexão com o banco
-    await AppDataSource.initialize()
-    const productRepository = AppDataSource.getRepository(Product)
-    const fichaTecnicaRepository = AppDataSource.getRepository(FichaTecnica)
-    const userRepository = AppDataSource.getRepository(User)
+    const dataSource = await initializeDB()
+    const productRepository = dataSource.getRepository(Product)
+    const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
+    const userRepository = dataSource.getRepository(User)
 
     // Buscar usuário para obter o markup ideal
     const user = await userRepository.findOne({ where: { id: session.user.id } })
@@ -81,15 +81,12 @@ export async function PUT(
       return fichaTecnicaRepository.save(fichaTecnica)
     }))
 
-    await AppDataSource.destroy()
-
     return NextResponse.json({
       product: savedProduct,
       fichasTecnicas
     })
   } catch (error) {
     console.error('Erro ao atualizar produto:', error)
-    await AppDataSource.destroy()
     return NextResponse.json({ 
       error: 'Erro ao atualizar produto',
       details: error instanceof Error ? error.message : 'Erro desconhecido'
@@ -172,9 +169,9 @@ export async function DELETE(
     }
 
     // Inicializar conexão com o banco
-    await AppDataSource.initialize()
-    const productRepository = AppDataSource.getRepository(Product)
-    const fichaTecnicaRepository = AppDataSource.getRepository(FichaTecnica)
+    const dataSource = await initializeDB()
+    const productRepository = dataSource.getRepository(Product)
+    const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
 
     // Buscar produto
     const product = await productRepository.findOne({
@@ -191,11 +188,9 @@ export async function DELETE(
     // Remover o produto
     await productRepository.remove(product)
 
-    await AppDataSource.destroy()
     return NextResponse.json({ message: 'Produto excluído com sucesso' })
   } catch (error) {
     console.error('Erro ao excluir produto:', error)
-    await AppDataSource.destroy()
     return NextResponse.json({ error: 'Erro ao excluir produto' }, { status: 500 })
   }
 } 

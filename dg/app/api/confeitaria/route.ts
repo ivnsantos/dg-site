@@ -30,8 +30,14 @@ export async function POST(request: Request) {
     }
 
     // Deletar confeitaria existente do usuário
-    await confeitariaRepository.delete({ user: { id: user.id } });
-    console.log('Dados anteriores da confeitaria deletados');
+    const confeitariaExistente = await confeitariaRepository.findOne({
+      where: { usuario: { id: user.id } }
+    });
+    
+    if (confeitariaExistente) {
+      await confeitariaRepository.remove(confeitariaExistente);
+      console.log('Dados anteriores da confeitaria deletados');
+    }
 
     // Cálculo do custo total mensal
     const custoTotalMensal =

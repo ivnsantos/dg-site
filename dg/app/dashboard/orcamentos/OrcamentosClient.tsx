@@ -46,6 +46,9 @@ export default function OrcamentosClient() {
         setHeader(data.header)
         setFooter(data.footer)
         setHeaderLoading(false)
+        console.log('userId', userId)
+        console.log('header', data.header)
+        console.log('footer', data.footer)
       })
       .catch(() => {
         setHeaderLoading(false)

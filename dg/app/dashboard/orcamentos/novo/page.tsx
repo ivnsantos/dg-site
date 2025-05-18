@@ -114,7 +114,8 @@ export default function NovoOrcamentoPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...orcamento,
+          orcamento,
+          itens: orcamento.itens,
           userId: 1 // Trocar para o usuário logado
         }),
       })
@@ -140,8 +141,9 @@ export default function NovoOrcamentoPage() {
       })
       if (!response.ok) throw new Error('Erro ao criar cliente')
       const data = await response.json()
-      setClientes([...clientes, data.cliente])
-      setSelectedClienteId(data.cliente.id)
+      const cliente = data.cliente || data
+      setClientes([...clientes, cliente])
+      setSelectedClienteId(cliente.id)
       setShowNewClienteForm(false)
       toast.success('Cliente criado com sucesso!')
     } catch {

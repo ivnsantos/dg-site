@@ -128,10 +128,6 @@ export async function PUT(
       { error: 'Erro ao atualizar ingrediente' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy()
-    }
   }
 }
 
@@ -214,9 +210,5 @@ export async function DELETE(
       { error: 'Erro ao deletar ingrediente' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy()
-    }
   }
 } 
