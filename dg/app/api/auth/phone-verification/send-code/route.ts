@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
-import { smsService } from '@/src/services/SmsService'
+import { emailService } from '@/src/services/EmailService'
 
 export async function POST(request: Request) {
   let dataSource;
@@ -53,15 +53,15 @@ export async function POST(request: Request) {
     
     await userRepository.save(user)
     
-    // Envia o código por SMS
-    const smsResult = await smsService.sendVerificationCode(user.telefone, verificationCode)
+    // Envia o código por email
+    const emailResult = await emailService.sendVerificationCode(email, verificationCode, user.name)
     
     // Por segurança, mostramos o código no console durante o desenvolvimento
     console.log(`Código de verificação para ${email} (${user.telefone}): ${verificationCode}`)
     
     return NextResponse.json({ 
       message: 'Código de verificação enviado com sucesso',
-      smsSent: smsResult.success
+      emailSent: emailResult.success
     }, { status: 200 })
     
   } catch (error) {

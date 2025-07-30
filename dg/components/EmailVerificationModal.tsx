@@ -16,15 +16,53 @@ export default function EmailVerificationModal() {
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutos
+  const [isVerified, setIsVerified] = useState(false) // Estado local para controle
+  
+  // Verifica o status de verificação no banco de dados
+  const checkVerificationStatus = async () => {
+    if (!session?.user?.email) return false
+    
+    try {
+      const response = await fetch('/api/auth/check-verification-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: session.user.email
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        return data.verified === true
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status:', error)
+    }
+    
+    return false
+  }
   
   // Controla a abertura do modal com base na verificação de email
   useEffect(() => {
-    if (session?.user && session.user.phoneVerified === false) {
-      setIsOpen(true)
-    } else {
-      setIsOpen(false)
+    const checkStatus = async () => {
+      if (session?.user?.email) {
+        const isVerifiedInDB = await checkVerificationStatus()
+        
+        if (isVerifiedInDB) {
+          setIsOpen(false)
+          setIsVerified(true)
+        } else if (session.user.phoneVerified === false && !isVerified) {
+          setIsOpen(true)
+        } else {
+          setIsOpen(false)
+        }
+      }
     }
-  }, [session])
+    
+    checkStatus()
+  }, [session, isVerified])
   
   // Timer para o código expirar
   useEffect(() => {
@@ -119,6 +157,7 @@ export default function EmailVerificationModal() {
       
       // Marca como verificado com sucesso
       setSuccess(true)
+      setIsVerified(true) // Marca como verificado localmente
       
       // Atualiza o estado da sessão
       await update({
@@ -129,11 +168,15 @@ export default function EmailVerificationModal() {
         }
       })
       
-      // Fechará o modal após alguns segundos
+      // Fecha o modal após alguns segundos
       setTimeout(() => {
         setIsOpen(false)
-        // Força uma atualização da sessão para garantir que o estado está sincronizado
-        window.location.reload()
+        // Reseta os estados
+        setSuccess(false)
+        setStep('send')
+        setCode('')
+        setError('')
+        setTimeLeft(300)
       }, 2000)
       
     } catch (error) {
@@ -151,8 +194,8 @@ export default function EmailVerificationModal() {
   
   // Não pode fechar o modal se o email não estiver verificado
   const handleOpenChange = (open: boolean) => {
-    if (session?.user?.phoneVerified === false) {
-      // Não permite fechar o modal
+    if (session?.user?.phoneVerified === false && !isVerified) {
+      // Não permite fechar o modal se não estiver verificado
       return
     }
     setIsOpen(open)

@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
           <div className="bg-[#2D1810]/20 p-4 rounded-lg backdrop-blur-sm border border-white/10 mt-8">
             <h3 className="font-semibold text-white">Como funciona?</h3>
             <p className="text-sm text-white/80">
-              Informe seu email e telefone cadastrados. Enviaremos um código para você redefinir sua senha.
+              Informe seu email e telefone cadastrados. Enviaremos um código por email para você redefinir sua senha.
             </p>
           </div>
         </div>
@@ -117,22 +117,10 @@ export default function ForgotPasswordPage() {
       {/* Formulário de Recuperação */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-2">
-            <div className="md:hidden flex justify-center mb-8">
-              <Image
-                src="/images/logo.png"
-                alt="Doce Gestão Logo"
-                width={120}
-                height={120}
-                className="animate-fade-in"
-                priority
-              />
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">
-              Recuperar senha
-            </h2>
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl font-bold text-white mb-2">Esqueceu sua senha?</h2>
             <p className="text-gray-300">
-              Informe os dados cadastrados para solicitar um código de recuperação
+              Digite seu email e telefone para receber um código de recuperação.
             </p>
           </div>
 
@@ -140,7 +128,7 @@ export default function ForgotPasswordPage() {
             <div className="bg-[#0B7A48]/20 border-l-4 border-[#0B7A48] p-4 rounded-lg">
               <p className="text-[#0B7A48] font-medium">Código de recuperação enviado!</p>
               <p className="text-gray-300 text-sm mt-1">
-                Verifique seu telefone para obter o código de 5 dígitos.
+                Verifique seu email para obter o código de 5 dígitos.
                 Redirecionando para a próxima etapa...
               </p>
             </div>
@@ -203,14 +191,15 @@ export default function ForgotPasswordPage() {
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-gray-300">
+                <p className="text-gray-400 text-sm">
                   Lembrou sua senha?{' '}
                   <Button
-                    onClick={() => router.push('/login')}
+                    type="button"
                     variant="link"
-                    className="text-[#0B7A48] hover:text-[#0B7A48]/80 font-medium px-1.5 h-auto"
+                    onClick={() => router.push('/login')}
+                    className="text-[#0B7A48] hover:text-[#0B7A48]/80 p-0 h-auto font-normal"
                   >
-                    Voltar para login
+                    Voltar para o login
                   </Button>
                 </p>
               </div>

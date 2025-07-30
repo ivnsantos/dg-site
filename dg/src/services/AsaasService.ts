@@ -56,7 +56,7 @@ export class AsaasService {
 
   constructor() {
     this.apiUrl = 'https://api-sandbox.asaas.com/v3'
-    this.accessToken = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmQyNGVkM2MwLTYwNTktNGJlMS1hZjk5LTUxMTRhYTcxMDgwYzo6JGFhY2hfOTY5ODQxMjItYWU4YS00NjA0LWIxOTItZTBkNGEzNTE4NDkw'
+    this.accessToken = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmEzMzRhYzc2LTdhYTMtNDg3Ni05OGU5LWZjMjVjNmMxZTQyOTo6JGFhY2hfYmJjNDNlNTktYTJhMC00YzhhLTljOTItNzhhM2M3ZDMyYjZi'
   }
 
   private async request<T>(

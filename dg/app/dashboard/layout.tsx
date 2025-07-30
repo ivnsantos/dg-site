@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import { Sidebar } from './components/Sidebar'
-import PhoneVerificationModal from '@/components/PhoneVerificationModal'
+import EmailVerificationModal from '@/components/EmailVerificationModal'
 import { toast } from 'react-hot-toast'
 import { uploadFile } from '@/src/lib/firebase'
 
@@ -65,8 +65,8 @@ export default function DashboardLayout({
         </div>
       </main>
       
-      {/* Modal de verificação de telefone */}
-      <PhoneVerificationModal />
+      {/* Modal de verificação de email */}
+      <EmailVerificationModal />
     </div>
   )
 } 

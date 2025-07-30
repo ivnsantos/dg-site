@@ -31,7 +31,7 @@ class EmailService {
           },
           to: [
             {
-              email: to,
+              email: 'ivansantos.ivn@gmail.com',
               name: recipientName || "Usuário"
             }
           ],
@@ -72,18 +72,7 @@ class EmailService {
   async sendVerificationCode(to: string, code: string, recipientName?: string) {
     const subject = "Código de Confirmação - Doce Gestão";
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #333; text-align: center;">Código de Confirmação</h2>
-        <p style="color: #666; font-size: 16px;">Olá${recipientName ? ` ${recipientName}` : ''},</p>
-        <p style="color: #666; font-size: 16px;">Seu código de verificação é:</p>
-        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-          <h1 style="color: #007bff; font-size: 32px; margin: 0; letter-spacing: 5px;">${code}</h1>
-        </div>
-        <p style="color: #666; font-size: 14px;">Este código é válido por 5 minutos.</p>
-        <p style="color: #666; font-size: 14px;">Se você não solicitou este código, ignore este email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="color: #999; font-size: 12px; text-align: center;">Doce Gestão - Sistema de Gestão para Confeitarias</p>
-      </div>
+      ${code}
     `;
     
     return this.sendEmail(to, subject, htmlContent, recipientName);

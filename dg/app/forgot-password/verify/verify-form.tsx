@@ -113,9 +113,7 @@ export function VerifyForm() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          email
-        })
+        body: JSON.stringify({ email })
       })
 
       const data = await response.json()
@@ -124,15 +122,15 @@ export function VerifyForm() {
         throw new Error(data.message || 'Erro ao reenviar código')
       }
 
-      // Reinicia o timer
+      // Reseta o timer
       setTimeLeft(300)
+      setCode('')
       
-      // Mostra mensagem de sucesso temporária
+      // Mostra mensagem de sucesso
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
 
     } catch (error) {
-      console.error('Erro ao reenviar código:', error)
       setError(error instanceof Error ? error.message : 'Erro ao reenviar código')
     } finally {
       setIsLoading(false)
@@ -165,15 +163,15 @@ export function VerifyForm() {
             />
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter">Verificação de Código</h1>
+            <h1 className="text-4xl font-bold tracking-tighter">Verificar Código</h1>
             <p className="text-lg text-white/90">
-              Estamos quase lá! Digite o código enviado para seu email e telefone.
+              Digite o código de 5 dígitos enviado para seu email.
             </p>
           </div>
           <div className="bg-[#2D1810]/20 p-4 rounded-lg backdrop-blur-sm border border-white/10 mt-8">
             <h3 className="font-semibold text-white">Não recebeu o código?</h3>
             <p className="text-sm text-white/80">
-              Olhe seu telefone e confira o número para verificar o código.
+              Verifique sua caixa de entrada e pasta de spam. O código expira em 5 minutos.
             </p>
           </div>
         </div>
@@ -182,22 +180,10 @@ export function VerifyForm() {
       {/* Formulário de Verificação */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-2">
-            <div className="md:hidden flex justify-center mb-8">
-              <Image
-                src="/images/logo.png"
-                alt="Doce Gestão Logo"
-                width={120}
-                height={120}
-                className="animate-fade-in"
-                priority
-              />
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">
-              Digite o código
-            </h2>
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl font-bold text-white mb-2">Verificar Código</h2>
             <p className="text-gray-300">
-              Enviamos um código de 5 dígitos para seu número de telefone.
+              Digite o código de 5 dígitos enviado para <span className="font-medium text-white">{email}</span>
             </p>
           </div>
 
@@ -260,21 +246,29 @@ export function VerifyForm() {
                     Verificando...
                   </span>
                 ) : (
-                  'Verificar código'
+                  'Verificar Código'
                 )}
               </Button>
 
-              <div className="text-center">
-                <p className="text-sm text-gray-300">
-                  Não recebeu o código?{' '}
+              <div className="text-center space-y-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleResendCode}
+                  disabled={isLoading || timeLeft > 0}
+                  className="w-full border-white/20 text-white hover:bg-white/10"
+                >
+                  {isLoading ? 'Reenviando...' : 'Reenviar Código'}
+                </Button>
+                
+                <p className="text-gray-400 text-sm">
                   <Button
                     type="button"
-                    onClick={handleResendCode}
-                    disabled={isLoading || timeLeft > 0}
                     variant="link"
-                    className="text-[#0B7A48] hover:text-[#0B7A48]/80 font-medium px-1.5 h-auto"
+                    onClick={() => router.push('/forgot-password')}
+                    className="text-[#0B7A48] hover:text-[#0B7A48]/80 p-0 h-auto font-normal"
                   >
-                    Enviar novamente
+                    Voltar para recuperação de senha
                   </Button>
                 </p>
               </div>

@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { initializeDB } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
-import { smsService } from '@/src/services/SmsService'
+import { emailService } from '@/src/services/EmailService'
 
 export async function POST(request: Request) {
   try {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     // Verificar se o telefone está disponível
     if (!user.telefone) {
       return NextResponse.json({ 
-        message: 'Não foi possível enviar o código por SMS. Entre em contato com o suporte.' 
+        message: 'Não foi possível enviar o código por email. Entre em contato com o suporte.' 
       }, { status: 400 })
     }
     
@@ -48,12 +48,12 @@ export async function POST(request: Request) {
     
     await userRepository.save(user)
     
-    // Envia o código por SMS
-    const smsResult = await smsService.sendVerificationCode(user.telefone, resetCode)
+    // Envia o código por email
+    const emailResult = await emailService.sendVerificationCode(email, resetCode, user.name)
     
-    // Se o SMS falhar, fazemos log mas não retornamos erro ao usuário
-    if (!smsResult.success) {
-      console.error('Falha ao enviar SMS:', smsResult.error)
+    // Se o email falhar, fazemos log mas não retornamos erro ao usuário
+    if (!emailResult.success) {
+      console.error('Falha ao enviar email:', emailResult.error)
     }
     
     // Por segurança, mostramos o código no console durante o desenvolvimento
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     
     return NextResponse.json({ 
       message: 'Novo código de recuperação enviado com sucesso',
-      smsSent: smsResult.success
+      emailSent: emailResult.success
     }, { status: 200 })
     
   } catch (error) {
