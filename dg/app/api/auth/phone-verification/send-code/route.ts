@@ -54,6 +54,8 @@ export async function POST(request: Request) {
     await userRepository.save(user)
     
     // Envia o código por email
+
+    console.log(email, verificationCode, user.name);
     const emailResult = await emailService.sendVerificationCode(email, verificationCode, user.name)
     
     // Por segurança, mostramos o código no console durante o desenvolvimento

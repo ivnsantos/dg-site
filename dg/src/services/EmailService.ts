@@ -19,7 +19,7 @@ class EmailService {
     if (!this.apiKey) {
       throw new Error('Chave da API Brevo não configurada')
     }
-
+    console.log(this.apiKey);
     try {
       console.log(`Enviando email para ${to}: ${subject}`);
 
@@ -75,6 +75,7 @@ class EmailService {
   async sendVerificationCode(to: string, code: string, recipientName?: string) {
     const subject = "Código de Confirmação - Doce Gestão";
     const htmlContent = ` Código de verificação: ${code}`;
+    console.log(to, code, subject, recipientName);
     
     return this.sendEmail(to, subject, htmlContent, recipientName);
   }
