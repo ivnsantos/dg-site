@@ -6,6 +6,7 @@ import { Button } from "../../../../components/ui/button"
 import { toast } from "react-hot-toast"
 import { uploadFile } from '../../../../src/lib/firebase'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
+import { useSession } from 'next-auth/react'
 
 interface HeaderOrcamentoForm {
   nomeFantasia: string
@@ -36,10 +37,16 @@ export default function ConfiguracaoOrcamento() {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const router = useRouter()
-  // Usando um userId fixo temporariamente para garantir funcionamento
-  const userId = 1 // Trocar para o usuário logado quando tiver autenticação
+  const { data: session } = useSession()
 
   useEffect(() => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
+    const userId = session.user.id
+
     async function fetchData() {
       const res = await fetch(`/api/orcamentos/configuracao?userId=${userId}`)
       const data = await res.json()
@@ -48,7 +55,7 @@ export default function ConfiguracaoOrcamento() {
       setLoading(false)
     }
     if (userId) fetchData()
-  }, [userId])
+  }, [session])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,7 +65,7 @@ export default function ConfiguracaoOrcamento() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
+          userId: session?.user?.id,
           header,
           footer
         })

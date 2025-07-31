@@ -6,7 +6,9 @@ import { Button } from '../../../components/ui/button'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import DoceGestaoLoading from '../../../components/ui/DoceGestaoLoading'
+import { toast } from 'sonner'
 
 interface OrcamentoList {
   id: number
@@ -28,32 +30,60 @@ export default function OrcamentosClient() {
   const [header, setHeader] = useState<any>(null)
   const [footer, setFooter] = useState<any>(null)
   const router = useRouter()
+  const { data: session } = useSession()
 
   useEffect(() => {
-    // Trocar userId para o usuário logado
-    const userId = 1
+    if (!session?.user?.id) {
+      setLoading(false)
+      setHeaderLoading(false)
+      return
+    }
+
+    const userId = session.user.id
+
+    // Buscar orçamentos
     fetch(`/api/orcamentos?userId=${userId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 503) {
+            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
+          }
+          throw new Error('Erro ao carregar orçamentos')
+        }
+        return res.json()
+      })
       .then(data => {
         setOrcamentos(data.orcamentos || [])
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((error) => {
+        console.error('Erro ao carregar orçamentos:', error)
+        toast.error(error.message || 'Erro ao carregar orçamentos')
+        setLoading(false)
+      })
+
     // Buscar header/footer
     fetch(`/api/orcamentos/configuracao?userId=${userId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 503) {
+            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
+          }
+          throw new Error('Erro ao carregar configurações')
+        }
+        return res.json()
+      })
       .then(data => {
         setHeader(data.header)
         setFooter(data.footer)
         setHeaderLoading(false)
-        console.log('userId', userId)
-        console.log('header', data.header)
-        console.log('footer', data.footer)
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Erro ao carregar configurações:', error)
+        toast.error(error.message || 'Erro ao carregar configurações')
         setHeaderLoading(false)
       })
-  }, [])
+  }, [session])
 
   const headerFooterCadastrados = header && footer
 

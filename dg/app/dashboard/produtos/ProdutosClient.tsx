@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { PlusCircle, Pencil, Trash2, Package2, Scale, TrendingUp } from 'lucide-react'
+import { PlusCircle, Pencil, Trash2, Package2, Scale, TrendingUp, AlertTriangle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -36,7 +36,18 @@ export default function ProdutosClient() {
     setIsLoading(true)
     try {
       const response = await fetch('/api/produtos')
-      if (!response.ok) throw new Error('Erro ao carregar produtos')
+      if (!response.ok) {
+        const errorData = await response.json()
+        
+        if (response.status === 503) {
+          // Erro de conexão com banco de dados
+          toast.error('Erro de conexão. Tente novamente em alguns segundos.')
+          return
+        }
+        
+        throw new Error(errorData.error || 'Erro ao carregar produtos')
+      }
+      
       const data = await response.json()
       const formattedProducts = data.map((product: Product) => ({
         ...product,
@@ -50,7 +61,8 @@ export default function ProdutosClient() {
       }))
       setProducts(formattedProducts)
     } catch (error) {
-      toast.error('Erro ao carregar produtos')
+      console.error('Erro ao carregar produtos:', error)
+      toast.error(error instanceof Error ? error.message : 'Erro ao carregar produtos')
     } finally {
       setIsLoading(false)
     }
@@ -214,6 +226,40 @@ export default function ProdutosClient() {
                 </div>
               </CardHeader>
               
+              {/* Alerta de Déficit */}
+              {product.profitMargin < 0 && (
+                <div className="mx-6 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <div>
+                      <p className="text-sm font-medium text-red-800">
+                         Prejuízo Detectado
+                      </p>
+                      <p className="text-xs text-red-600">
+                        Este produto está gerando prejuízo. Considere ajustar o preço de venda.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Alerta de Margem Baixa */}
+              {product.profitMargin >= 0 && product.profitMargin <= 15 && (
+                <div className="mx-6 mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">
+                        ⚠️ Margem de Lucro Baixa
+                      </p>
+                      <p className="text-xs text-yellow-600">
+                        A margem de lucro está muito baixa ({product.profitMargin.toFixed(1)}%). Considere aumentar o preço.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
@@ -234,16 +280,34 @@ export default function ProdutosClient() {
 
                 <div className="space-y-2 pt-2 border-t">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500">Custo</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500">Custo</span>
+                      <div className="group relative">
+                        <span className="text-xs text-gray-400 cursor-help">ⓘ</span>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                          Custo total dos ingredientes
+                        </div>
+                      </div>
+                    </div>
                     <span className="text-xs text-gray-600">R$ {product.totalCost.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500">Preço Atual</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500">Preço Atual</span>
+                    </div>
                     <span className="text-xs text-gray-600">R$ {product.sellingPrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500">Preço Sugerido</span>
-                    <span className="text-xs text-gray-400">R$ {product.suggestedPrice.toFixed(2)}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500">Preço Sugerido</span>
+                      <div className="group relative">
+                        <span className="text-xs text-gray-400 cursor-help">ⓘ</span>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                          Preço ideal para {product.idealMarkup.toFixed(1)}x markup
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs text-blue-600 font-medium">R$ {product.suggestedPrice.toFixed(2)}</span>
                   </div>
                 </div>
               </CardContent>
@@ -254,7 +318,15 @@ export default function ProdutosClient() {
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <TrendingUp className={`h-4 w-4 ${product.profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-                      <span className="text-sm text-gray-500">Lucro Atual</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-gray-500">Lucro Atual</span>
+                        <div className="group relative">
+                          <span className="text-xs text-gray-400 cursor-help">ⓘ</span>
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            Lucro real com o preço atual
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="text-right">
                       <p className={`font-medium ${product.profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -270,7 +342,15 @@ export default function ProdutosClient() {
                   <div className="flex justify-between items-center pt-2 border-t">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm text-gray-500">Lucro Sugerido</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-gray-500">Lucro Sugerido</span>
+                        <div className="group relative">
+                          <span className="text-xs text-gray-400 cursor-help">ⓘ</span>
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            Lucro se usar o preço sugerido
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-blue-600">

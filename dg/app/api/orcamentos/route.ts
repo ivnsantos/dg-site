@@ -35,7 +35,34 @@ export async function GET(request: Request) {
     return NextResponse.json({ orcamentos, header, footer })
   } catch (error) {
     console.error('Erro ao buscar orçamentos:', error)
-    return NextResponse.json({ error: 'Erro ao buscar orçamentos' }, { status: 500 })
+    
+    // Tratamento específico para erros de conexão
+    if (error instanceof Error && (error.message.includes('Driver not Connected') || error.message.includes('Connection terminated'))) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
+    if (error instanceof Error && error.message.includes('Failed to initialize database')) {
+      return NextResponse.json({ 
+        error: 'Serviço temporariamente indisponível. Tente novamente em alguns segundos.',
+        code: 'DB_INIT_ERROR'
+      }, { status: 503 })
+    }
+    
+    return NextResponse.json({ 
+      error: 'Erro interno do servidor',
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 })
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      try {
+        await dataSource.destroy()
+      } catch (destroyError) {
+        console.error('Erro ao fechar conexão:', destroyError)
+      }
+    }
   }
 }
 
@@ -95,7 +122,35 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error('Erro ao criar orçamento:', error)
-    return NextResponse.json({ error: 'Erro ao criar orçamento' }, { status: 500 })
+    
+    // Tratamento específico para erros de conexão
+    if (error instanceof Error && (error.message.includes('Driver not Connected') || error.message.includes('Connection terminated'))) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
+    if (error instanceof Error && error.message.includes('Failed to initialize database')) {
+      return NextResponse.json({ 
+        error: 'Serviço temporariamente indisponível. Tente novamente em alguns segundos.',
+        code: 'DB_INIT_ERROR'
+      }, { status: 503 })
+    }
+    
+    return NextResponse.json({ 
+      error: 'Erro ao criar orçamento',
+      details: error instanceof Error ? error.message : 'Erro desconhecido',
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 })
+  } finally {
+    if (dataSource && dataSource.isInitialized) {
+      try {
+        await dataSource.destroy()
+      } catch (destroyError) {
+        console.error('Erro ao fechar conexão:', destroyError)
+      }
+    }
   }
 }
 

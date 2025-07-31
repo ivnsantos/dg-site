@@ -1,10 +1,34 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
 import { Button } from '../../../../../components/ui/button'
-import { toast } from 'react-hot-toast'
-import DoceGestaoLoading from '../../../../../components/ui/DoceGestaoLoading'
+import { Input } from '../../../../../components/ui/input'
+import { Label } from '../../../../../components/ui/label'
+import { Textarea } from '../../../../../components/ui/textarea'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
+
+interface Orcamento {
+  id: number
+  numero: string
+  codigo: string
+  clienteId: number
+  dataValidade: string
+  valorTotal: number
+  observacoes?: string
+  status: string
+  itens: ItemOrcamento[]
+}
+
+interface ItemOrcamento {
+  id?: number
+  descricao: string
+  quantidade: number
+  valorUnitario: number
+  valorTotal: number
+  observacoes?: string
+}
 
 interface Cliente {
   id: number
@@ -13,60 +37,57 @@ interface Cliente {
   endereco?: string
 }
 
-interface ItemOrcamento {
-  id: number
-  descricao: string
-  quantidade: number
-  valorUnitario: number
-  valorTotal: number
-  observacoes?: string
-}
-
-interface Orcamento {
-  id: number
-  numero: string
-  codigo: string
-  cliente: Cliente
-  dataValidade: string
-  valorTotal: number
-  observacoes?: string
-  status: string
-  itens: ItemOrcamento[]
-}
-
-export default function EditarOrcamentoPage() {
-  const router = useRouter()
-  const params = useParams()
-  const id = params?.id as string
-  const [clientes, setClientes] = useState<Cliente[]>([])
+export default function EditarOrcamentoPage({ params }: { params: { id: string } }) {
+  const { data: session } = useSession()
   const [orcamento, setOrcamento] = useState<Orcamento | null>(null)
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    // Carregar clientes
-    const userId = 1 // Trocar para o usuário logado
-    fetch(`/api/clientes?userId=${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        setClientes(data.clientes || [])
-      })
-      .catch(() => {
-        toast.error('Erro ao carregar clientes')
-      })
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
 
-    // Carregar orçamento
-    fetch(`/api/orcamentos/${id}`)
-      .then(res => res.json())
+    const userId = session.user.id
+
+    // Buscar orçamento
+    fetch(`/api/orcamentos/${params.id}`)
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 503) {
+            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
+          }
+          throw new Error('Erro ao carregar orçamento')
+        }
+        return res.json()
+      })
       .then(data => {
         setOrcamento(data.orcamento)
+        
+        // Buscar clientes
+        return fetch(`/api/clientes?userId=${userId}`)
+      })
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 503) {
+            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
+          }
+          throw new Error('Erro ao carregar clientes')
+        }
+        return res.json()
+      })
+      .then(data => {
+        setClientes(data.clientes || [])
         setLoading(false)
       })
-      .catch(() => {
-        toast.error('Erro ao carregar orçamento')
+      .catch((error) => {
+        console.error('Erro ao carregar dados:', error)
+        toast.error(error.message || 'Erro ao carregar dados')
         setLoading(false)
       })
-  }, [id])
+  }, [params.id, session])
 
   const handleChange = (field: keyof Orcamento, value: any) => {
     if (!orcamento) return
@@ -112,35 +133,37 @@ export default function EditarOrcamentoPage() {
     e.preventDefault()
     if (!orcamento) return
 
-    setSaving(true)
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/orcamentos/${id}`, {
+      const response = await fetch(`/api/orcamentos/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...orcamento,
-          clienteId: orcamento.cliente.id,
-          userId: 1 // Trocar para o usuário logado
+          clienteId: orcamento.clienteId,
+          userId: session?.user?.id
         }),
       })
 
       if (!response.ok) throw new Error('Erro ao atualizar orçamento')
 
       toast.success('Orçamento atualizado com sucesso!')
-      router.push(`/dashboard/orcamentos/${id}`)
+      router.push(`/dashboard/orcamentos/${params.id}`)
     } catch (error) {
       toast.error('Erro ao atualizar orçamento')
-      setSaving(false)
       setLoading(false)
     }
   }
 
   if (loading) {
-    return <DoceGestaoLoading />
+    return (
+      <div className="text-center py-8">
+        <p>Carregando orçamento...</p>
+      </div>
+    )
   }
 
   if (!orcamento) {
@@ -157,7 +180,7 @@ export default function EditarOrcamentoPage() {
         <h1 className="text-2xl font-bold">Editar Orçamento #{orcamento.numero}</h1>
         <Button
           variant="outline"
-          onClick={() => router.push(`/dashboard/orcamentos/${id}`)}
+          onClick={() => router.push(`/dashboard/orcamentos/${params.id}`)}
         >
           Voltar
         </Button>
@@ -190,8 +213,8 @@ export default function EditarOrcamentoPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Cliente</label>
             <select
-              value={orcamento.cliente.id}
-              onChange={(e) => handleChange('cliente', { id: Number(e.target.value) })}
+              value={orcamento.clienteId}
+              onChange={(e) => handleChange('clienteId', Number(e.target.value))}
               className="w-full p-2 border rounded"
               required
             >
@@ -327,16 +350,16 @@ export default function EditarOrcamentoPage() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push(`/dashboard/orcamentos/${id}`)}
+            onClick={() => router.push(`/dashboard/orcamentos/${params.id}`)}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
             className="bg-[#0B7A48] text-white"
-            disabled={saving}
+            disabled={loading}
           >
-            {saving ? 'Salvando...' : 'Salvar Alterações'}
+            {loading ? 'Salvando...' : 'Salvar Alterações'}
           </Button>
         </div>
       </form>

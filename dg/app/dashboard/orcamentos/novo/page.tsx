@@ -6,6 +6,7 @@ import { Button } from '../../../../components/ui/button'
 import { toast } from 'react-hot-toast'
 import { uploadFile } from '../../../../src/lib/firebase'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
+import { useSession } from 'next-auth/react'
 
 interface Cliente {
   id: number
@@ -36,6 +37,7 @@ interface OrcamentoForm {
 export const dynamic = 'force-dynamic'
 
 export default function NovoOrcamentoPage() {
+  const { data: session } = useSession()
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [orcamento, setOrcamento] = useState<OrcamentoForm>({
     numero: '',
@@ -54,22 +56,36 @@ export default function NovoOrcamentoPage() {
   const [newCliente, setNewCliente] = useState<Cliente>({ id: 0, nome: '', telefone: '', endereco: '' })
 
   useEffect(() => {
-    // Trocar userId para o usuário logado
-    const userId = 1
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
+    const userId = session.user.id
+    
     fetch(`/api/clientes?userId=${userId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 503) {
+            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
+          }
+          throw new Error('Erro ao carregar clientes')
+        }
+        return res.json()
+      })
       .then(data => {
         setClientes(data.clientes || [])
         setLoading(false)
       })
-      .catch(() => {
-        toast.error('Erro ao carregar clientes')
+      .catch((error) => {
+        console.error('Erro ao carregar clientes:', error)
+        toast.error(error.message || 'Erro ao carregar clientes')
         setLoading(false)
       })
-  }, [])
+  }, [session])
 
   const handleChange = (field: keyof OrcamentoForm, value: any) => {
-    setOrcamento({ ...orcamento, [field]: value })
+    setOrcamento({ ...orcamento, [field]: value } as OrcamentoForm)
   }
 
   const handleItemChange = (idx: number, field: keyof ItemOrcamentoForm, value: any) => {
@@ -116,7 +132,7 @@ export default function NovoOrcamentoPage() {
         body: JSON.stringify({
           orcamento,
           itens: orcamento.itens,
-          userId: 1 // Trocar para o usuário logado
+          userId: session?.user?.id // Trocar para o usuário logado
         }),
       })
 
@@ -137,7 +153,7 @@ export default function NovoOrcamentoPage() {
       const response = await fetch('/api/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newCliente, userId: 1 })
+        body: JSON.stringify({ ...newCliente, userId: session?.user?.id })
       })
       if (!response.ok) throw new Error('Erro ao criar cliente')
       const data = await response.json()

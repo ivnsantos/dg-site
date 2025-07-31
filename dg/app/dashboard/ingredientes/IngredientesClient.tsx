@@ -83,7 +83,15 @@ export default function IngredientesClient() {
     e.preventDefault()
     
     if (!formData.name || !formData.unit || !formData.quantity || !formData.price || !formData.brand) {
-      toast.error('Preencha todos os campos obrigatórios (nome, unidade, quantidade, preço e marca)')
+      // Mensagem de erro mais específica
+      const missingFields = []
+      if (!formData.name) missingFields.push('nome')
+      if (!formData.unit) missingFields.push('unidade')
+      if (!formData.quantity) missingFields.push('quantidade')
+      if (!formData.price) missingFields.push('preço')
+      if (!formData.brand) missingFields.push('marca')
+      
+      toast.error(`Preencha os campos obrigatórios: ${missingFields.join(', ')}`)
       return
     }
 
@@ -91,19 +99,21 @@ export default function IngredientesClient() {
       const method = editingId ? 'PUT' : 'POST'
       const url = '/api/ingredientes' + (editingId ? `?id=${editingId}` : '')
       
+      const requestBody = {
+        ...formData,
+        quantity: parseFloat(formData.quantity),
+        price: parseFloat(formData.price),
+        ...(editingId && { id: editingId })
+      }
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...formData,
-          quantity: parseFloat(formData.quantity),
-          price: parseFloat(formData.price),
-          ...(editingId && { id: editingId })
-        })
+        body: JSON.stringify(requestBody)
       })
-
+      
       if (!response.ok) {
         throw new Error('Erro ao salvar ingrediente')
       }
@@ -197,8 +207,8 @@ export default function IngredientesClient() {
                   value={formData.unit}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, unit: value }))}
                 >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Unidade" />
+                  <SelectTrigger className={`w-[120px] ${!formData.unit ? 'border-red-500' : ''}`}>
+                    <SelectValue placeholder="Unidade *" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="g">Gramas (g)</SelectItem>
@@ -209,6 +219,9 @@ export default function IngredientesClient() {
                   </SelectContent>
                 </Select>
               </div>
+              {!formData.unit && (
+                <p className="text-sm text-red-500">Selecione uma unidade</p>
+              )}
             </div>
 
             <div className="space-y-2">
