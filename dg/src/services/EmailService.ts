@@ -2,8 +2,8 @@
  * Serviço para envio de emails usando o Brevo (Sendinblue)
  */
 class EmailService {
-  private apiKey = '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';
-  private apiUrl = 'https://api.brevo.com/v3/smtp/email';
+  // private apiKey = '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';
+  // private apiUrl = 'https://api.brevo.com/v3/smtp/email';
 
   /**
    * Envia um email para o endereço especificado
@@ -17,11 +17,11 @@ class EmailService {
     try {
       console.log(`Enviando email para ${to}: ${subject}`);
 
-      const response = await fetch(this.apiUrl, {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'api-key': this.apiKey,
+          'api-key': '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',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
