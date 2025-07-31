@@ -4,7 +4,7 @@ import { toast } from 'sonner'
  * Serviço para envio de emails usando o Brevo (Sendinblue)
  */
 class EmailService {
-  private apiKey = process.env.BREVO_API_KEY || ''
+  private apiKey = process.env.NEXT_PUBLIC_BREVO_API_KEY || ''
   private apiUrl = 'https://api.brevo.com/v3/smtp/email'
 
   /**
