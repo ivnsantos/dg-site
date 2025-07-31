@@ -27,7 +27,7 @@ class EmailService {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'api-key': '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',
+          'api-key': this.apiKey,
           'content-type': 'application/json'
         },
         body: JSON.stringify({
