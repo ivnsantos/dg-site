@@ -34,7 +34,13 @@ interface CreateSubscriptionRequest {
     postalCode: string
     addressNumber: string
     phone: string
-  }
+  },
+  discount?: {
+    value: number
+    dueDateLimitDays: number
+    type: 'PERCENTAGE' | 'FIXED'
+  },
+  maxPayments: number
 }
 
 interface AsaasSubscriptionResponse {

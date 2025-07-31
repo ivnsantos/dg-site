@@ -63,8 +63,8 @@ export async function POST(request: Request) {
         // Verifica se não atingiu o limite de usos
         if (!cupom.limiteUsos || cupom.quantidadeUsos < cupom.limiteUsos) {
           // Aplica o desconto
-          valorPlano = Number((valorPlano * (1 - cupom.desconto / 100)).toFixed(2))
-          cupomAplicado = cupom
+         // valorPlano = Number((valorPlano * (1 - cupom.desconto / 100)).toFixed(2))
+         // cupomAplicado = cupom
           descontoAplicado = cupom.desconto
 
           // Atualiza a quantidade de usos do cupom
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       value: valorPlano,
       nextDueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 7 dias a partir de hoje
       cycle: 'MONTHLY',
-      description: `Assinatura ${data.plano} - Doce Gestão`,
+      description: `${data.cupomDesconto?.toUpperCase().length > 0 ? `Cupom: ${data.cupomDesconto.toUpperCase()}` : ''} : Assinatura ${data.plano} - Doce Gestão`,
       creditCard: {
         holderName: data.cartao.nome,
         number: data.cartao.numero,
@@ -108,6 +108,12 @@ export async function POST(request: Request) {
         postalCode: data.cep,
         addressNumber: data.numero,
         phone: data.telefone
+      },
+      maxPayments: 2,
+      discount: {
+        value: descontoAplicado,
+        dueDateLimitDays: 1,
+        type: 'FIXED'
       }
     })
 
