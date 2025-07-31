@@ -4,7 +4,7 @@ import { toast } from 'sonner'
  * Serviço para envio de emails usando o Brevo (Sendinblue)
  */
 class EmailService {
-  private apiKey = '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'
+  private apiKey = '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'
   private apiUrl = 'https://api.brevo.com/v3/smtp/email'
 
   /**
@@ -27,7 +27,7 @@ class EmailService {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'api-key': this.apiKey,
+          'api-key': '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',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
@@ -37,7 +37,7 @@ class EmailService {
           },
           to: [
             {
-              email: 'ivansantos.ivn@gmail.com',
+              email: to,
               name: recipientName || "Usuário"
             }
           ],
@@ -74,9 +74,7 @@ class EmailService {
    */
   async sendVerificationCode(to: string, code: string, recipientName?: string) {
     const subject = "Código de Confirmação - Doce Gestão";
-    const htmlContent = `
-      ${code}
-    `;
+    const htmlContent = ` Código de verificação: ${code}`;
     
     return this.sendEmail(to, subject, htmlContent, recipientName);
   }
