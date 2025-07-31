@@ -113,7 +113,7 @@ export async function POST(request: Request) {
       discount: {
         value: descontoAplicado,
         dueDateLimitDays: 1,
-        type: 'FIXED'
+        type: 'PERCENTAGE'
       }
     })
 
