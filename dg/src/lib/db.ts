@@ -17,7 +17,7 @@ import { HeaderOrcamento } from './../entities/HeaderOrcamento'
 import { FooterOrcamento } from './../entities/FooterOrcamento'
 import { FichaTecnica } from './../entities/FichaTecnica'
 
-// Configuração do DataSource
+// Configuração do DataSource com configurações mais robustas
 const dataSourceConfig = {
     type: 'postgres' as const,
     url: process.env.DATABASE_URL,
