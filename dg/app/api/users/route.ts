@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { initializeDB } from '@/src/lib/db'
 import { User, TipoPlano, UserStatus } from '@/src/entities/User'
 import { Cupom, StatusCupom } from '@/src/entities/Cupom'
+import { Subscription } from '@/src/entities/Subscription'
 import { asaasService } from '@/src/services/AsaasService'
 import bcrypt from 'bcryptjs'
 import { DeepPartial } from 'typeorm'
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
 
     const userRepository = dataSource.getRepository(User)
     const cupomRepository = dataSource.getRepository(Cupom)
+    const subscriptionRepository = dataSource.getRepository(Subscription)
 
     // Verifica se já existe usuário com este email
     const existingEmail = await userRepository.findOne({
@@ -86,8 +88,21 @@ export async function POST(request: Request) {
       cpfCnpj: data.cpfCnpj.replace(/\D/g, '')
     })
 
+    interface AsaasSubscriptionResponse {
+      id: string
+      customer: string
+      value: number
+      nextDueDate: string
+      cycle: string
+      description: string
+      billingType: string
+      status: string
+      createdAt: string
+      updatedAt: string
+      endDate: string
+    }
     // Cria a assinatura no Asaas
-    const subscriptionResponse = await asaasService.createSubscription({
+    const subscriptionResponse: AsaasSubscriptionResponse = await asaasService.createSubscription({
       customer: customerResponse.id,
       billingType: 'CREDIT_CARD',
       value: valorPlano,
@@ -138,10 +153,35 @@ export async function POST(request: Request) {
     const user = userRepository.create(userData)
 
     // Salva o usuário no banco
-    await userRepository.save(user)
+    const savedUser = await userRepository.save(user)
+
+    // Grava a assinatura no banco de dados
+    const subscriptionData: DeepPartial<Subscription> = {
+      externalId: subscriptionResponse.id,
+      customerId: customerResponse.id,
+      value: valorPlano,
+      cycle: 'MONTHLY',
+      description: subscriptionResponse.description || `${data.cupomDesconto?.toUpperCase().length > 0 ? `Cupom: ${data.cupomDesconto.toUpperCase()}` : ''} : Assinatura ${data.plano} - Doce Gestão`,
+      billingType: 'CREDIT_CARD',
+      status: subscriptionResponse.status || 'ACTIVE',
+      dateCreated: new Date(),
+      nextDueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endDate: subscriptionResponse.endDate,
+      externalReference: '',
+      paymentLink: '',
+      checkoutSession: '',
+      creditCardNumber: data.cartao.numero.slice(-4), // Últimos 4 dígitos
+      creditCardBrand: 'UNKNOWN',
+      creditCardToken: '',
+      userId: savedUser.id,
+      deleted: false
+    }
+
+    const subscription = subscriptionRepository.create(subscriptionData)
+    await subscriptionRepository.save(subscription)
 
     // Remove a senha do retorno
-    const { password, ...userWithoutPassword } = user
+    const { password, ...userWithoutPassword } = savedUser
 
     return NextResponse.json({
       message: 'Usuário criado com sucesso',
@@ -149,10 +189,15 @@ export async function POST(request: Request) {
         ...userWithoutPassword,
         valorPlano,
         cupom: cupomAplicado ? {
-          codigo: cupomAplicado.codigo,
-          desconto: cupomAplicado.desconto,
           valorFinal: valorPlano
         } : null
+      },
+      subscription: {
+        id: subscription.id,
+        externalId: subscription.externalId,
+        status: subscription.status,
+        value: subscription.value,
+        nextDueDate: subscription.nextDueDate
       }
     }, { status: 201 })
 

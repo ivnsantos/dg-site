@@ -54,6 +54,7 @@ interface AsaasSubscriptionResponse {
   status: string
   createdAt: string
   updatedAt: string
+  endDate: string
 }
 
 export class AsaasService {

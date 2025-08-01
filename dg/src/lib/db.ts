@@ -20,6 +20,7 @@ import {
 } from '../entities'
 import { LinkTree } from '../entities/LinkTree'
 import { LinkTreeLink } from '../entities/LinkTreeLink'
+import { Subscription } from '../entities/Subscription'
 
 // Configuração do DataSource com configurações mais robustas
 const dataSourceConfig = {
@@ -41,7 +42,8 @@ const dataSourceConfig = {
         Ingredient,
         FichaTecnica,
         LinkTree,
-        LinkTreeLink
+        LinkTreeLink,
+        Subscription
     ],
     synchronize: true,
     logging: false,
