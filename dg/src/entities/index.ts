@@ -1,15 +1,18 @@
-export * from './Menu';
-export * from './MenuSection';
-export * from './MenuItem';
-export * from './Product';
-export * from './User';
-export * from './Cupom';
-export * from './Orcamento';
-export * from './Confeitaria';
-export * from './Cliente';
-export * from './ItemOrcamento';
-export * from './HeaderOrcamento';
-export * from './FooterOrcamento';
-export * from './Ingredient';
-export * from './FichaTecnica'; 
+// Exportar todas as entidades de forma centralizada
+export { User } from './User'
+export { Cupom } from './Cupom'
+export { Orcamento } from './Orcamento'
+export { Product } from './Product'
+export { Ingredient } from './Ingredient'
+export { Confeitaria } from './Confeitaria'
+export { Menu } from './Menu'
+export { MenuSection } from './MenuSection'
+export { MenuItem } from './MenuItem'
+export { Cliente } from './Cliente'
+export { ItemOrcamento } from './ItemOrcamento'
+export { HeaderOrcamento } from './HeaderOrcamento'
+export { FooterOrcamento } from './FooterOrcamento'
+export { FichaTecnica } from './FichaTecnica'
+export { LinkTree } from './LinkTree'
+export { LinkTreeLink } from './LinkTreeLink' 
 

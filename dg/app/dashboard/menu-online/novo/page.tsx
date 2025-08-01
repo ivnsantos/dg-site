@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Button } from '../../../../components/ui/button'
-import { uploadFile } from '../../../../src/lib/firebase'
+import { uploadFileViaAPI } from '../../../../src/lib/s3'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -137,13 +137,13 @@ export default function NovoMenuPage() {
       let menuImageUrl = ''
       if (menu.imageFile) {
         const path = `menus/${Date.now()}-${menu.imageFile.name}`
-        menuImageUrl = await uploadFile(menu.imageFile, path)
+        menuImageUrl = await uploadFileViaAPI(menu.imageFile, path)
       }
       // Upload da imagem de fundo
       let menuImageBackgroundUrl = ''
       if (menu.imageBackgroundFile) {
         const path = `menus/backgrounds/${Date.now()}-${menu.imageBackgroundFile.name}`
-        menuImageBackgroundUrl = await uploadFile(menu.imageBackgroundFile, path)
+        menuImageBackgroundUrl = await uploadFileViaAPI(menu.imageBackgroundFile, path)
       }
       // Upload das imagens das seções
       const sectionUploads = await Promise.all(
@@ -151,7 +151,7 @@ export default function NovoMenuPage() {
           let sectionImageUrl = ''
           if (section.imageFile) {
             const path = `menus/sections/${Date.now()}-${section.imageFile.name}`
-            sectionImageUrl = await uploadFile(section.imageFile, path)
+            sectionImageUrl = await uploadFileViaAPI(section.imageFile, path)
           }
           // Upload das imagens dos itens
           const itemUploads = await Promise.all(
@@ -159,7 +159,7 @@ export default function NovoMenuPage() {
               let itemImageUrl = ''
               if (item.imageFile) {
                 const path = `menus/items/${Date.now()}-${item.imageFile.name}`
-                itemImageUrl = await uploadFile(item.imageFile, path)
+                itemImageUrl = await uploadFileViaAPI(item.imageFile, path)
               }
               return {
                 ...item,

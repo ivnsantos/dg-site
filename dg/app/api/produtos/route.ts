@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   } finally {
     if (dataSource && dataSource.isInitialized) {
       try {
-        await dataSource.destroy()
+      await dataSource.destroy()
       } catch (destroyError) {
         console.error('Erro ao fechar conexão:', destroyError)
       }
@@ -154,7 +154,7 @@ export async function GET() {
   } finally {
     if (dataSource && dataSource.isInitialized) {
       try {
-        await dataSource.destroy()
+      await dataSource.destroy()
       } catch (destroyError) {
         console.error('Erro ao fechar conexão:', destroyError)
       }

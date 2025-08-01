@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '../../../../components/ui/button'
 import { toast } from 'react-hot-toast'
-import { uploadFile } from '../../../../src/lib/firebase'
+import { uploadFileViaAPI } from '../../../../src/lib/s3'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
 
 export default function MenuDetalhePage() {
@@ -61,13 +61,13 @@ export default function MenuDetalhePage() {
       let menuImageUrl = form.imageUrl
       if (form.imageFile) {
         const path = `menus/${Date.now()}-${form.imageFile.name}`
-        menuImageUrl = await uploadFile(form.imageFile, path)
+        menuImageUrl = await uploadFileViaAPI(form.imageFile, path)
       }
       // Upload da imagem de fundo
       let menuImageBackgroundUrl = form.imageUrlBackground
       if (form.imageBackgroundFile) {
         const path = `menus/backgrounds/${Date.now()}-${form.imageBackgroundFile.name}`
-        menuImageBackgroundUrl = await uploadFile(form.imageBackgroundFile, path)
+        menuImageBackgroundUrl = await uploadFileViaAPI(form.imageBackgroundFile, path)
       }
       // Upload das imagens das seções
       const sectionUploads = await Promise.all(
@@ -75,7 +75,7 @@ export default function MenuDetalhePage() {
           let sectionImageUrl = section.imageUrl
           if (section.imageFile) {
             const path = `menus/sections/${Date.now()}-${section.imageFile.name}`
-            sectionImageUrl = await uploadFile(section.imageFile, path)
+            sectionImageUrl = await uploadFileViaAPI(section.imageFile, path)
           }
           // Upload das imagens dos itens
           const itemUploads = await Promise.all(
@@ -83,7 +83,7 @@ export default function MenuDetalhePage() {
               let itemImageUrl = item.imageUrl
               if (item.imageFile) {
                 const path = `menus/items/${Date.now()}-${item.imageFile.name}`
-                itemImageUrl = await uploadFile(item.imageFile, path)
+                itemImageUrl = await uploadFileViaAPI(item.imageFile, path)
               }
               return {
                 ...item,

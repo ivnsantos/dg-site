@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
+import WhatsAppFloat from '@/components/WhatsAppFloat'
 
 export const dynamic = 'force-dynamic'
 
@@ -200,6 +201,9 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
+
+      {/* WhatsApp Float Button */}
+      <WhatsAppFloat position="right" />
     </div>
   )
 } 

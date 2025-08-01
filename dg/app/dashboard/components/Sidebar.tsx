@@ -18,10 +18,12 @@ import {
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
   SparklesIcon,
-  LockClosedIcon
+  LockClosedIcon,
+  LinkIcon
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../components/ui/button'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
+import { link } from 'fs'
 
 // Define interface para os itens de navegação
 interface NavigationItem {
@@ -37,6 +39,7 @@ const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, restrictedTo: [] },
   { name: 'Produtos', href: '/dashboard/produtos', icon: CubeIcon, restrictedTo: [] },
   { name: 'Ingredientes', href: '/dashboard/ingredientes', icon: BeakerIcon, restrictedTo: [] },
+  { name: 'Linktree', href: '/dashboard/linktree', icon: LinkIcon, restrictedTo: [] },
   { name: 'Menu Online', href: '/dashboard/menu-online', icon: Bars3Icon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Orçamentos', href: '/dashboard/orcamentos', icon: DocumentTextIcon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Usuários', href: '/dashboard/usuarios', icon: UserIcon, restrictedTo: [] },

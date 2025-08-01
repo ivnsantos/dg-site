@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
+import WhatsAppFloat from '@/components/WhatsAppFloat'
 
 export const dynamic = 'force-dynamic'
 
@@ -156,20 +157,7 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="telefone" className="text-sm font-medium text-gray-300">
-                    Telefone
-                  </label>
-                  <Input
-                    id="telefone"
-                    type="text"
-                    placeholder="(00) 00000-0000"
-                    value={telefone}
-                    onChange={handleTelefoneChange}
-                    disabled={isLoading}
-                    className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                  />
-                </div>
+
               </div>
 
               <Button
@@ -207,6 +195,9 @@ export default function ForgotPasswordPage() {
           )}
         </div>
       </div>
+
+      {/* WhatsApp Float Button */}
+      <WhatsAppFloat position="right" />
     </div>
   )
 } 

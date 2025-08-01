@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import Image from 'next/image'
 import { ArrowLeft, Check } from 'lucide-react'
+import WhatsAppFloat from '@/components/WhatsAppFloat'
 
 const PLANOS = [
   {
@@ -1074,6 +1075,9 @@ export default function RegisterPage() {
           </form>
         </div>
       </div>
+
+      {/* WhatsApp Float Button */}
+      <WhatsAppFloat position="right" />
     </div>
   )
 } 

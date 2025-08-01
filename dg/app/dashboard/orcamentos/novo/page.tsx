@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '../../../../components/ui/button'
 import { toast } from 'react-hot-toast'
-import { uploadFile } from '../../../../src/lib/firebase'
+import { uploadFileToS3 } from '../../../../src/lib/s3'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
 import { useSession } from 'next-auth/react'
 

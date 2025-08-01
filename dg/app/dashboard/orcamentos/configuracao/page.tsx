@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../../../../components/ui/button"
 import { toast } from "react-hot-toast"
-import { uploadFile } from '../../../../src/lib/firebase'
+import { uploadFileViaAPI } from '../../../../src/lib/s3'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
 import { useSession } from 'next-auth/react'
 
@@ -84,7 +84,7 @@ export default function ConfiguracaoOrcamento() {
     setUploading(true)
     try {
       const path = `orcamentos/logos/${Date.now()}-${file.name}`
-      const url = await uploadFile(file, path)
+      const url = await uploadFileViaAPI(file, path)
       setHeader(h => ({ ...h, logotipoUrl: url }))
       toast.success('Logo enviada com sucesso!')
     } catch {

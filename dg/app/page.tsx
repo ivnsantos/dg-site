@@ -3,6 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import WhatsAppFloat from '@/components/WhatsAppFloat'
 
 export default function HomePage() {
   return (
@@ -178,98 +179,103 @@ export default function HomePage() {
         </div>
       </section>
       {/* Quem Somos Section */}
-      <section className="py-24 bg-gradient-to-br from-[#2D1810] via-[#1a0d09] to-[#2D1810] relative overflow-hidden">
+      <section className="py-16 lg:py-24 bg-gradient-to-br from-[#2D1810] via-[#1a0d09] to-[#2D1810] relative overflow-hidden">
         {/* Background decorativo elegante */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full opacity-50">
-            <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-l from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-gradient-to-br from-[#0B7A48]/8 to-[#0ea65f]/8 rounded-full blur-2xl"></div>
+            <div className="absolute top-20 left-20 w-32 lg:w-64 h-32 lg:h-64 bg-gradient-to-r from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-20 w-40 lg:w-80 h-40 lg:h-80 bg-gradient-to-l from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/3 w-24 lg:w-48 h-24 lg:h-48 bg-gradient-to-br from-[#0B7A48]/8 to-[#0ea65f]/8 rounded-full blur-2xl"></div>
           </div>
         </div>
         
         <div className="container relative z-10">
           {/* Header elegante */}
-          <div className="text-center mb-20">
-            <div className="inline-block relative mb-8">
+          <div className="text-center mb-12 lg:mb-20">
+            <div className="inline-block relative mb-6 lg:mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] rounded-full blur-xl opacity-60 animate-pulse"></div>
               <div className="relative bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] p-[2px] rounded-full">
-                <div className="bg-[#2D1810] px-12 py-6 rounded-full">
-                  <h3 className="text-4xl font-bold bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] bg-clip-text text-transparent flex items-center justify-center gap-4">
-                    <span className="text-3xl filter drop-shadow-lg">👑</span>
+                <div className="bg-[#2D1810] px-6 lg:px-12 py-4 lg:py-6 rounded-full">
+                  <h3 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] bg-clip-text text-transparent flex items-center justify-center gap-2 lg:gap-4">
+                    <span className="text-xl lg:text-3xl filter drop-shadow-lg">👑</span>
                     Nossa Embaixadora
-                    <span className="text-3xl filter drop-shadow-lg">👑</span>
+                    <span className="text-xl lg:text-3xl filter drop-shadow-lg">👑</span>
                   </h3>
                 </div>
               </div>
             </div>
-            <p className="text-white/90 text-xl max-w-4xl mx-auto leading-relaxed font-light">
+            <p className="text-white/90 text-base lg:text-xl max-w-4xl mx-auto leading-relaxed font-light px-4">
               Conheça a profissional que representa nossa marca com <span className="text-[#0B7A48] font-semibold">excelência e dedicação</span>, 
               compartilhando sua expertise para transformar a vida de confeiteiros em todo o Brasil.
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-3 gap-12 items-start">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-12 items-start">
             {/* Card principal da Embaixadora */}
             <div className="lg:col-span-2">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48]/20 via-[#0ea65f]/20 to-[#0B7A48]/20 rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700"></div>
-                <div className="relative overflow-hidden rounded-[2rem] bg-white/5 backdrop-blur-md border border-white/10 p-10 hover:transform hover:scale-[1.02] transition-all duration-700 group shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48]/20 via-[#0ea65f]/20 to-[#0B7A48]/20 rounded-2xl lg:rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700"></div>
+                <div className="relative overflow-hidden rounded-2xl lg:rounded-[2rem] bg-white/5 backdrop-blur-md border border-white/10 p-4 lg:p-10 hover:transform hover:scale-[1.02] transition-all duration-700 group shadow-2xl">
                   
-                  <div className="flex flex-col xl:flex-row gap-12 items-center">
+                  <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 items-center">
                     <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] rounded-2xl lg:rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
                       <div className="relative">
                         <Image
                           src="/images/mari.jpeg"
                           alt="Mari Tolentino - Embaixadora da Doce Gestão"
-                          width={320}
-                          height={420}
-                          className="w-[320px] h-[420px] object-cover rounded-3xl shadow-2xl group-hover:shadow-[#0B7A48]/30 transition-all duration-500"
+                          width={240}
+                          height={300}
+                          className="w-[240px] h-[300px] lg:w-[320px] lg:h-[420px] object-cover rounded-2xl lg:rounded-3xl shadow-2xl group-hover:shadow-[#0B7A48]/30 transition-all duration-500"
                         />
-                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                        <div className="absolute inset-0 rounded-2xl lg:rounded-3xl bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                       </div>
                     </div>
-                    <div className="flex-1 text-center xl:text-left">
                     
+                    <div className="flex-1 text-center lg:text-left">
                       <div className="relative mb-4">
-                        <h3 className="text-4xl font-bold text-white group-hover:text-[#0B7A48] transition-colors duration-500">
+                        <h3 className="text-2xl lg:text-4xl font-bold text-white group-hover:text-[#0B7A48] transition-colors duration-500">
                           Mari Tolentino
                         </h3>
-                        
+                        <div className="absolute -top-1 lg:-top-2 -right-1 lg:-right-2 bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] text-white px-2 py-1 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-bold shadow-xl transform rotate-2 group-hover:rotate-0 transition-transform duration-500">
+                          <span className="mr-1 lg:mr-2">👑</span>
+                          <span className="hidden sm:inline">Embaixadora Oficial</span>
+                          <span className="sm:hidden">Oficial</span>
+                        </div>
                       </div>
-                      <p className="text-[#0B7A48] font-bold text-xl mb-6 flex items-center justify-center xl:justify-start gap-3">
-                        <span className="text-2xl">🌟</span>
-                        Embaixadora da Doce Gestão
-                        <span className="text-2xl">🌟</span>
+                      <p className="text-[#0B7A48] font-bold text-base lg:text-xl mb-4 lg:mb-6 flex items-center justify-center lg:justify-start gap-2 lg:gap-3">
+                        <span className="text-lg lg:text-2xl">🌟</span>
+                        <span className="text-sm lg:text-base">Embaixadora da Doce Gestão</span>
+                        <span className="text-lg lg:text-2xl">🌟</span>
                       </p>
-                      {/* <p className="text-white/80 text-lg leading-relaxed mb-8 font-light">
+                      
+                      <p className="text-white/80 text-sm lg:text-lg leading-relaxed mb-4 lg:mb-8 font-light">
                         Chef confeiteira apaixonada por doces e tecnologia, com vasta experiência em gestão de negócios e desenvolvimento de receitas exclusivas. 
                         Nossa embaixadora oficial que representa a marca com <span className="text-[#0B7A48] font-semibold">excelência</span> e compartilha conhecimento 
                         valioso com a comunidade de confeiteiros.
-                      </p> */}
+                      </p>
                       
                       {/* Especialidades elegantes */}
-                      <div className="grid grid-cols-2 gap-6 mb-8">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
-                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">🎂</span>
-                          <p className="text-white font-semibold">Confeitaria</p>
-                          <p className="text-white/60 text-sm mt-1">Especialista</p>
+                      <div className="grid grid-cols-2 gap-3 lg:gap-6 mb-4 lg:mb-8">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg lg:rounded-2xl p-3 lg:p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-xl lg:text-3xl mb-2 lg:mb-3 block group-hover:scale-110 transition-transform duration-300">🎂</span>
+                          <p className="text-white font-semibold text-xs lg:text-base">Confeitaria</p>
+                          <p className="text-white/60 text-xs lg:text-sm mt-1">Especialista</p>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
-                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">💼</span>
-                          <p className="text-white font-semibold">Gestão</p>
-                          <p className="text-white/60 text-sm mt-1">Estratégica</p>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg lg:rounded-2xl p-3 lg:p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-xl lg:text-3xl mb-2 lg:mb-3 block group-hover:scale-110 transition-transform duration-300">💼</span>
+                          <p className="text-white font-semibold text-xs lg:text-base">Gestão</p>
+                          <p className="text-white/60 text-xs lg:text-sm mt-1">Estratégica</p>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
-                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">📱</span>
-                          <p className="text-white font-semibold">Tecnologia</p>
-                          <p className="text-white/60 text-sm mt-1">Inovação</p>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg lg:rounded-2xl p-3 lg:p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-xl lg:text-3xl mb-2 lg:mb-3 block group-hover:scale-110 transition-transform duration-300">📱</span>
+                          <p className="text-white font-semibold text-xs lg:text-base">Tecnologia</p>
+                          <p className="text-white/60 text-xs lg:text-sm mt-1">Inovação</p>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
-                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">🎓</span>
-                          <p className="text-white font-semibold">Mentoria</p>
-                          <p className="text-white/60 text-sm mt-1">Compartilhamento</p>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg lg:rounded-2xl p-3 lg:p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-xl lg:text-3xl mb-2 lg:mb-3 block group-hover:scale-110 transition-transform duration-300">🎓</span>
+                          <p className="text-white font-semibold text-xs lg:text-base">Mentoria</p>
+                          <p className="text-white/60 text-xs lg:text-sm mt-1">Compartilhamento</p>
                         </div>
                       </div>
                     </div>
@@ -280,39 +286,39 @@ export default function HomePage() {
 
             {/* Card de Destaque elegante */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-[#0B7A48]/10 via-[#0ea65f]/10 to-[#0B7A48]/10 backdrop-blur-md rounded-3xl border border-[#0B7A48]/20 p-8 h-full shadow-xl">
-                <div className="text-center mb-8">
-                  <div className="text-7xl mb-6 filter drop-shadow-lg">🏆</div>
-                  <h4 className="text-2xl font-bold text-white mb-2">Por que a Mari?</h4>
-                  <p className="text-white/70 text-sm">Conheça os diferenciais que fazem dela nossa embaixadora oficial</p>
+              <div className="bg-gradient-to-br from-[#0B7A48]/10 via-[#0ea65f]/10 to-[#0B7A48]/10 backdrop-blur-md rounded-2xl lg:rounded-3xl border border-[#0B7A48]/20 p-4 lg:p-8 h-full shadow-xl">
+                <div className="text-center mb-4 lg:mb-8">
+                  <div className="text-4xl lg:text-7xl mb-3 lg:mb-6 filter drop-shadow-lg">🏆</div>
+                  <h4 className="text-lg lg:text-2xl font-bold text-white mb-2">Por que a Mari?</h4>
+                  <p className="text-white/70 text-xs lg:text-sm">Conheça os diferenciais que fazem dela nossa embaixadora oficial</p>
                 </div>
-                <ul className="space-y-4">
+                <ul className="space-y-2 lg:space-y-4">
                   <li className="flex items-start text-white group">
-                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <span className="text-[#0B7A48] mr-2 lg:mr-3 flex-shrink-0 mt-1 text-base lg:text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
                     <div>
-                      <span className="font-semibold">Experiência Comprovada</span>
-                      <p className="text-white/70 text-sm mt-1">Anos de prática em confeitaria profissional</p>
+                      <span className="font-semibold text-xs lg:text-base">Experiência Comprovada</span>
+                      <p className="text-white/70 text-xs lg:text-sm mt-1">Anos de prática em confeitaria profissional</p>
                     </div>
                   </li>
                   <li className="flex items-start text-white group">
-                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <span className="text-[#0B7A48] mr-2 lg:mr-3 flex-shrink-0 mt-1 text-base lg:text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
                     <div>
-                      <span className="font-semibold">Especialista em Gestão</span>
-                      <p className="text-white/70 text-sm mt-1">Conhecimento profundo em negócios</p>
+                      <span className="font-semibold text-xs lg:text-base">Especialista em Gestão</span>
+                      <p className="text-white/70 text-xs lg:text-sm mt-1">Conhecimento profundo em negócios</p>
                     </div>
                   </li>
                   <li className="flex items-start text-white group">
-                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <span className="text-[#0B7A48] mr-2 lg:mr-3 flex-shrink-0 mt-1 text-base lg:text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
                     <div>
-                      <span className="font-semibold">Passion por Tecnologia</span>
-                      <p className="text-white/70 text-sm mt-1">Inovação e transformação digital</p>
+                      <span className="font-semibold text-xs lg:text-base">Passion por Tecnologia</span>
+                      <p className="text-white/70 text-xs lg:text-sm mt-1">Inovação e transformação digital</p>
                     </div>
                   </li>
                   <li className="flex items-start text-white group">
-                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <span className="text-[#0B7A48] mr-2 lg:mr-3 flex-shrink-0 mt-1 text-base lg:text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
                     <div>
-                      <span className="font-semibold">Compartilhamento</span>
-                      <p className="text-white/70 text-sm mt-1">Dedicação à comunidade de confeiteiros</p>
+                      <span className="font-semibold text-xs lg:text-base">Compartilhamento</span>
+                      <p className="text-white/70 text-xs lg:text-sm mt-1">Dedicação à comunidade de confeiteiros</p>
                     </div>
                   </li>
                 </ul>
@@ -703,6 +709,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Float Button */}
+      <WhatsAppFloat position="right" />
     </main>
   )
 } 

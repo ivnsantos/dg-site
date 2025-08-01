@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
-
-const supabaseUrl = 'https://ofdgaoobhjcyoqgtjxdg.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZGdhb29iaGpjeW9xZ3RqeGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxMjg1MzAsImV4cCI6MjA2MTcwNDUzMH0.RBciA1lKfSTa0cPeyNgWaxr39GgqrMM6MHEBdV2oV64'
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { uploadFileToS3 } from '@/src/lib/s3'
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
+    const customPath = formData.get('path') as string
 
     if (!file) {
       return NextResponse.json(
@@ -20,26 +14,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    // Verificar se é uma imagem
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json(
+        { error: 'O arquivo deve ser uma imagem' },
+        { status: 400 }
+      )
+    }
 
-    // Cria um nome único para o arquivo
-    const timestamp = Date.now()
-    const filename = `${timestamp}-${file.name}`
-    
-    // Define o caminho onde o arquivo será salvo
-    const path = join(process.cwd(), 'public', 'uploads', filename)
-    
-    // Salva o arquivo
-    await writeFile(path, buffer)
+    // Verificar tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'O arquivo deve ter no máximo 5MB' },
+        { status: 400 }
+      )
+    }
 
-    // Retorna a URL do arquivo
-    const url = `/uploads/${filename}`
-    return NextResponse.json({ url })
-  } catch (error) {
+    // Usar path customizado ou gerar um padrão
+    const path = customPath || `uploads/${Date.now()}-${file.name}`
+
+    // Fazer upload para S3
+    const imageUrl = await uploadFileToS3(file, path)
+
+    return NextResponse.json({ 
+      url: imageUrl,
+      message: 'Imagem enviada com sucesso'
+    })
+
+  } catch (error: any) {
     console.error('Erro ao fazer upload:', error)
     return NextResponse.json(
-      { error: 'Erro ao fazer upload do arquivo' },
+      { error: 'Erro ao fazer upload da imagem' },
       { status: 500 }
     )
   }

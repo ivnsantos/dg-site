@@ -68,7 +68,12 @@ export default function MenuOnlineClient() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Menus Online</h1>
-        <Button className="bg-[#0B7A48] text-white">Adicionar Menu</Button>
+        <Button 
+          className="bg-[#0B7A48] text-white"
+          onClick={() => router.push('/dashboard/menu-online/novo')}
+        >
+          Adicionar Menu
+        </Button>
       </div>
       {loading ? (
         <div className="text-center text-muted-foreground">Carregando menus...</div>

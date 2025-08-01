@@ -2,20 +2,24 @@ export const runtime = 'nodejs'
 
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
-import { User } from './../entities/User'
-import { Cupom } from './../entities/Cupom'
-import { Orcamento } from './../entities/Orcamento'
-import { Product } from './../entities/Product'
-import { Ingredient } from './../entities/Ingredient'
-import { Confeitaria } from './../entities/Confeitaria'
-import { Menu } from './../entities/Menu'
-import { MenuSection } from './../entities/MenuSection'
-import { MenuItem } from './../entities/MenuItem'
-import { Cliente } from './../entities/Cliente'
-import { ItemOrcamento } from './../entities/ItemOrcamento'
-import { HeaderOrcamento } from './../entities/HeaderOrcamento'
-import { FooterOrcamento } from './../entities/FooterOrcamento'
-import { FichaTecnica } from './../entities/FichaTecnica'
+import {
+    User,
+    Cupom,
+    Orcamento,
+    Product,
+    Ingredient,
+    Confeitaria,
+    Menu,
+    MenuSection,
+    MenuItem,
+    Cliente,
+    ItemOrcamento,
+    HeaderOrcamento,
+    FooterOrcamento,
+    FichaTecnica
+} from '../entities'
+import { LinkTree } from '../entities/LinkTree'
+import { LinkTreeLink } from '../entities/LinkTreeLink'
 
 // Configuração do DataSource com configurações mais robustas
 const dataSourceConfig = {
@@ -35,26 +39,21 @@ const dataSourceConfig = {
         HeaderOrcamento,
         FooterOrcamento,
         Ingredient,
-        FichaTecnica
+        FichaTecnica,
+        LinkTree,
+        LinkTreeLink
     ],
-    synchronize: false,
-    logging: false, // Reduz logs para melhor performance
+    synchronize: true,
+    logging: false,
     extra: {
-        max: 20,
-        min: 5,
+        max: 10,
+        min: 2,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000, // Aumentado para 10s
+        connectionTimeoutMillis: 20000,
+        acquireTimeoutMillis: 20000,
         ssl: process.env.NODE_ENV === 'production' ? {
             rejectUnauthorized: false
         } : false
-    },
-    acquireTimeout: 10000, // Timeout para adquirir conexão
-    timeout: 10000, // Timeout geral
-    pool: {
-        max: 20,
-        min: 5,
-        acquire: 10000,
-        idle: 30000
     }
 }
 
@@ -121,8 +120,8 @@ export async function initializeDB(retryCount = 0): Promise<DataSource> {
         
         // Tenta novamente se ainda não atingiu o limite
         if (retryCount < maxRetries) {
-            console.log(`Retrying database connection in 2 seconds... (${retryCount + 1}/${maxRetries})`)
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            console.log(`Retrying database connection in 3 seconds... (${retryCount + 1}/${maxRetries})`)
+            await new Promise(resolve => setTimeout(resolve, 3000))
             return initializeDB(retryCount + 1)
         }
         
