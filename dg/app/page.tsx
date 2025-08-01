@@ -91,23 +91,12 @@ export default function HomePage() {
       {/* Como Funciona Section */}
       <section className="py-16 bg-[#2D1810]">
         <div className="container">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">COMO FUNCIONA ?</h2>
+          <h2 className="text-3xl font-bold text-white mb-12 text-center">o que oferecemos?</h2>
           
           <div className="space-y-12">
-            <div className="step-card">
-              <div className="text-[#0B7A48] text-4xl font-bold">1</div>
-              <div>
-                <h3 className="text-xl font-bold mb-2 text-white">Custo</h3>
-                <p className="text-gray-300">
-                  Um futuro não está só na sua mão de fazer. Portanto, 
-                  com a DoceGestão, você terá todo o controle dos seus custos 
-                  com valor no seu bolso na sua margem.
-                </p>
-              </div>
-            </div>
 
             <div className="step-card">
-              <div className="text-[#0B7A48] text-4xl font-bold">2</div>
+              <div className="text-[#0B7A48] text-4xl font-bold">1</div>
               <div>
                 <h3 className="text-xl font-bold mb-2 text-white">Precificação & Lucro</h3>
                 <p className="text-gray-300">
@@ -118,7 +107,7 @@ export default function HomePage() {
             </div>
 
             <div className="step-card">
-              <div className="text-[#0B7A48] text-4xl font-bold">3</div>
+              <div className="text-[#0B7A48] text-4xl font-bold">2</div>
               <div>
                 <h3 className="text-xl font-bold mb-2 text-white">Gestão Simplificada</h3>
                 <p className="text-gray-300">
@@ -129,7 +118,7 @@ export default function HomePage() {
             </div>
 
             <div className="step-card">
-              <div className="text-[#0B7A48] text-4xl font-bold">4</div>
+              <div className="text-[#0B7A48] text-4xl font-bold">3</div>
               <div>
                 <h3 className="text-xl font-bold mb-2 text-white">Menu Online</h3>
                 <p className="text-gray-300">
@@ -149,99 +138,22 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Recursos Section - NOVA SEÇÃO */}
-      <section className="py-16 bg-[#085c36]">
-        <div className="container">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">RECURSOS EXCLUSIVOS</h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-black/20 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:transform hover:scale-105 transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="p-3 bg-[#0B7A48] rounded-full mr-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-white">Menu Online</h3>
+            <div className="step-card">
+              <div className="text-[#0B7A48] text-4xl font-bold">6</div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-white">LinkTree Doce Gestão</h3>
+                <p className="text-gray-300">
+                  Crie um LinkTree otimizado para o Instagram facilitando seu
+                  compartilhamento com seus clientes.
+                </p>
               </div>
-              <p className="text-gray-200 mb-6">
-                Crie cardápios digitais elegantes e compartilhe facilmente com seus clientes através de um link ou QR Code.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Layout moderno e personalizável</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Adicione fotos dos seus produtos</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Organize itens em categorias</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Links diretos para WhatsApp e Instagram</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="bg-black/20 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:transform hover:scale-105 transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="p-3 bg-[#0B7A48] rounded-full mr-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-white">Orçamentos Digitais</h3>
-              </div>
-              <p className="text-gray-200 mb-6">
-                Crie orçamentos profissionais com sua marca e envie para seus clientes de forma rápida e prática.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Design profissional com sua logomarca</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Cadastro de clientes e produtos</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Links diretos para WhatsApp e Instagram</span>
-                </li>
-                <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#0B7A48] mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white">Acompanhamento de status (pendente, aprovado)</span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
       </section>
 
+  
       {/* Nosso Desafio Section */}
       <section className="bg-[#0B7A48] py-16">
         <div className="container">
@@ -265,230 +177,336 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Preços Section */}
-      <section className="py-24 bg-gradient-to-b from-[#2D1810] to-[#1a0d09]">
-        <div className="container">
-          <h2 className="text-4xl font-bold text-white mb-4 text-center">TENHA CONTROLE TOTAL DA SUA COZINHA</h2>
-          <p className="text-gray-300 text-center mb-8 text-lg max-w-3xl mx-auto">
-            Pare de perder dinheiro e tempo com cálculos imprecisos. Mais de 1000 confeiteiros já transformaram seus negócios com nossos planos.
-          </p>
-          
-          <div className="bg-[#0B7A48]/30 backdrop-blur-sm rounded-xl p-6 mb-12 max-w-3xl mx-auto border border-[#0B7A48]/50">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-[#0B7A48] p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+      {/* Quem Somos Section */}
+      <section className="py-24 bg-gradient-to-br from-[#2D1810] via-[#1a0d09] to-[#2D1810] relative overflow-hidden">
+        {/* Background decorativo elegante */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-full h-full opacity-50">
+            <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-l from-[#0B7A48]/10 to-[#0ea65f]/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-gradient-to-br from-[#0B7A48]/8 to-[#0ea65f]/8 rounded-full blur-2xl"></div>
+          </div>
+        </div>
+        
+        <div className="container relative z-10">
+          {/* Header elegante */}
+          <div className="text-center mb-20">
+            <div className="inline-block relative mb-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] rounded-full blur-xl opacity-60 animate-pulse"></div>
+              <div className="relative bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] p-[2px] rounded-full">
+                <div className="bg-[#2D1810] px-12 py-6 rounded-full">
+                  <h3 className="text-4xl font-bold bg-gradient-to-r from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] bg-clip-text text-transparent flex items-center justify-center gap-4">
+                    <span className="text-3xl filter drop-shadow-lg">👑</span>
+                    Nossa Embaixadora
+                    <span className="text-3xl filter drop-shadow-lg">👑</span>
+                  </h3>
+                </div>
               </div>
-              <span className="text-xl font-bold text-white animate-pulse">SAIA DO APERTO e DO AMADORISMO</span>
             </div>
-            <p className="text-white/90 text-lg">
-             Nossa comunidade é focada em ajudar você a lucrar mais na cozinha, com dicas e estratégias para aumentar seu faturamento.
+            <p className="text-white/90 text-xl max-w-4xl mx-auto leading-relaxed font-light">
+              Conheça a profissional que representa nossa marca com <span className="text-[#0B7A48] font-semibold">excelência e dedicação</span>, 
+              compartilhando sua expertise para transformar a vida de confeiteiros em todo o Brasil.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6 md:gap-12">
-            <div className="price-card relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 md:p-8 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.03] group">
-              <div className="absolute inset-0">
-                <Image
-                  src="/images/cupcake.jpg"
-                  alt="Cupcake"
-                  fill
-                  className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2D1810]/95 to-transparent"></div>
-              </div>
-              <div className="relative z-10">
-                <div className="bg-white/10 inline-block rounded-full px-3 py-1 mb-3">
-                  <span className="text-sm text-white">Para quem está começando</span>
+          <div className="grid lg:grid-cols-3 gap-12 items-start">
+            {/* Card principal da Embaixadora */}
+            <div className="lg:col-span-2">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48]/20 via-[#0ea65f]/20 to-[#0B7A48]/20 rounded-[2rem] blur-2xl opacity-40 group-hover:opacity-60 transition-all duration-700"></div>
+                <div className="relative overflow-hidden rounded-[2rem] bg-white/5 backdrop-blur-md border border-white/10 p-10 hover:transform hover:scale-[1.02] transition-all duration-700 group shadow-2xl">
+                  
+                  <div className="flex flex-col xl:flex-row gap-12 items-center">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+                      <div className="relative">
+                        <Image
+                          src="/images/mari.jpeg"
+                          alt="Mari Tolentino - Embaixadora da Doce Gestão"
+                          width={320}
+                          height={420}
+                          className="w-[320px] h-[420px] object-cover rounded-3xl shadow-2xl group-hover:shadow-[#0B7A48]/30 transition-all duration-500"
+                        />
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center xl:text-left">
+                    
+                      <div className="relative mb-4">
+                        <h3 className="text-4xl font-bold text-white group-hover:text-[#0B7A48] transition-colors duration-500">
+                          Mari Tolentino
+                        </h3>
+                        
+                      </div>
+                      <p className="text-[#0B7A48] font-bold text-xl mb-6 flex items-center justify-center xl:justify-start gap-3">
+                        <span className="text-2xl">🌟</span>
+                        Embaixadora da Doce Gestão
+                        <span className="text-2xl">🌟</span>
+                      </p>
+                      {/* <p className="text-white/80 text-lg leading-relaxed mb-8 font-light">
+                        Chef confeiteira apaixonada por doces e tecnologia, com vasta experiência em gestão de negócios e desenvolvimento de receitas exclusivas. 
+                        Nossa embaixadora oficial que representa a marca com <span className="text-[#0B7A48] font-semibold">excelência</span> e compartilha conhecimento 
+                        valioso com a comunidade de confeiteiros.
+                      </p> */}
+                      
+                      {/* Especialidades elegantes */}
+                      <div className="grid grid-cols-2 gap-6 mb-8">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">🎂</span>
+                          <p className="text-white font-semibold">Confeitaria</p>
+                          <p className="text-white/60 text-sm mt-1">Especialista</p>
+                        </div>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">💼</span>
+                          <p className="text-white font-semibold">Gestão</p>
+                          <p className="text-white/60 text-sm mt-1">Estratégica</p>
+                        </div>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">📱</span>
+                          <p className="text-white font-semibold">Tecnologia</p>
+                          <p className="text-white/60 text-sm mt-1">Inovação</p>
+                        </div>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/5 hover:bg-white/15 transition-all duration-300 group">
+                          <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-300">🎓</span>
+                          <p className="text-white font-semibold">Mentoria</p>
+                          <p className="text-white/60 text-sm mt-1">Compartilhamento</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Plano Básico</h3>
-                <ul className="space-y-3 my-6">
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Controle de ingredientes</span>
+              </div>
+            </div>
+
+            {/* Card de Destaque elegante */}
+            <div className="lg:col-span-1">
+              <div className="bg-gradient-to-br from-[#0B7A48]/10 via-[#0ea65f]/10 to-[#0B7A48]/10 backdrop-blur-md rounded-3xl border border-[#0B7A48]/20 p-8 h-full shadow-xl">
+                <div className="text-center mb-8">
+                  <div className="text-7xl mb-6 filter drop-shadow-lg">🏆</div>
+                  <h4 className="text-2xl font-bold text-white mb-2">Por que a Mari?</h4>
+                  <p className="text-white/70 text-sm">Conheça os diferenciais que fazem dela nossa embaixadora oficial</p>
+                </div>
+                <ul className="space-y-4">
+                  <li className="flex items-start text-white group">
+                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <div>
+                      <span className="font-semibold">Experiência Comprovada</span>
+                      <p className="text-white/70 text-sm mt-1">Anos de prática em confeitaria profissional</p>
+                    </div>
                   </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Controle suas receitas</span>
+                  <li className="flex items-start text-white group">
+                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <div>
+                      <span className="font-semibold">Especialista em Gestão</span>
+                      <p className="text-white/70 text-sm mt-1">Conhecimento profundo em negócios</p>
+                    </div>
                   </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Custo e precificação da receita</span>
+                  <li className="flex items-start text-white group">
+                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <div>
+                      <span className="font-semibold">Passion por Tecnologia</span>
+                      <p className="text-white/70 text-sm mt-1">Inovação e transformação digital</p>
+                    </div>
                   </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Plataforma amigável, fácil de entender</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Suas receitas salvas em ambiente seguro</span>
+                  <li className="flex items-start text-white group">
+                    <span className="text-[#0B7A48] mr-4 flex-shrink-0 mt-1 text-xl group-hover:scale-110 transition-transform duration-300">✨</span>
+                    <div>
+                      <span className="font-semibold">Compartilhamento</span>
+                      <p className="text-white/70 text-sm mt-1">Dedicação à comunidade de confeiteiros</p>
+                    </div>
                   </li>
                 </ul>
-                <div className="mt-8 pt-6 border-t border-white/10">
-                  <div className="flex items-center justify-center mb-4">
-                    <span className="text-3xl md:text-4xl font-bold text-white">R$ 40,99</span>
-                    <span className="text-gray-300 ml-2">/mês</span>
-                  </div>
-                  <p className="text-center text-white/60 mb-4">
-                    Ideal para quem está iniciando sozinha na cozinha
-                  </p>
-                  <Link href="/register" className="w-full">
-                    <button className="button-primary w-full py-3 md:py-4 text-lg font-semibold rounded-xl hover:bg-[#0B7A48]/90 transition-colors">
-                      Começar Agora
-                    </button>
-                  </Link>
-                  <p className="text-center text-white/70 mt-3 text-sm">
-                    Comece hoje sem compromisso. Cancele quando quiser.
-                  </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Preços Section */}
+      <section className="py-20 bg-[#2D1810]">
+        <div className="container">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Escolha seu Plano
+            </h2>
+            <p className="text-white/70 text-lg">
+              Transforme sua confeitaria em um negócio lucrativo
+            </p>
+          </div>
+          
+          {/* Cards de planos */}
+          <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {/* Plano Básico */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Básico</h3>
+                <p className="text-white/60 text-sm">Para quem está começando</p>
+              </div>
+              
+              <div className="text-center mb-6">
+                <div className="flex items-baseline justify-center">
+                  <span className="text-4xl font-bold text-white">R$ 40,99</span>
+                  <span className="text-white/60 ml-2">/mês</span>
                 </div>
               </div>
+              
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Controle de ingredientes</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Controle suas receitas</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Custo e precificação da receita</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Plataforma amigável, fácil de entender</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Suas receitas salvas em ambiente seguro</span>
+                </li>
+              </ul>
+              
+              <Link href="/register" className="block">
+                <button className="w-full py-3 bg-white/10 text-white rounded-lg font-medium hover:bg-[#0B7A48] transition-colors">
+                  Começar Agora
+                </button>
+              </Link>
+              
+              <p className="text-center text-white/50 text-xs mt-3">
+                Cancele quando quiser
+              </p>
             </div>
             
-            <div className="price-card relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border-2 border-[#0B7A48] p-4 md:p-8 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.03] group">
-              <div className="absolute -top-2 -right-2 bg-[#0B7A48] text-white px-4 py-1 rounded-lg transform rotate-6 shadow-lg z-20">
-                <span className="text-sm font-bold">MAIS ASSINADO</span>
-              </div>
-              <div className="absolute inset-0">
-                <Image
-                  src="/images/bolo-casamento.jpg"
-                  alt="Bolo de Casamento"
-                  fill
-                  className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2D1810]/95 to-transparent"></div>
-              </div>
-              <div className="relative z-10">
-                <div className="bg-[#0B7A48]/50 inline-block rounded-full px-3 py-1 mb-3">
-                  <span className="text-sm text-white">Escolha dos profissionais</span>
+            {/* Plano PRO */}
+            <div className="relative bg-gradient-to-br from-[#0B7A48]/10 to-[#0ea65f]/10 border-2 border-[#0B7A48]/20 rounded-xl p-6">
+              {/* Badge */}
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <div className="bg-[#0B7A48] text-white px-4 py-1 rounded-full text-xs font-bold">
+                  MAIS POPULAR
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 flex items-center">
-                  Plano PRO
-                  <span className="ml-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs py-1 px-2 rounded-full font-bold">PRO</span>
-                </h3>
-                <p className="text-[#0B7A48] font-semibold mb-4">Para quem quer Lucrar na cozinha</p>
-                
-                <div className="bg-[#0B7A48]/40 rounded-lg p-3 mb-6 border border-[#0B7A48]/50">
-                  <p className="text-white text-sm font-medium flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Aumente seu faturamento em até  76% com precificação correta
-                  </p>
+              </div>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Plano PRO</h3>
+                <p className="text-white/60 text-sm">Para quem quer lucrar mais</p>
+              </div>
+              
+              <div className="text-center mb-6">
+                <div className="flex items-baseline justify-center">
+                  <span className="text-4xl font-bold text-white">R$ 47,89</span>
+                  <span className="text-white/60 ml-2">/mês</span>
                 </div>
+                <p className="text-[#0B7A48] font-semibold text-sm mt-2">
+                  Aumente seu faturamento em até 76%
+                </p>
+              </div>
+              
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Controle completo de ingredientes e estoque</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span><strong className="text-yellow-400">TODAS</strong> as suas receitas gerenciadas</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Calculadora avançada de preços e custos</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Simulador de orçamentos</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Atualização automática de preços</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Sistema de apoio à decisão</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Interface intuitiva e amigável</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Menu Online completo (ilimitados)</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Orçamentos Digitais profissionais</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Controle seus clientes</span>
+                </li>
+                <li className="flex items-center text-white/80">
+                  <span className="text-[#0B7A48] mr-3">✓</span>
+                  <span>Linktree Doce Gestão</span>
+                </li>
                 
-                <ul className="space-y-3 my-6">
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Controle completo de ingredientes e estoque</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span><strong className="text-yellow-400">TODAS</strong> as suas receitas gerenciadas</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Calculadora avançada de preços e custos</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Simulador de orçamentos</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Atualização automática de preços</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Sistema de apoio à decisão</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Interface intuitiva e amigável</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Menu Online completo (ilimitados)</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Orçamentos Digitais profissionais</span>
-                  </li>
-                  <li className="flex items-start text-white">
-                    <span className="text-[#0B7A48] mr-2 flex-shrink-0 mt-1">✓</span>
-                    <span>Controle seus clientes</span>
-                  </li>
-                  
-                  {/* Seção Em Breve com destaque visual */}
-                  <li className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-white font-medium mb-2 flex items-center">
-                      <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full mr-2">Em breve</span>
-                      Recursos exclusivos
-                    </p>
-                    <ul className="space-y-2 pl-6">
-                      <li className="flex items-start text-white/90">
-                        <span className="text-[#0B7A48] mr-2 flex-shrink-0">✓</span>
-                        <span>IA para cozinheiros</span>
-                      </li>
-                      <li className="flex items-start text-white/90">
-                        <span className="text-[#0B7A48] mr-2 flex-shrink-0">✓</span>
-                        <span>Tendências culinárias</span>
-                      </li>
-                      <li className="flex items-start text-white/90">
-                        <span className="text-[#0B7A48] mr-2 flex-shrink-0">✓</span>
-                        <span>Produtos em alta</span>
-                      </li>
-                      <li className="flex items-start text-white/90">
-                        <span className="text-[#0B7A48] mr-2 flex-shrink-0">✓</span>
-                        <span>Receitas mais buscadas</span>
-                      </li>
-                      <li className="flex items-start text-white/90">
-                        <span className="text-[#0B7A48] mr-2 flex-shrink-0">✓</span>
-                        <span>Cursos</span>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-                <div className="mt-8 pt-6 border-t border-white/10">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="relative">
-                      {/* <span className="text-gray-400 line-through text-2xl absolute -top-5 left-0">R$ 59,90</span> */}
-                      <span className="text-3xl md:text-4xl font-bold text-white">R$ 47,89</span>
-                    </div>
-                    <span className="text-gray-300 ml-2">/mês</span>
+                {/* Seção Em Breve */}
+                <li className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center mb-2">
+                    <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded mr-2">Em breve</span>
+                    <span className="text-white font-medium text-sm">Recursos exclusivos</span>
                   </div>
-                  {/* <div className="bg-yellow-500/20 rounded-md p-2 mb-4 text-center">
-                    <p className="text-yellow-400 font-semibold text-sm">
-                      Economize R$ 148,80 por ano!
-                    </p>
-                  </div> */}
-                  <Link href="/register" className="w-full">
-                    <button className="button-primary w-full py-3 md:py-4 text-lg font-semibold rounded-xl hover:bg-[#0B7A48]/90 transition-colors group relative overflow-hidden">
-                      <span className="relative z-10">Quero Lucrar Mais</span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-[#0ea65f] to-[#0B7A48] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                    </button>
-                  </Link>
-                  <p className="text-center text-white/70 mt-3 text-sm">
-                    Experimente por 7 dias com garantia de satisfação
-                  </p>
-                </div>
-              </div>
+                  <ul className="space-y-1 pl-4">
+                    <li className="flex items-center text-white/70">
+                      <span className="text-[#0B7A48] mr-2 text-xs">•</span>
+                      <span className="text-xs">IA para cozinheiros</span>
+                    </li>
+                    <li className="flex items-center text-white/70">
+                      <span className="text-[#0B7A48] mr-2 text-xs">•</span>
+                      <span className="text-xs">Tendências culinárias</span>
+                    </li>
+                    <li className="flex items-center text-white/70">
+                      <span className="text-[#0B7A48] mr-2 text-xs">•</span>
+                      <span className="text-xs">Produtos em alta</span>
+                    </li>
+                    <li className="flex items-center text-white/70">
+                      <span className="text-[#0B7A48] mr-2 text-xs">•</span>
+                      <span className="text-xs">Receitas mais buscadas</span>
+                    </li>
+                    <li className="flex items-center text-white/70">
+                      <span className="text-[#0B7A48] mr-2 text-xs">•</span>
+                      <span className="text-xs">Cursos</span>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+              
+              <Link href="/register" className="block">
+                <button className="w-full py-3 bg-[#0B7A48] text-white rounded-lg font-medium hover:bg-[#0ea65f] transition-colors">
+                  Quero Lucrar Mais
+                </button>
+              </Link>
+              
+              <p className="text-center text-white/50 text-xs mt-3">
+                Experimente por 7 dias com garantia de satisfação
+              </p>
             </div>
           </div>
           
-          <div className="mt-16 bg-[#0B7A48]/20 backdrop-blur-sm rounded-xl p-6 max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold text-white mb-4 text-center">Ainda tem dúvidas?</h3>
-            <p className="text-white/80 text-center mb-6">
-              Confeiteiros que usam nossa plataforma relatam aumento médio de <strong>30% na lucratividade</strong> em apenas 30 dias!
-            </p>
-            <div className="flex justify-center">
+          {/* CTA */}
+          <div className="mt-12 text-center">
+            <div className="bg-white/5 rounded-xl p-6 max-w-lg mx-auto border border-white/10">
+              <h3 className="text-xl font-bold text-white mb-3">Ainda tem dúvidas?</h3>
+              <p className="text-white/70 mb-4 text-sm">
+                Nossos especialistas estão prontos para ajudar você
+              </p>
               <Link href="/contato">
-                <button className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold hover:bg-white/20 transition-all duration-300 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  Fale com um especialista
+                <button className="px-6 py-2 bg-[#0B7A48] text-white rounded-lg font-medium hover:bg-[#0ea65f] transition-colors">
+                  Falar com Especialista
                 </button>
               </Link>
             </div>
@@ -617,52 +635,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Quem Somos Section */}
-      <section className="py-16 bg-[#2D1810]">
-        <div className="container">
-          <h2 className="text-6xl font-bold text-[#0B7A48] mb-6 text-center">Quem somos</h2>
-          <p className="text-xl text-white mb-12 text-center max-w-3xl mx-auto">
-            A Doce Gestão é composta por um time de empreendedores especialistas em tecnologia e confeitaria.
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="relative group">
-              <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 hover:transform hover:scale-105 transition-all duration-300">
-                <Image
-                  src="/images/mari.jpeg"
-                  alt="Fundadora"
-                  width={400}
-                  height={400}
-                  className="w-full h-[400px] object-cover rounded-xl mb-6"
-                />
-                <h3 className="text-2xl font-bold text-white mb-2">Mari Tolentino</h3>
-                <p className="text-[#0B7A48] font-bold mb-2">Fundadora & Chef Confeiteira</p>
-                <p className="text-gray-300">
-                  Chef confeiteira apaixonada por doces e tecnologia, com experiência em gestão de negócios e desenvolvimento de receitas exclusivas.
-                </p>
-              </div>
-            </div>
-
-            <div className="relative group">
-              <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 hover:transform hover:scale-105 transition-all duration-300">
-                <Image
-                  src="/images/Ivan.jpeg"
-                  alt="Co-fundador"
-                  width={400}
-                  height={400}
-                  className="w-full h-[400px] object-contain bg-white/5 rounded-xl mb-6"
-                  priority
-                />
-                <h3 className="text-2xl font-bold text-white mb-2">Ivan Pedroso</h3>
-                <p className="text-[#0B7A48] font-bold mb-2">Co-Fundador & Tech Manager</p>
-                <p className="text-gray-300">
-                  Especialista em desenvolvimento web e mobile, com experiência em gestão de equipes e projetos.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Join Section */}
       <section className="py-16 bg-white">

@@ -129,7 +129,7 @@ export async function POST(request: Request) {
       plano: data.plano as TipoPlano,
       valorPlano: valorPlano,
       status: UserStatus.ATIVO,
-      cupomDesconto: cupomAplicado?.codigo,
+      cupomDesconto: data.cupomDesconto.toUpperCase(),
       idAssinatura: subscriptionResponse.id,
       idCustomer: customerResponse.id,
       telefone: data.telefone.replace(/\D/g, '')
