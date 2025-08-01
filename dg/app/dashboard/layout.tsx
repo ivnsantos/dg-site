@@ -1,8 +1,9 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { redirect } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Sidebar } from './components/Sidebar'
 import EmailVerificationModal from '@/components/EmailVerificationModal'
 import WhatsAppFloat from '@/components/WhatsAppFloat'
@@ -19,6 +20,34 @@ export default function DashboardLayout({
 }) {
   const { data: session, status } = useSession()
   const pathname = usePathname()
+  const router = useRouter()
+  const [userStatus, setUserStatus] = useState<string | null>(null)
+
+  // Verificar status do usuário
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch('/api/users/me')
+          if (response.ok) {
+            const userData = await response.json()
+            setUserStatus(userData.status)
+            
+            // Se o usuário estiver inativo, redirecionar
+            if (userData.status === 'INATIVO' && pathname !== '/assinatura-inativa') {
+              router.push('/assinatura-inativa')
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao verificar status do usuário:', error)
+        }
+      }
+    }
+
+    if (status === 'authenticated') {
+      checkUserStatus()
+    }
+  }, [session, status, pathname, router])
 
   if (status === 'loading') {
     return <div>Carregando...</div>
@@ -28,8 +57,14 @@ export default function DashboardLayout({
     redirect('/login')
   }
 
+  // Se o usuário estiver inativo e não estiver na página de assinatura inativa
+  if (userStatus === 'INATIVO' && pathname !== '/assinatura-inativa') {
+    return null // O useEffect vai redirecionar
+  }
+
   const isInactive = session?.user?.status.toString() === 'INATIVO' || !session?.user?.plano
   const isPlansPage = pathname === '/dashboard/planos'
+  
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return

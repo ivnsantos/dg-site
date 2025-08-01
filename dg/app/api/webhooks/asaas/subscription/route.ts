@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { initializeDB } from '@/src/lib/db'
 import { Subscription } from '@/src/entities/Subscription'
+import { User, UserStatus } from '@/src/entities/User'
 import crypto from 'crypto'
 
 interface AsaasSubscriptionWebhook {
@@ -81,6 +82,7 @@ function parseBrazilianDate(dateString: string): Date | null {
 // Função para processar cada tipo de evento
 async function processSubscriptionEvent(event: string, subscriptionData: any, dataSource: any) {
   const subscriptionRepository = dataSource.getRepository(Subscription)
+  const userRepository = dataSource.getRepository(User)
   
   // Buscar assinatura pelo externalId
   const existingSubscription = await subscriptionRepository.findOne({
@@ -129,8 +131,19 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.status = 'INACTIVE'
       existingSubscription.deleted = true
       
+      // Buscar e inativar o usuário
+      const user = await userRepository.findOne({
+        where: { id: existingSubscription.userId }
+      })
+      
+      if (user) {
+        user.status = UserStatus.INATIVO
+        await userRepository.save(user)
+        console.log(`Usuário ${user.id} inativado devido à assinatura inativa`)
+      }
+      
       await subscriptionRepository.save(existingSubscription)
-      return { success: true, message: 'Assinatura inativada com sucesso' }
+      return { success: true, message: 'Assinatura e usuário inativados com sucesso' }
 
     case 'SUBSCRIPTION_DELETED':
       // Marcar assinatura como deletada

@@ -66,9 +66,9 @@ O webhook recebe um payload no seguinte formato:
 | Evento | Descrição | Ação no Banco |
 |--------|-----------|---------------|
 | `SUBSCRIPTION_CREATED` | Assinatura criada | Atualiza/cria dados da assinatura |
-| `SUBSCRIPTION_UPDATED` | Assinatura atualizada | Atualiza dados da assinatura |
-| `SUBSCRIPTION_INACTIVATED` | Assinatura inativada | Marca como `INACTIVE` e `deleted: true` |
-| `SUBSCRIPTION_DELETED` | Assinatura removida | Marca como `CANCELLED` e `deleted: true` |
+| `SUBSCRIPTION_UPDATED` | Assinatura atualizada | Atualiza dados da assinatura e reativa usuário se necessário |
+| `SUBSCRIPTION_INACTIVATED` | Assinatura inativada | Marca assinatura como `INACTIVE` e usuário como `INATIVO` |
+| `SUBSCRIPTION_DELETED` | Assinatura removida | Marca assinatura como `CANCELLED` e usuário como `INATIVO` |
 
 ## ⚙️ Configuração
 
@@ -140,7 +140,19 @@ Para cada evento, os seguintes campos são atualizados:
 | `externalReference` | Referência externa |
 | `paymentLink` | Link de pagamento |
 
-### 3. Conversão de Datas
+### 3. Controle de Acesso do Usuário
+
+O webhook também controla o acesso do usuário à plataforma:
+
+| Evento | Ação no Usuário |
+|--------|----------------|
+| `SUBSCRIPTION_INACTIVATED` | Marca usuário como `INATIVO` (sem acesso) |
+| `SUBSCRIPTION_DELETED` | Marca usuário como `INATIVO` (sem acesso) |
+| `SUBSCRIPTION_UPDATED` (status ACTIVE) | Reativa usuário como `ATIVO` (com acesso) |
+
+**Importante**: Usuários inativos não conseguem acessar a plataforma até que a assinatura seja reativada.
+
+### 4. Conversão de Datas
 
 O webhook converte automaticamente datas do formato brasileiro (`DD/MM/YYYY`) para o formato ISO.
 
@@ -193,7 +205,13 @@ O webhook registra logs detalhados:
 ```
 Webhook recebido: SUBSCRIPTION_UPDATED - sub_m5gdy1upm25fbwgx
 Webhook processado com sucesso: SUBSCRIPTION_UPDATED
+Usuário 123 reativado devido à assinatura ativa
 ```
+
+**Logs de Controle de Usuário:**
+- `Usuário {id} inativado devido à assinatura inativa`
+- `Usuário {id} inativado devido à assinatura deletada`
+- `Usuário {id} reativado devido à assinatura ativa`
 
 ## 🚨 Tratamento de Erros
 

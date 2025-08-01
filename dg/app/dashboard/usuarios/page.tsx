@@ -1,13 +1,13 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../../api/auth/[...nextauth]/route'
-import { AppDataSource, initializeDB } from '@/src/lib/db'
-import { User } from '@/src/entities/User'
-import { Button } from "@/components/ui/button"
+import { initializeDB } from '@/src/lib/db'
+import { User, UserStatus } from '@/src/entities/User'
+import { Subscription } from '@/src/entities/Subscription'
 import { Card } from "@/components/ui/card"
-import { UserCircle, Calculator, Pencil, CheckCircle } from 'lucide-react'
-import { AssinaturaCard } from './components/AssinaturaCard'
+import { UserCircle, Calculator } from 'lucide-react'
 import { MarkupSection } from './components/MarkupSection'
+import { AssinaturaManagementCard } from './components/AssinaturaManagementCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +23,8 @@ export default async function UsuariosPage() {
 
   // Busca dados do usuário no banco
   const userRepository = connection.getRepository(User)
+  const subscriptionRepository = connection.getRepository(Subscription)
+  
   const user = await userRepository.findOne({
     where: { email: session.user.email }
   })
@@ -30,6 +32,11 @@ export default async function UsuariosPage() {
   if (!user) {
     redirect('/login')
   }
+
+  // Busca dados da assinatura
+  const subscription = await subscriptionRepository.findOne({
+    where: { userId: user.id }
+  })
 
   return (
     <div className="space-y-8">
@@ -44,7 +51,6 @@ export default async function UsuariosPage() {
             <UserCircle className="h-6 w-6 text-[#0B7A48]" />
             <h2 className="text-xl font-semibold text-gray-900">Dados Pessoais</h2>
           </div>
-       
         </div>
 
         <div className="grid grid-cols-2 gap-6">
@@ -65,12 +71,7 @@ export default async function UsuariosPage() {
             {user.telefone ? (
               <div className="flex items-center">
                 <p className="text-gray-900">{user.telefone}</p>
-                {user.verificationCode && (
-                  <div className="flex items-center ml-2">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-1" />
-                    <span className="text-xs text-green-600 font-medium">Verificado</span>
-                  </div>
-                )}
+ 
               </div>
             ) : (
               <p className="text-gray-900">-</p>
@@ -78,7 +79,15 @@ export default async function UsuariosPage() {
           </div>
           <div>
             <p className="text-sm text-gray-500 mb-1">Status</p>
-            <p className="text-gray-900">{user.status}</p>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                user.status === UserStatus.ATIVO 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {user.status}
+              </span>
+            </div>
           </div>
         </div>
       </Card>
@@ -86,8 +95,27 @@ export default async function UsuariosPage() {
       {/* Markup */}
       <MarkupSection markupIdeal={user.markupIdeal} />
 
-      {/* Assinatura */}
-      <AssinaturaCard plano={user.plano} valorPlano={user.valorPlano} />
+      {/* Card de Assinatura - Layout Compacto */}
+      <AssinaturaManagementCard 
+        plano={user.plano} 
+        valorPlano={user.valorPlano}
+        subscription={subscription ? {
+          id: subscription.id,
+          externalId: subscription.externalId,
+          value: subscription.value,
+          cycle: subscription.cycle,
+          status: subscription.status,
+          billingType: subscription.billingType,
+          nextDueDate: subscription.nextDueDate,
+          description: subscription.description,
+          isActive: subscription.isActive(),
+          isOverdue: subscription.isOverdue(),
+          isExpired: subscription.isExpired(),
+          daysUntilNextDue: subscription.getDaysUntilNextDue(),
+          formattedValue: subscription.getFormattedValue(),
+          formattedNextDueDate: subscription.getFormattedNextDueDate()
+        } : undefined}
+      />
     </div>
   )
 } 
