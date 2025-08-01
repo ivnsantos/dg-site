@@ -96,6 +96,7 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
 
   switch (event) {
     case 'SUBSCRIPTION_CREATED':
+      console.log(`Assinatura ${existingSubscription.id} sendo criada`)
       // Atualizar dados da assinatura criada
       existingSubscription.value = subscriptionData.value
       existingSubscription.cycle = subscriptionData.cycle
@@ -109,9 +110,11 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.paymentLink = subscriptionData.paymentLink
       
       await subscriptionRepository.save(existingSubscription)
+      console.log(`Assinatura ${existingSubscription.id} atualizada com sucesso`)
       return { success: true, message: 'Assinatura criada/atualizada com sucesso' }
 
     case 'SUBSCRIPTION_UPDATED':
+      console.log(`Assinatura ${existingSubscription.id} sendo atualizada`)
       // Atualizar dados da assinatura
       existingSubscription.value = subscriptionData.value
       existingSubscription.cycle = subscriptionData.cycle
@@ -124,9 +127,11 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.paymentLink = subscriptionData.paymentLink
       
       await subscriptionRepository.save(existingSubscription)
+      console.log(`Assinatura ${existingSubscription.id} atualizada com sucesso`)
       return { success: true, message: 'Assinatura atualizada com sucesso' }
 
     case 'SUBSCRIPTION_INACTIVATED':
+      console.log(`Assinatura ${existingSubscription.id} sendo inativada`)
       // Marcar assinatura como inativa
       existingSubscription.status = 'INACTIVE'
       existingSubscription.deleted = true
@@ -143,14 +148,27 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       }
       
       await subscriptionRepository.save(existingSubscription)
+      console.log(`Assinatura ${existingSubscription.id} inativada com sucesso`)
       return { success: true, message: 'Assinatura e usuário inativados com sucesso' }
 
     case 'SUBSCRIPTION_DELETED':
-      // Marcar assinatura como deletada
-      existingSubscription.status = 'CANCELLED'
+      // Marcar assinatura como deletada 
+      console.log(`Assinatura ${existingSubscription.id} sendo deletada`)
+      existingSubscription.status = 'INACTIVE'
       existingSubscription.deleted = true
+
+      const user1 = await userRepository.findOne({
+        where: { id: existingSubscription.userId }
+      })
+      
+      if (user1) {
+        user1.status = UserStatus.INATIVO
+        await userRepository.save(user1)
+        console.log(`Usuário ${user1.id} inativado devido à assinatura inativa`)
+      }
       
       await subscriptionRepository.save(existingSubscription)
+      console.log(`Assinatura ${existingSubscription.id} deletada com sucesso`)
       return { success: true, message: 'Assinatura deletada com sucesso' }
 
     default:

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { CreditCard, Calendar, AlertTriangle } from 'lucide-react'
+import { CreditCard, Calendar, AlertTriangle, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import {
   Dialog,
@@ -39,6 +39,7 @@ interface AssinaturaManagementCardProps {
 export function AssinaturaManagementCard({ plano, valorPlano, subscription }: AssinaturaManagementCardProps) {
   const [dialogAberto, setDialogAberto] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [detalhesAbertos, setDetalhesAbertos] = useState(false)
   const { toast } = useToast()
 
   const handleCancelar = async () => {
@@ -97,6 +98,43 @@ export function AssinaturaManagementCard({ plano, valorPlano, subscription }: As
     }
   }
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'ATIVO'
+      case 'INACTIVE':
+        return 'INATIVO'
+      case 'CANCELLED':
+        return 'CANCELADO'
+      default:
+        return status
+    }
+  }
+
+  const getBillingTypeText = (billingType: string) => {
+    switch (billingType) {
+      case 'CREDIT_CARD':
+        return 'Cartão de Crédito'
+      case 'PIX':
+        return 'PIX'
+      case 'BOLETO':
+        return 'Boleto'
+      default:
+        return billingType
+    }
+  }
+
+  const getCycleText = (cycle: string) => {
+    switch (cycle) {
+      case 'MONTHLY':
+        return 'mensal'
+      case 'YEARLY':
+        return 'anual'
+      default:
+        return cycle.toLowerCase()
+    }
+  }
+
   return (
     <>
       <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
@@ -128,138 +166,160 @@ export function AssinaturaManagementCard({ plano, valorPlano, subscription }: As
         </DialogContent>
       </Dialog>
 
-      <Card className="p-6">
+      <Card className="p-6 bg-gradient-to-br from-white to-gray-50 border-0 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-[#0B7A48]" />
-            <h2 className="text-lg font-medium text-gray-900">Gerenciar Assinatura</h2>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <CreditCard className="h-5 w-5 text-[#0B7A48]" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Gerenciar Assinatura</h2>
+              <p className="text-sm text-gray-500">Controle sua assinatura</p>
+            </div>
           </div>
           {subscription && (
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(subscription.status)}`}>
-              {subscription.status}
+              {getStatusText(subscription.status)}
             </span>
           )}
         </div>
         
         {subscription ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Informações principais */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600">Plano {plano}</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-semibold text-[#0B7A48]">
-                    {subscription.formattedValue}
-                  </span>
-                  <span className="text-sm text-gray-500">/{subscription.cycle.toLowerCase()}</span>
-                </div>
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-                onClick={() => setDialogAberto(true)}
-              >
-                Cancelar Assinatura
-              </Button>
-            </div>
-
-            {/* Detalhes da assinatura */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
+            <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm text-gray-500">Próximo Vencimento</p>
-                  <p className="text-sm font-medium">{subscription.formattedNextDueDate}</p>
+                  <h3 className="text-xl font-bold text-[#0B7A48]">
+                    {subscription.formattedValue}
+                  </h3>
+                  <p className="text-gray-600">Plano {plano} • {getCycleText(subscription.cycle)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Próximo vencimento</p>
+                  <p className="font-semibold text-gray-900">{subscription.formattedNextDueDate}</p>
                 </div>
               </div>
               
-              <div>
-                <p className="text-sm text-gray-500">Dias até Vencimento</p>
-                <p className={`text-sm font-medium ${
-                  subscription.daysUntilNextDue <= 7 
-                    ? 'text-red-600' 
-                    : subscription.daysUntilNextDue <= 15 
-                    ? 'text-yellow-600' 
-                    : 'text-green-600'
-                }`}>
-                  {subscription.daysUntilNextDue} dias
-                </p>
-              </div>
-              
-              <div>
-                <p className="text-sm text-gray-500">Tipo de Cobrança</p>
-                <p className="text-sm font-medium">{subscription.billingType}</p>
-              </div>
-              
-              <div>
-                <p className="text-sm text-gray-500">ID da Assinatura</p>
-                <p className="text-sm font-mono text-gray-700">{subscription.externalId}</p>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${
+                    subscription.daysUntilNextDue <= 7 
+                      ? 'bg-red-500' 
+                      : subscription.daysUntilNextDue <= 15 
+                      ? 'bg-yellow-500' 
+                      : 'bg-green-500'
+                  }`}></div>
+                  <span className="text-sm text-gray-600">
+                    {subscription.daysUntilNextDue} dias restantes
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-600 hover:bg-gray-50 text-xs"
+                    onClick={() => setDetalhesAbertos(!detalhesAbertos)}
+                  >
+                    {detalhesAbertos ? 'Ocultar' : 'Ver detalhes'}
+                    <ChevronDown className={`h-3 w-3 ml-1 transition-transform ${
+                      detalhesAbertos ? 'rotate-180' : ''
+                    }`} />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700 text-xs"
+                    onClick={() => setDialogAberto(true)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Alertas */}
-            {subscription.isOverdue && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <p className="text-red-800 text-sm font-medium">
-                    Assinatura em atraso há {Math.abs(subscription.daysUntilNextDue)} dias
-                  </p>
+            {/* Detalhes da assinatura - Colapsável */}
+            {detalhesAbertos && (
+              <div className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <p className="text-sm text-gray-500">Tipo de Cobrança</p>
+                    </div>
+                    <p className="text-sm font-medium text-gray-900">{getBillingTypeText(subscription.billingType)}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-sm text-gray-500 mb-2">ID da Assinatura</p>
+                    <p className="text-sm font-mono text-gray-700">{subscription.externalId}</p>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {subscription.isExpired && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <p className="text-red-800 text-sm font-medium">
-                    Assinatura expirada
-                  </p>
-                </div>
-              </div>
-            )}
+                {/* Alertas */}
+                {subscription.isOverdue && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <p className="text-red-800 text-sm font-medium">
+                        Assinatura em atraso há {Math.abs(subscription.daysUntilNextDue)} dias
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-            {!subscription.isOverdue && !subscription.isExpired && subscription.daysUntilNextDue <= 7 && (
-              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                  <p className="text-yellow-800 text-sm font-medium">
-                    Vencimento próximo - {subscription.daysUntilNextDue} dias
-                  </p>
-                </div>
-              </div>
-            )}
+                {subscription.isExpired && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <p className="text-red-800 text-sm font-medium">
+                        Assinatura expirada
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-            {subscription.description && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Descrição</p>
-                <p className="text-sm text-gray-900">{subscription.description}</p>
+                {!subscription.isOverdue && !subscription.isExpired && subscription.daysUntilNextDue <= 7 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                      <p className="text-yellow-800 text-sm font-medium">
+                        Vencimento próximo - {subscription.daysUntilNextDue} dias
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {subscription.description && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-gray-500 mb-1">Descrição</p>
+                    <p className="text-sm text-gray-900">{subscription.description}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600">Plano {plano}</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xl font-semibold text-[#0B7A48]">
+          <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-[#0B7A48]">
                   {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorPlano)}
-                </span>
-                <span className="text-sm text-gray-500">/mês</span>
+                </h3>
+                <p className="text-gray-600">Plano {plano} • mensal</p>
               </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:bg-red-50 hover:text-red-700 text-xs"
+                onClick={() => setDialogAberto(true)}
+              >
+                Cancelar
+              </Button>
             </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-              onClick={() => setDialogAberto(true)}
-            >
-              Cancelar Assinatura
-            </Button>
           </div>
         )}
       </Card>
