@@ -20,8 +20,8 @@ export default function CouponPopup() {
         const timer = setTimeout(() => {
           setIsVisible(true)
           // Salvar o timestamp atual
-          localStorage.setItem('couponPopupLastShown', now.toString())
-        }, 6000)
+          localStorage.setItem('couponPopupLastShown', Date.now().toString())
+        }, 2000)
 
         return () => clearTimeout(timer)
       }
@@ -72,123 +72,90 @@ export default function CouponPopup() {
       {/* Overlay */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         {/* Popup */}
-        <div className="relative bg-gradient-to-br from-[#0B7A48] via-[#0ea65f] to-[#0B7A48] p-1 rounded-2xl max-w-md w-full animate-in slide-in-from-bottom-4 duration-500">
-          <div className="bg-white rounded-2xl p-6 relative overflow-hidden">
+        <div className="relative bg-gradient-to-br from-[#8B4513] via-[#A0522D] to-[#8B4513] p-1 rounded-xl max-w-sm w-full animate-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-white rounded-xl p-4 relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20"></div>
-            <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-20"></div>
+            <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full opacity-20"></div>
+            <div className="absolute -bottom-3 -left-3 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full opacity-20"></div>
             
             {/* Close button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors z-10"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
             {/* Content */}
             <div className="relative z-10 text-center">
               {/* Icon */}
-              <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                <Gift className="w-8 h-8 text-white" />
+              <div className="mx-auto mb-3 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                <Gift className="w-6 h-6 text-white" />
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-1">
                 🎉 Oferta Especial!
               </h3>
 
               {/* Subtitle */}
-              <p className="text-gray-600 mb-6">
-                Ganhe <span className="font-bold text-[#0B7A48]">20% de desconto</span> no Plano PRO
+              <p className="text-gray-600 mb-4 text-sm">
+                Ganhe <span className="font-bold text-[#8B4513]">20% de desconto</span> no Plano PRO
               </p>
 
               {/* Coupon */}
-              <div className="bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] p-4 rounded-xl mb-6">
-                <p className="text-white text-sm mb-2">Use o cupom:</p>
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl font-bold text-white tracking-wider">DOCE20</span>
+              <div className="bg-gradient-to-r from-[#8B4513] to-[#A0522D] p-3 rounded-lg mb-4">
+                <p className="text-white text-xs mb-1">Use o cupom:</p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-2xl font-bold text-white tracking-wider">DOCE20</span>
                   <button
                     onClick={handleCopy}
-                    className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors"
+                    className="bg-white/20 hover:bg-white/30 p-1.5 rounded-md transition-colors"
                   >
                     {isCopied ? (
-                      <Check className="w-5 h-5 text-white" />
+                      <Check className="w-4 h-4 text-white" />
                     ) : (
-                      <Copy className="w-5 h-5 text-white" />
+                      <Copy className="w-4 h-4 text-white" />
                     )}
                   </button>
                 </div>
                 {isCopied && (
-                  <p className="text-white/90 text-sm mt-2 animate-in fade-in duration-200">
+                  <p className="text-white/90 text-xs mt-1 animate-in fade-in duration-200">
                     Cupom copiado! ✅
                   </p>
                 )}
               </div>
 
               {/* Plano PRO Details */}
-              <div className="bg-gradient-to-br from-[#0B7A48]/10 to-[#0ea65f]/10 p-4 rounded-xl mb-6 border border-[#0B7A48]/20">
-                <div className="flex items-center justify-center mb-3">
-                  <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-sm py-1 px-3 rounded-full font-bold mr-2">
+              <div className="bg-gradient-to-br from-[#8B4513]/10 to-[#A0522D]/10 p-3 rounded-lg mb-4 border border-[#8B4513]/20">
+                <div className="flex items-center justify-center mb-2">
+                  <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs py-0.5 px-2 rounded-full font-bold mr-2">
                     PRO
                   </span>
                 </div>
                 
                 {/* Preço original riscado */}
                 <div className="text-center mb-2">
-                  <span className="text-sm text-gray-500 line-through">R$ 47,89/mês</span>
+                  <span className="text-xs text-gray-500 line-through">R$ 47,89/mês</span>
                 </div>
                 
                 {/* Preço com desconto em destaque */}
-                <div className="text-center mb-3">
-                  <div className="text-2xl font-bold text-[#0B7A48]">R$ 38,31</div>
-                  <div className="text-sm text-gray-600">por mês</div>
-                </div>
-            
-              </div>
-
-              {/* Benefits */}
-              <div className="space-y-3 mb-6 text-left">
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Controle completo</strong> de ingredientes e estoque</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Gerenciamento ilimitado</strong> de todas as receitas</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Calculadora avançada</strong> de preços e custos</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Menu Online</strong> profissional ilimitado</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Orçamentos digitais</strong> para clientes</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>LinkTree personalizado</strong> para Instagram</span>
-                </div>
-                <div className="flex items-start text-sm text-gray-700">
-                  <span className="text-[#0B7A48] mr-2 mt-0.5">✓</span>
-                  <span><strong>Controle de clientes</strong> e histórico</span>is
+                <div className="text-center mb-2">
+                  <div className="text-2xl font-bold text-[#8B4513]">R$ 38,31</div>
+                  <div className="text-xs text-gray-600">por mês</div>
                 </div>
               </div>
 
               {/* CTA Button */}
               <a
                 href="/register"
-                className="block w-full bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] text-white py-3 px-6 rounded-xl font-semibold hover:from-[#0ea65f] hover:to-[#0B7A48] transition-all duration-300 transform hover:scale-105"
+                className="block w-full bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white py-2 px-4 rounded-lg font-semibold hover:from-[#A0522D] hover:to-[#8B4513] transition-all duration-300 transform hover:scale-105 text-sm"
               >
                 Quero o Plano PRO com Desconto
               </a>
 
               {/* Terms */}
-              <p className="text-xs text-gray-500 mt-4">
+              <p className="text-xs text-gray-500 mt-3">
                 * Oferta válida por tempo limitado. Desconto aplicado apenas no Plano PRO. 
                 Não pode ser combinada com outras promoções.
               </p>

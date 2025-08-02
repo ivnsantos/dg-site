@@ -840,7 +840,7 @@ export default function HomePage() {
       <WhatsAppFloat position="right" />
 
       {/* Coupon Popup */}
-      <CouponPopup />
+      {/* <CouponPopup /> */}
     </main>
   )
 } 
