@@ -108,6 +108,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verifica se o usuário já tem 2 LinkTrees (limite máximo)
+    const existingLinkTreesCount = await linkTreeRepository.count({
+      where: { userId: parseInt(userId) }
+    })
+
+    if (existingLinkTreesCount >= 2) {
+      return NextResponse.json(
+        { error: 'Você já possui o limite máximo de 2 LinkTrees. Exclua um LinkTree existente para criar um novo.' },
+        { status: 400 }
+      )
+    }
+
     // Criar o LinkTree
     const linkTree = linkTreeRepository.create({
       name,

@@ -3,8 +3,12 @@
 import React, { useState } from 'react'
 import { Button } from '../../../../components/ui/button'
 import { uploadFileViaAPI } from '../../../../src/lib/s3'
+import { validateImage } from '../../../../src/lib/imageValidation'
+import ErrorModal from '../../../../components/ui/ErrorModal'
+import { useErrorModal } from '../../../../src/hooks/useErrorModal'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
+import { toast } from 'react-hot-toast'
 
 interface MenuItemForm {
   name: string
@@ -56,7 +60,45 @@ export default function NovoMenuPage() {
   })
   const [sections, setSections] = useState<MenuSectionForm[]>([])
   const [loading, setLoading] = useState(false)
+  const [checkingLimit, setCheckingLimit] = useState(true)
   const router = useRouter()
+  const { modalState, showError, hideError } = useErrorModal()
+  const { data: session } = useSession()
+
+  // Verificar limite de menus ao carregar a página
+  React.useEffect(() => {
+    const checkMenuLimit = async () => {
+      if (!session?.user?.id) return
+      
+      try {
+        const response = await fetch(`/api/menus?userId=${session.user.id}`)
+        const data = await response.json()
+        
+        if (data.menus && data.menus.length >= 2) {
+          toast.error('Você já possui o limite máximo de 2 menus online.')
+          router.push('/dashboard/menu-online')
+          return
+        }
+      } catch (error) {
+        console.error('Erro ao verificar limite de menus:', error)
+      } finally {
+        setCheckingLimit(false)
+      }
+    }
+
+    checkMenuLimit()
+  }, [session, router])
+
+  if (checkingLimit) {
+    return (
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0B7A48] mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando limite de menus...</p>
+        </div>
+      </div>
+    )
+  }
 
   const addSection = () => {
     setSections([
@@ -83,6 +125,20 @@ export default function NovoMenuPage() {
   }
 
   const handleSectionImage = (idx: number, file: File | null) => {
+    if (file) {
+      console.log('Arquivo selecionado:', file.name, 'Tamanho:', file.size, 'MB:', (file.size / (1024 * 1024)).toFixed(2))
+      const validation = validateImage(file)
+      console.log('Validação:', validation)
+      if (!validation.isValid) {
+        console.log('Erro de validação:', validation.error)
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem da Seção')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById(`sectionImageUpload-${idx}`) as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     updateSection(idx, 'imageFile', file)
   }
 
@@ -112,6 +168,20 @@ export default function NovoMenuPage() {
   }
 
   const handleItemImage = (sectionIdx: number, itemIdx: number, file: File | null) => {
+    if (file) {
+      console.log('Arquivo de item selecionado:', file.name, 'Tamanho:', file.size, 'MB:', (file.size / (1024 * 1024)).toFixed(2))
+      const validation = validateImage(file)
+      console.log('Validação de item:', validation)
+      if (!validation.isValid) {
+        console.log('Erro de validação de item:', validation.error)
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem do Item')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById(`itemImageUpload-${sectionIdx}-${itemIdx}`) as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     const updated = [...sections]
     updated[sectionIdx].items[itemIdx].imageFile = file
     setSections(updated)
@@ -122,27 +192,61 @@ export default function NovoMenuPage() {
   }
 
   const handleMenuImage = (file: File | null) => {
+    if (file) {
+      console.log('Arquivo selecionado:', file.name, 'Tamanho:', file.size, 'MB:', (file.size / (1024 * 1024)).toFixed(2))
+      const validation = validateImage(file)
+      console.log('Validação:', validation)
+      if (!validation.isValid) {
+        console.log('Erro de validação:', validation.error)
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById('menuImageUpload') as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     setMenu({ ...menu, imageFile: file })
   }
 
   const handleMenuBackgroundImage = (file: File | null) => {
+    if (file) {
+      console.log('Arquivo de fundo selecionado:', file.name, 'Tamanho:', file.size, 'MB:', (file.size / (1024 * 1024)).toFixed(2))
+      const validation = validateImage(file)
+      console.log('Validação de fundo:', validation)
+      if (!validation.isValid) {
+        console.log('Erro de validação de fundo:', validation.error)
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem de Fundo')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById('menuBackgroundImageUpload') as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     setMenu({ ...menu, imageBackgroundFile: file })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!session?.user?.id) {
+      toast.error('Usuário não autenticado')
+      return
+    }
+    
     setLoading(true)
     try {
       // Upload da imagem do menu principal
       let menuImageUrl = ''
       if (menu.imageFile) {
-        const path = `menus/${Date.now()}-${menu.imageFile.name}`
+        const path = `${Date.now()}-${menu.imageFile.name}`
         menuImageUrl = await uploadFileViaAPI(menu.imageFile, path)
       }
       // Upload da imagem de fundo
       let menuImageBackgroundUrl = ''
       if (menu.imageBackgroundFile) {
-        const path = `menus/backgrounds/${Date.now()}-${menu.imageBackgroundFile.name}`
+        const path = `${Date.now()}-${menu.imageBackgroundFile.name}`
         menuImageBackgroundUrl = await uploadFileViaAPI(menu.imageBackgroundFile, path)
       }
       // Upload das imagens das seções
@@ -150,7 +254,7 @@ export default function NovoMenuPage() {
         sections.map(async (section, idx) => {
           let sectionImageUrl = ''
           if (section.imageFile) {
-            const path = `menus/sections/${Date.now()}-${section.imageFile.name}`
+            const path = `${Date.now()}-${section.imageFile.name}`
             sectionImageUrl = await uploadFileViaAPI(section.imageFile, path)
           }
           // Upload das imagens dos itens
@@ -158,7 +262,7 @@ export default function NovoMenuPage() {
             section.items.map(async (item) => {
               let itemImageUrl = ''
               if (item.imageFile) {
-                const path = `menus/items/${Date.now()}-${item.imageFile.name}`
+                const path = `${Date.now()}-${item.imageFile.name}`
                 itemImageUrl = await uploadFileViaAPI(item.imageFile, path)
               }
               return {
@@ -183,7 +287,7 @@ export default function NovoMenuPage() {
         imageUrlBackground: menuImageBackgroundUrl,
         imageBackgroundFile: undefined,
         sections: sectionUploads,
-        userId: 1, // Trocar para o id do usuário logado
+        userId: session.user.id,
       }
       // Chama a API para salvar no banco
       const response = await fetch('/api/menus', {
@@ -191,12 +295,18 @@ export default function NovoMenuPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (!response.ok) throw new Error('Erro ao salvar menu')
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao salvar menu')
+      }
+      
       toast.success('Menu salvo com sucesso!')
       router.push('/dashboard/menu-online')
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao salvar menu:', err)
-      toast.error('Erro ao salvar menu')
+      toast.error(err.message || 'Erro ao salvar menu')
+      showError(err.message || 'Erro ao salvar menu', 'Erro ao Criar Menu')
     } finally {
       setLoading(false)
     }
@@ -214,6 +324,7 @@ export default function NovoMenuPage() {
         </svg>
         Voltar
       </button>
+      
       <h2 className="text-xl font-bold mb-6">Novo Menu</h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
@@ -433,6 +544,15 @@ export default function NovoMenuPage() {
           ) : 'Salvar Menu'}
         </Button>
       </form>
+
+      {/* Modal de Erro */}
+      <ErrorModal
+        isOpen={modalState.isOpen}
+        onClose={hideError}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+      />
     </div>
   )
 } 

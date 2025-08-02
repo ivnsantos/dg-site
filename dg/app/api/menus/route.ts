@@ -14,6 +14,18 @@ export async function POST(request: NextRequest) {
     // Busca o usuário (ajuste conforme autenticação depois)
     const user = await db.getRepository(User).findOneByOrFail({ id: userId })
 
+    // Verifica se o usuário já tem 2 menus (limite máximo)
+    const existingMenusCount = await db.getRepository(Menu).count({
+      where: { user: { id: userId } }
+    })
+
+    if (existingMenusCount >= 2) {
+      return NextResponse.json(
+        { error: 'Você já possui o limite máximo de 2 menus online. Exclua um menu existente para criar um novo.' },
+        { status: 400 }
+      )
+    }
+
     // Cria o menu
     const menu = new Menu()
     menu.name = name

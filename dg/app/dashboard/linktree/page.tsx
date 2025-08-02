@@ -144,13 +144,21 @@ export default function LinkTreePage() {
             Crie e gerencie seus LinkTrees para compartilhar todos os seus links importantes
           </p>
         </div>
-        <Button 
-          className="bg-[#0B7A48] text-white"
-          onClick={() => router.push('/dashboard/linktree/novo')}
-        >
-          <PlusIcon className="h-4 w-4 mr-2" />
-          Criar LinkTree
-        </Button>
+        <div className="flex items-center gap-3">
+          {linkTrees.length >= 2 && (
+            <div className="text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-200">
+              Limite de 2 LinkTrees atingido
+            </div>
+          )}
+          <Button 
+            className="bg-[#0B7A48] text-white"
+            onClick={() => router.push('/dashboard/linktree/novo')}
+            disabled={linkTrees.length >= 2}
+          >
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Criar LinkTree
+          </Button>
+        </div>
       </div>
 
       {loading ? (

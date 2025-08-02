@@ -16,7 +16,8 @@ import {
   AcademicCapIcon,
   SparklesIcon,
   ArrowTrendingUpIcon,
-  LockClosedIcon
+  LockClosedIcon,
+  LinkIcon
 } from '@heroicons/react/24/outline'
 import { ExpandableSection } from './components/ExpandableSection'
 import { ReactNode } from 'react'
@@ -26,6 +27,7 @@ import { Product } from '@/src/entities/Product'
 import { Menu } from '@/src/entities/Menu'
 import { Orcamento } from '@/src/entities/Orcamento'
 import { Cliente } from '@/src/entities/Cliente'
+import { LinkTree } from '@/src/entities/LinkTree'
 
 export const dynamic = 'force-dynamic'
 
@@ -93,6 +95,11 @@ export default async function DashboardPage() {
     where: { user: { id: user.id } }
   })
 
+  // Busca dados de LinkTrees
+  const linkTreesCount = await dataSource.getRepository(LinkTree).count({
+    where: { user: { id: user.id } }
+  })
+
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto p-4">
@@ -112,18 +119,20 @@ export default async function DashboardPage() {
         </div>
 
         {/* Cartas de resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <StatCard 
             title="Produtos" 
             value={productsCount} 
             icon={<CubeIcon className="h-8 w-8 text-[#0B7A48]" />} 
-            href="/dashboard/produtos"
+            href={user?.markupIdeal ? "/dashboard/produtos" : undefined}
+            disabled={!user?.markupIdeal}
           />
           <StatCard 
             title="Ingredientes" 
             value={ingredientsCount} 
             icon={<BeakerIcon className="h-8 w-8 text-[#0B7A48]" />} 
-            href="/dashboard/ingredientes"
+            href={user?.markupIdeal ? "/dashboard/ingredientes" : undefined}
+            disabled={!user?.markupIdeal}
           />
           {!isPlanoBasico && (
             <>
@@ -132,6 +141,12 @@ export default async function DashboardPage() {
                 value={menusCount} 
                 icon={<Squares2X2Icon className="h-8 w-8 text-[#0B7A48]" />} 
                 href="/dashboard/menu-online"
+              />
+              <StatCard 
+                title="LinkTrees" 
+                value={linkTreesCount} 
+                icon={<LinkIcon className="h-8 w-8 text-[#0B7A48]" />} 
+                href="/dashboard/linktree"
               />
               <StatCard 
                 title="Clientes" 
@@ -149,7 +164,7 @@ export default async function DashboardPage() {
                 </div>
                 <h3 className="text-lg font-medium text-gray-500 mb-2">Recursos PRO bloqueados</h3>
                 <p className="text-sm text-gray-400 text-center mb-4">
-                  Acesse Menu Online, Orçamentos, Gerenciamento de Clientes e muito mais
+                  Acesse Menu Online, LinkTrees, Orçamentos, Gerenciamento de Clientes e muito mais
                 </p>
                 <Link href="/dashboard/planos">
                   <button className="px-4 py-2 bg-[#0B7A48] text-white rounded-lg text-sm hover:bg-[#0ea65f] transition-colors">
@@ -324,22 +339,42 @@ interface StatCardProps {
   value: number;
   icon: React.ReactNode;
   href?: string; // Tornando href opcional
+  disabled?: boolean; // Adicionando propriedade para desabilitar
 }
 
-function StatCard({ title, value, icon, href }: StatCardProps) {
+function StatCard({ title, value, icon, href, disabled }: StatCardProps) {
   const content = (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`transition-all ${
+      disabled 
+        ? 'opacity-50 cursor-not-allowed bg-gray-50' 
+        : 'hover:shadow-md cursor-pointer'
+    }`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-gray-500">{title}</CardTitle>
-        {icon}
+        <CardTitle className={`text-sm font-medium ${
+          disabled ? 'text-gray-400' : 'text-gray-500'
+        }`}>
+          {title}
+          {disabled && (
+            <span className="ml-2 text-xs text-orange-600 font-normal">
+              (Markup necessário)
+            </span>
+          )}
+        </CardTitle>
+        <div className={disabled ? 'opacity-50' : ''}>
+          {icon}
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className={`text-2xl font-bold ${
+          disabled ? 'text-gray-400' : ''
+        }`}>
+          {value}
+        </div>
       </CardContent>
     </Card>
   );
 
-  if (href) {
+  if (href && !disabled) {
     return <Link href={href}>{content}</Link>;
   }
 

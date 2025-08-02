@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner']
+  },
+  async headers() {
+    return [
+      {
+        source: '/api/upload',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'multipart/form-data',
+          },
+        ],
+      },
+    ]
+  },
+  async serverRuntimeConfig() {
+    return {
+      // Configuração para aumentar limite de upload
+      bodyParser: {
+        sizeLimit: '20mb',
+      },
+    }
+  },
   webpack: (config, { isServer }) => {
     config.cache = false;
     

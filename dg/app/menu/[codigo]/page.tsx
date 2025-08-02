@@ -101,30 +101,26 @@ export default function MenuPublicoPage() {
       <div className="w-full max-w-2xl flex flex-col items-center">
         {/* Header com imagem de fundo e logo */}
         <div className="w-full relative mb-6">
-          {menu.imageUrlBackground && (
-            <div className="w-full h-56 md:h-72 overflow-hidden rounded-b-2xl bg-muted relative">
-              <Image
-                src={menu.imageUrlBackground}
-                alt="Fundo do menu"
-                fill
-                className="object-cover w-full h-full"
-                priority
-              />
-            </div>
-          )}
-          {menu.imageUrl && (
-            <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
-              <Image
-                src={menu.imageUrl}
-                alt="Logo da empresa"
-                width={128}
-                height={128}
-                className="object-cover w-32 h-32 rounded-full"
-              />
-            </div>
-          )}
+          <div className="w-full h-56 md:h-72 overflow-hidden rounded-b-2xl bg-muted relative">
+            <Image
+              src={menu.imageUrlBackground || "/images/sem-imagem.jpg"}
+              alt="Fundo do menu"
+              fill
+              className="object-cover w-full h-full"
+              priority
+            />
+          </div>
+          <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center">
+            <Image
+              src={menu.imageUrl || "/images/sem-imagem.jpg"}
+              alt="Logo da empresa"
+              width={128}
+              height={128}
+              className="object-cover w-full h-full rounded-full"
+            />
+          </div>
         </div>
-        <div className="mt-20 w-full flex flex-col items-center">
+        <div className="mt-16 w-full flex flex-col items-center">
           <div className="flex items-center justify-center gap-2 mb-1">
             <h1 className="text-3xl md:text-4xl font-bold text-primary text-center flex items-center gap-2">{menu.name}
               <img src="/images/verified-badge-profile-icon-png.webp" alt="Verificado" className="w-7 h-7 object-contain ml-1" />

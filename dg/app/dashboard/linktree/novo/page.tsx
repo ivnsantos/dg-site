@@ -8,11 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../../components
 import IconImageSelector from '../../../../components/IconImageSelector'
 import LinkTreePreview from '../../../../components/LinkTreePreview'
 import LoadingOverlay from '../../../../components/ui/LoadingOverlay'
+import ErrorModal from '../../../../components/ui/ErrorModal'
+import { useErrorModal } from '../../../../src/hooks/useErrorModal'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ArrowLeftIcon, PlusIcon, TrashIcon, LinkIcon, PhotoIcon } from '@heroicons/react/24/outline'
 import { uploadFileViaAPI } from '../../../../src/lib/s3'
+import { validateImage } from '../../../../src/lib/imageValidation'
 
 interface LinkTreeForm {
   name: string
@@ -40,7 +43,9 @@ export default function NovoLinkTreePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [checkingCode, setCheckingCode] = useState(false)
+  const [checkingLimit, setCheckingLimit] = useState(true)
   const [codeAvailable, setCodeAvailable] = useState<boolean | null>(null)
+  const { modalState, showError, hideError } = useErrorModal()
   const [formData, setFormData] = useState<LinkTreeForm>({
     name: '',
     description: '',
@@ -62,9 +67,36 @@ export default function NovoLinkTreePage() {
     ]
   })
 
+  // Verificar limite de LinkTrees ao carregar a página
+  useEffect(() => {
+    const checkLinkTreeLimit = async () => {
+      if (!session?.user?.id) return
+      
+      try {
+        const response = await fetch(`/api/linktree?userId=${session.user.id}`)
+        const data = await response.json()
+        
+        if (data.linkTrees && data.linkTrees.length >= 2) {
+          toast.error('Você já possui o limite máximo de 2 LinkTrees.')
+          router.push('/dashboard/linktree')
+          return
+        }
+      } catch (error) {
+        console.error('Erro ao verificar limite de LinkTrees:', error)
+      } finally {
+        setCheckingLimit(false)
+      }
+    }
+
+    checkLinkTreeLimit()
+  }, [session, router])
+
   // Função para verificar se o código está disponível
   const checkCodeAvailability = async (code: string) => {
-    if (!code || code.length < 3) {
+    console.log('Verificando código:', code, 'Tamanho:', code.length)
+    
+    if (!code || code.length === 0) {
+      console.log('Código vazio, resetando para null')
       setCodeAvailable(null)
       return
     }
@@ -72,10 +104,12 @@ export default function NovoLinkTreePage() {
     // Validar formato
     const codeRegex = /^[a-zA-Z0-9-]+$/
     if (!codeRegex.test(code)) {
+      console.log('Código com formato inválido')
       setCodeAvailable(false)
       return
     }
 
+    console.log('Iniciando verificação no servidor...')
     setCheckingCode(true)
     try {
       const response = await fetch('/api/linktree/check-code', {
@@ -87,6 +121,7 @@ export default function NovoLinkTreePage() {
       })
 
       const data = await response.json()
+      console.log('Resposta da API:', data)
       setCodeAvailable(data.available)
     } catch (error) {
       console.error('Erro ao verificar código:', error)
@@ -98,11 +133,22 @@ export default function NovoLinkTreePage() {
 
   // Debounce para verificar código
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      checkCodeAvailability(formData.code)
-    }, 500)
+    console.log('useEffect triggered, código:', formData.code)
+    
+    if (!formData.code || formData.code.length === 0) {
+      setCodeAvailable(null)
+      return
+    }
 
-    return () => clearTimeout(timeoutId)
+    const timeoutId = setTimeout(() => {
+      console.log('Executando verificação após debounce...')
+      checkCodeAvailability(formData.code)
+    }, 300) // Reduzido para 300ms para ser mais responsivo
+
+    return () => {
+      console.log('Limpando timeout...')
+      clearTimeout(timeoutId)
+    }
   }, [formData.code])
 
   const addLink = () => {
@@ -136,6 +182,16 @@ export default function NovoLinkTreePage() {
 
   const handleImageUpload = (file: File | null) => {
     if (file) {
+      const validation = validateImage(file)
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem do Logo')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById('image') as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+      
       setFormData(prev => ({
         ...prev,
         imageFile: file,
@@ -159,8 +215,14 @@ export default function NovoLinkTreePage() {
     }
 
     // Validar se o código está disponível
-    if (codeAvailable !== true) {
+    if (codeAvailable === false) {
       toast.error('Código não está disponível')
+      return
+    }
+
+    // Se ainda está verificando o código, aguardar
+    if (checkingCode) {
+      toast.error('Aguarde a verificação do código')
       return
     }
 
@@ -216,6 +278,7 @@ export default function NovoLinkTreePage() {
     } catch (error: any) {
       console.error('Erro ao criar LinkTree:', error)
       toast.error(error.message || 'Erro ao criar LinkTree')
+      showError(error.message || 'Erro ao criar LinkTree', 'Erro ao Criar LinkTree')
     } finally {
       setLoading(false)
     }
@@ -280,15 +343,16 @@ export default function NovoLinkTreePage() {
                       onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value.toLowerCase() }))}
                       placeholder="Ex: meus-links"
                       className={`pr-10 ${
-                        codeAvailable === true ? 'border-green-500' : 
-                        codeAvailable === false ? 'border-red-500' : ''
+                        codeAvailable === true ? 'border-green-500 bg-green-50' : 
+                        codeAvailable === false ? 'border-red-500 bg-red-50' : 
+                        checkingCode ? 'border-blue-500 bg-blue-50' : ''
                       }`}
                       required
                       disabled={loading}
                     />
                     {checkingCode && (
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0B7A48]"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
                       </div>
                     )}
                     {!checkingCode && codeAvailable === true && (
@@ -310,10 +374,16 @@ export default function NovoLinkTreePage() {
                     Apenas letras, números e hífens. Será usado na URL: /linktree/code
                   </p>
                   {codeAvailable === true && (
-                    <p className="text-xs text-green-600 mt-1">✓ Código disponível</p>
+                    <p className="text-xs text-green-600 mt-1 font-medium">✓ Código disponível</p>
                   )}
                   {codeAvailable === false && (
-                    <p className="text-xs text-red-600 mt-1">✗ Código já existe</p>
+                    <p className="text-xs text-red-600 mt-1 font-medium">✗ Código já existe</p>
+                  )}
+                  {checkingCode && (
+                    <p className="text-xs text-blue-600 mt-1 font-medium">⏳ Verificando código...</p>
+                  )}
+                  {codeAvailable === null && !checkingCode && formData.code.length > 0 && (
+                    <p className="text-xs text-gray-600 mt-1">Aguardando verificação...</p>
                   )}
                 </div>
               </div>
@@ -726,7 +796,7 @@ export default function NovoLinkTreePage() {
             </Button>
             <Button
               type="submit"
-              disabled={loading || codeAvailable !== true}
+              disabled={loading || codeAvailable === false}
               className="flex-1 bg-[#0B7A48] hover:bg-[#0B7A48]/90"
             >
               {loading ? (
@@ -741,6 +811,15 @@ export default function NovoLinkTreePage() {
           </div>
         </div>
       </form>
+
+      {/* Modal de Erro */}
+      <ErrorModal
+        isOpen={modalState.isOpen}
+        onClose={hideError}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+      />
     </div>
   )
 } 

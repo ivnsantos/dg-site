@@ -5,6 +5,9 @@ import { useRouter, useParams } from 'next/navigation'
 import { Button } from '../../../../components/ui/button'
 import { toast } from 'react-hot-toast'
 import { uploadFileViaAPI } from '../../../../src/lib/s3'
+import { validateImage } from '../../../../src/lib/imageValidation'
+import ErrorModal from '../../../../components/ui/ErrorModal'
+import { useErrorModal } from '../../../../src/hooks/useErrorModal'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
 
 export default function MenuDetalhePage() {
@@ -15,6 +18,7 @@ export default function MenuDetalhePage() {
   const [loading, setLoading] = useState(true)
   const [edit, setEdit] = useState(false)
   const [form, setForm] = useState<any>(null)
+  const { modalState, showError, hideError } = useErrorModal()
 
   useEffect(() => {
     fetch(`/api/menus/${id}`)
@@ -160,6 +164,17 @@ export default function MenuDetalhePage() {
 
   // Upload de imagem da seção
   const handleSectionImage = (idx: number, file: File | null) => {
+    if (file) {
+      const validation = validateImage(file)
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem da Seção')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById(`sectionImageUpload-${idx}`) as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     const updated = [...form.sections]
     updated[idx].imageFile = file
     setForm({ ...form, sections: updated })
@@ -167,6 +182,17 @@ export default function MenuDetalhePage() {
 
   // Função para upload de imagem do item
   const handleItemImage = (sectionIdx: number, itemIdx: number, file: File | null) => {
+    if (file) {
+      const validation = validateImage(file)
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem do Item')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById(`itemImageUpload-${sectionIdx}-${itemIdx}`) as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+    }
     const updated = [...form.sections]
     updated[sectionIdx].items[itemIdx].imageFile = file
     setForm({ ...form, sections: updated })
@@ -483,6 +509,15 @@ export default function MenuDetalhePage() {
         )}
       </form>
       <Button variant="destructive" className="mt-6 w-full" onClick={handleDelete}>Remover Menu</Button>
+      
+      {/* Modal de Erro */}
+      <ErrorModal
+        isOpen={modalState.isOpen}
+        onClose={hideError}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+      />
     </div>
   )
 } 

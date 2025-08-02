@@ -7,11 +7,14 @@ import { Label } from '../../../../../components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../../components/ui/card'
 import IconImageSelector from '../../../../../components/IconImageSelector'
 import LoadingOverlay from '../../../../../components/ui/LoadingOverlay'
+import ErrorModal from '../../../../../components/ui/ErrorModal'
+import { useErrorModal } from '../../../../../src/hooks/useErrorModal'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
+import { toast } from 'react-hot-toast'
 import { ArrowLeftIcon, PlusIcon, TrashIcon, LinkIcon, PhotoIcon } from '@heroicons/react/24/outline'
 import { uploadFileViaAPI } from '../../../../../src/lib/s3'
+import { validateImage } from '../../../../../src/lib/imageValidation'
 
 interface LinkTree {
   id: number
@@ -45,6 +48,7 @@ export default function EditarLinkTreePage({ params }: { params: { id: string } 
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [linkTree, setLinkTree] = useState<LinkTree | null>(null)
+  const { modalState, showError, hideError } = useErrorModal()
   const [formData, setFormData] = useState<LinkTree>({
     id: 0,
     name: '',
@@ -122,6 +126,16 @@ export default function EditarLinkTreePage({ params }: { params: { id: string } 
 
   const handleImageUpload = (file: File | null) => {
     if (file) {
+      const validation = validateImage(file)
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Erro na validação da imagem')
+        showError(validation.error || 'Erro na validação da imagem', 'Erro na Imagem do Logo')
+        // Limpar o input de arquivo para permitir nova seleção
+        const input = document.getElementById('image') as HTMLInputElement
+        if (input) input.value = ''
+        return
+      }
+      
       setFormData(prev => ({
         ...prev,
         imageFile: file,
@@ -428,6 +442,15 @@ export default function EditarLinkTreePage({ params }: { params: { id: string } 
           </div>
         </div>
       </form>
+
+      {/* Modal de Erro */}
+      <ErrorModal
+        isOpen={modalState.isOpen}
+        onClose={hideError}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+      />
     </div>
   )
 } 

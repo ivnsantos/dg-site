@@ -204,6 +204,7 @@ export default function LoginPage() {
 
       {/* WhatsApp Float Button */}
       <WhatsAppFloat position="right" />
+
     </div>
   )
 } 

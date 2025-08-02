@@ -19,7 +19,7 @@ export default withAuth(
         return NextResponse.redirect(new URL('/dashboard/planos', request.url))
       }
     }
-
+    
     return NextResponse.next()
   },
   {

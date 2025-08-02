@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadFileToS3 } from '@/src/lib/s3'
 
+// Configuração para aumentar limite de tamanho
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '20mb',
+    },
+  },
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -22,7 +31,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar tamanho (máximo 5MB)
+    // Verificar tamanho (máximo 20MB)
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'O arquivo deve ter no máximo 5MB' },
@@ -34,7 +43,7 @@ export async function POST(request: NextRequest) {
     const path = customPath || `uploads/${Date.now()}-${file.name}`
 
     // Fazer upload para S3
-    const imageUrl = await uploadFileToS3(file, path)
+    const imageUrl = await uploadFileToS3(file, path, )
 
     return NextResponse.json({ 
       url: imageUrl,
