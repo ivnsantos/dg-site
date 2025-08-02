@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadFileToS3 } from '@/src/lib/s3'
 
-// Configuração para aumentar limite de tamanho
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '20mb',
-    },
-  },
-}
+// Configuração para aumentar limite de tamanho (nova sintaxe Next.js 13+)
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,7 +38,7 @@ export async function POST(request: NextRequest) {
     const path = customPath || `uploads/${Date.now()}-${file.name}`
 
     // Fazer upload para S3
-    const imageUrl = await uploadFileToS3(file, path, )
+    const imageUrl = await uploadFileToS3(file, path)
 
     return NextResponse.json({ 
       url: imageUrl,

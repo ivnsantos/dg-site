@@ -16,14 +16,7 @@ const nextConfig = {
       },
     ]
   },
-  async serverRuntimeConfig() {
-    return {
-      // Configuração para aumentar limite de upload
-      bodyParser: {
-        sizeLimit: '20mb',
-      },
-    }
-  },
+
   webpack: (config, { isServer }) => {
     config.cache = false;
     
@@ -93,16 +86,8 @@ const nextConfig = {
       },
     ],
   },
-
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
-  },
-  staticPageGenerationTimeout: 120,
-  experimental: {
-    serverMinification: false,
-  }
+  staticPageGenerationTimeout: 120
 }
 
 module.exports = nextConfig 
