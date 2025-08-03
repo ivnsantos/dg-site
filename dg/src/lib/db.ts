@@ -52,25 +52,20 @@ const dataSourceConfig = {
     synchronize: true,
     logging: false,
     extra: {
-        max: 3, // Reduzido para evitar muitas conexões
-        min: 0, // Permite que o pool seja mais flexível
-        idleTimeoutMillis: 60000, // Aumentado para 1 minuto
-        connectionTimeoutMillis: 15000, // Aumentado para 15 segundos
-        acquireTimeoutMillis: 15000, // Aumentado para 15 segundos
+        max: 5,
+        min: 0,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+        acquireTimeoutMillis: 10000,
         ssl: process.env.NODE_ENV === 'production' ? {
             rejectUnauthorized: false
         } : false
-    },
-    // Configurações adicionais para melhorar a estabilidade
-    poolSize: 3,
-    keepConnectionAlive: true,
-    connectTimeoutMS: 15000,
-    socketTimeoutMS: 30000
+    }
 }
 
 // Instância única do DataSource
 let AppDataSource: DataSource | null = null
-let isInitializing = false
+let initializationPromise: Promise<DataSource> | null = null
 
 // Função para inicializar o banco de dados
 export async function initializeDB(): Promise<DataSource> {
@@ -82,46 +77,38 @@ export async function initializeDB(): Promise<DataSource> {
             return AppDataSource
         } catch (error) {
             console.warn('Connection test failed, reinitializing...')
-            // Se o teste falhou, reseta a instância
-            try {
-                await AppDataSource.destroy()
-            } catch (destroyError) {
-                console.warn('Error destroying old connection:', destroyError)
-            }
             AppDataSource = null
+            initializationPromise = null
         }
     }
 
     // Se já está inicializando, aguarda
-    if (isInitializing) {
-        while (isInitializing) {
-            await new Promise(resolve => setTimeout(resolve, 100))
-        }
-        if (AppDataSource && AppDataSource.isInitialized) {
-            return AppDataSource
-        }
+    if (initializationPromise) {
+        return initializationPromise
     }
 
     // Inicia nova inicialização
-    isInitializing = true
-    
-    try {
-        console.log("Initializing database connection...")
-        
-        // Cria nova instância
-        AppDataSource = new DataSource(dataSourceConfig)
-        await AppDataSource.initialize()
-        
-        console.log("Database connection initialized successfully")
-        return AppDataSource
-        
-    } catch (error) {
-        console.error("Database initialization failed:", error)
-        AppDataSource = null
-        throw error
-    } finally {
-        isInitializing = false
-    }
+    initializationPromise = (async () => {
+        try {
+            console.log("Initializing database connection...")
+            
+            // Cria nova instância
+            AppDataSource = new DataSource(dataSourceConfig)
+            await AppDataSource.initialize()
+            
+            console.log("Database connection initialized successfully")
+            return AppDataSource
+            
+        } catch (error) {
+            console.error("Database initialization failed:", error)
+            AppDataSource = null
+            throw error
+        } finally {
+            initializationPromise = null
+        }
+    })()
+
+    return initializationPromise
 }
 
 // Função para obter o DataSource (inicializa se necessário)
@@ -137,6 +124,8 @@ export async function closeDB() {
     if (AppDataSource && AppDataSource.isInitialized) {
         try {
             await AppDataSource.destroy()
+            AppDataSource = null
+            initializationPromise = null
             console.log("Database connection closed")
         } catch (error) {
             console.error("Error closing database connection:", error)

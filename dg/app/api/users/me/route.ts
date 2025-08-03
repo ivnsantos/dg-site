@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { initializeDB } from '@/src/lib/db'
-import { User } from '@/src/entities/User'
+import { getDataSource } from '@/src/lib/db'
+import { User, UserStatus } from '@/src/entities/User'
 
 export async function GET(request: NextRequest) {
-  let dataSource: any = null
-  
   try {
     const session = await getServerSession(authOptions)
     
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
     
     const user = await userRepository.findOne({
@@ -48,7 +46,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user: {
         ...user,
-        isActive: user.status === 'ATIVO'
+        isActive: user.status === UserStatus.ATIVO
       }
     })
 
@@ -59,13 +57,5 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource) {
-      try {
-        await dataSource.destroy()
-      } catch (error) {
-        console.warn('Erro ao destruir conexão:', error)
-      }
-    }
   }
 } 

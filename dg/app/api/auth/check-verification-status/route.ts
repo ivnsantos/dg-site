@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 
 export async function POST(request: Request) {
-  let dataSource;
   try {
     // Inicializa o banco de dados
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     
     const body = await request.json()
     const { email } = body
@@ -40,9 +39,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       message: 'Erro ao processar a verificação do status' 
     }, { status: 500 })
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      await dataSource.destroy()
-    }
   }
 } 
