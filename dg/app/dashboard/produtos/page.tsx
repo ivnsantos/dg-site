@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../../api/auth/[...nextauth]/route'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { User } from '@/src/entities/User'
 import ProdutosClient from './ProdutosClient'
 import { MarkupRequired } from '../components/MarkupRequired'
@@ -16,7 +16,7 @@ export default async function ProdutosPage() {
   }
 
   // Inicializa o banco de dados
-  const dataSource = await initializeDB()
+  const dataSource = await getDataSource()
   
   // Busca dados do usuário no banco
   const userRepository = dataSource.getRepository(User)

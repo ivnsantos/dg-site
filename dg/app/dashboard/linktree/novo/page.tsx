@@ -285,7 +285,7 @@ export default function NovoLinkTreePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto relative">
+    <div className="max-w-4xl mx-auto relative px-4 sm:px-6">
       {/* Overlay de Loading */}
       <LoadingOverlay 
         isLoading={loading}
@@ -294,35 +294,35 @@ export default function NovoLinkTreePage() {
       />
 
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={() => router.back()}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
           disabled={loading}
         >
           <ArrowLeftIcon className="h-4 w-4" />
           Voltar
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Criar Novo LinkTree</h1>
-          <p className="text-gray-600">Crie seu LinkTree personalizado</p>
+          <h1 className="text-xl sm:text-2xl font-bold">Criar Novo LinkTree</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Crie seu LinkTree personalizado</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6">
           {/* Informações básicas */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <LinkIcon className="h-5 w-5" />
                 Informações Básicas
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Nome do LinkTree *</Label>
                   <Input
@@ -387,7 +387,7 @@ export default function NovoLinkTreePage() {
                   )}
                 </div>
               </div>
-              <div className="mt-4">
+              <div>
                 <Label htmlFor="description">Descrição</Label>
                 <Input
                   id="description"
@@ -399,10 +399,10 @@ export default function NovoLinkTreePage() {
               </div>
 
               {/* Upload de Imagem */}
-              <div className="mt-4">
+              <div>
                 <Label>Logo do LinkTree</Label>
                 <div className="mt-2">
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     {formData.imageUrl ? (
                       <div className="relative">
                         <img
@@ -438,7 +438,7 @@ export default function NovoLinkTreePage() {
                       />
                       <label
                         htmlFor="image"
-                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm"
                       >
                         <PhotoIcon className="w-4 h-4" />
                         {formData.imageUrl ? 'Trocar imagem' : 'Escolher imagem'}
@@ -452,7 +452,7 @@ export default function NovoLinkTreePage() {
               </div>
 
               {/* Personalização de Cores */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="backgroundColor">Cor de Fundo</Label>
                   <div className="flex gap-2">
@@ -513,14 +513,14 @@ export default function NovoLinkTreePage() {
               </div>
 
               {/* Seleção de Efeitos de Fundo */}
-              <div className="mt-6">
+              <div>
                 <Label className="text-sm font-medium text-gray-700 mb-3 block">Efeito de Fundo</Label>
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                   {/* Efeito Liso */}
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, backgroundEffect: 'none' }))}
-                    className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                    className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                       formData.backgroundEffect === 'none' 
                         ? 'border-blue-500 bg-blue-50 shadow-md scale-105' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -528,13 +528,13 @@ export default function NovoLinkTreePage() {
                     disabled={loading}
                   >
                     <div 
-                      className="w-full h-12 rounded-lg shadow-inner"
+                      className="w-full h-10 sm:h-12 rounded-lg shadow-inner"
                       style={{ backgroundColor: formData.backgroundColor }}
                     ></div>
                     <p className="text-xs mt-2 text-gray-600 font-medium">Liso</p>
                     {formData.backgroundEffect === 'none' && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -545,7 +545,7 @@ export default function NovoLinkTreePage() {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, backgroundEffect: 'hearts' }))}
-                    className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                    className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                       formData.backgroundEffect === 'hearts' 
                         ? 'border-blue-500 bg-blue-50 shadow-md scale-105' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -553,7 +553,7 @@ export default function NovoLinkTreePage() {
                     disabled={loading}
                   >
                     <div 
-                      className="w-full h-12 rounded-lg shadow-inner relative overflow-hidden"
+                      className="w-full h-10 sm:h-12 rounded-lg shadow-inner relative overflow-hidden"
                       style={{ backgroundColor: formData.backgroundColor }}
                     >
                       <div className="absolute inset-0 opacity-30">
@@ -570,8 +570,8 @@ export default function NovoLinkTreePage() {
                     </div>
                     <p className="text-xs mt-2 text-gray-600 font-medium">Corações</p>
                     {formData.backgroundEffect === 'hearts' && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -582,7 +582,7 @@ export default function NovoLinkTreePage() {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, backgroundEffect: 'dots' }))}
-                    className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                    className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                       formData.backgroundEffect === 'dots' 
                         ? 'border-blue-500 bg-blue-50 shadow-md scale-105' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -590,7 +590,7 @@ export default function NovoLinkTreePage() {
                     disabled={loading}
                   >
                     <div 
-                      className="w-full h-12 rounded-lg shadow-inner relative overflow-hidden"
+                      className="w-full h-10 sm:h-12 rounded-lg shadow-inner relative overflow-hidden"
                       style={{ backgroundColor: formData.backgroundColor }}
                     >
                       <div className="absolute inset-0 opacity-30">
@@ -603,8 +603,8 @@ export default function NovoLinkTreePage() {
                     </div>
                     <p className="text-xs mt-2 text-gray-600 font-medium">Bolinhas</p>
                     {formData.backgroundEffect === 'dots' && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -615,7 +615,7 @@ export default function NovoLinkTreePage() {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, backgroundEffect: 'lines' }))}
-                    className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                    className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                       formData.backgroundEffect === 'lines' 
                         ? 'border-blue-500 bg-blue-50 shadow-md scale-105' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -623,7 +623,7 @@ export default function NovoLinkTreePage() {
                     disabled={loading}
                   >
                     <div 
-                      className="w-full h-12 rounded-lg shadow-inner relative overflow-hidden"
+                      className="w-full h-10 sm:h-12 rounded-lg shadow-inner relative overflow-hidden"
                       style={{ backgroundColor: formData.backgroundColor }}
                     >
                       <div className="absolute inset-0 opacity-25">
@@ -636,8 +636,8 @@ export default function NovoLinkTreePage() {
                     </div>
                     <p className="text-xs mt-2 text-gray-600 font-medium">Traços</p>
                     {formData.backgroundEffect === 'lines' && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -648,7 +648,7 @@ export default function NovoLinkTreePage() {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, backgroundEffect: 'stars' }))}
-                    className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                    className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                       formData.backgroundEffect === 'stars' 
                         ? 'border-blue-500 bg-blue-50 shadow-md scale-105' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -656,7 +656,7 @@ export default function NovoLinkTreePage() {
                     disabled={loading}
                   >
                     <div 
-                      className="w-full h-12 rounded-lg shadow-inner relative overflow-hidden"
+                      className="w-full h-10 sm:h-12 rounded-lg shadow-inner relative overflow-hidden"
                       style={{ backgroundColor: formData.backgroundColor }}
                     >
                       <div className="absolute inset-0 opacity-30">
@@ -676,8 +676,8 @@ export default function NovoLinkTreePage() {
                     </div>
                     <p className="text-xs mt-2 text-gray-600 font-medium">Estrelinhas</p>
                     {formData.backgroundEffect === 'stars' && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -687,7 +687,7 @@ export default function NovoLinkTreePage() {
               </div>
 
               {/* Preview */}
-              <div className="mt-4">
+              <div>
                 <Label className="block mb-2">Preview das Cores:</Label>
                 <LinkTreePreview
                   name={formData.name}
@@ -707,7 +707,7 @@ export default function NovoLinkTreePage() {
           {/* Links */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <LinkIcon className="h-5 w-5" />
                 Links
               </CardTitle>
@@ -732,7 +732,7 @@ export default function NovoLinkTreePage() {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor={`title-${index}`}>Título *</Label>
                         <Input
@@ -784,7 +784,7 @@ export default function NovoLinkTreePage() {
           </Card>
 
           {/* Botões de ação */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button
               type="button"
               variant="outline"

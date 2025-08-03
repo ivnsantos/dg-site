@@ -1,15 +1,12 @@
-export const runtime = 'nodejs'
-
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/auth'
-import { initializeDB } from '@/src/lib/db'
-import { Product } from '../../../src/entities/Product'
-import { FichaTecnica } from '../../../src/entities/FichaTecnica'
-import { User } from '../../../src/entities/User'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
+import { Product } from '@/src/entities/Product'
+import { FichaTecnica } from '@/src/entities/FichaTecnica'
+import { User } from '@/src/entities/User'
 
 export async function POST(request: Request) {
-  let dataSource;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions)
@@ -18,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     // Inicializar conexão com o banco
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const productRepository = dataSource.getRepository(Product)
     const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
     const userRepository = dataSource.getRepository(User)
@@ -98,19 +95,10 @@ export async function POST(request: Request) {
       details: error instanceof Error ? error.message : 'Erro desconhecido',
       code: 'INTERNAL_ERROR'
     }, { status: 500 })
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      try {
-      await dataSource.destroy()
-      } catch (destroyError) {
-        console.error('Erro ao fechar conexão:', destroyError)
-      }
-    }
   }
 }
 
 export async function GET() {
-  let dataSource;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions)
@@ -119,7 +107,7 @@ export async function GET() {
     }
 
     // Inicializar conexão com o banco
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const productRepository = dataSource.getRepository(Product)
 
     // Buscar produtos do usuário
@@ -151,13 +139,5 @@ export async function GET() {
       error: 'Erro interno do servidor',
       code: 'INTERNAL_ERROR'
     }, { status: 500 })
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      try {
-      await dataSource.destroy()
-      } catch (destroyError) {
-        console.error('Erro ao fechar conexão:', destroyError)
-      }
-    }
   }
-} 
+}

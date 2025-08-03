@@ -1,14 +1,11 @@
-export const runtime = 'nodejs'
-
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/auth'
-import { initializeDB } from '@/src/lib/db'
-import { Cliente } from '../../../src/entities/Cliente'
-import { User } from '../../../src/entities/User'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
+import { Cliente } from '@/src/entities/Cliente'
+import { User } from '@/src/entities/User'
 
 export async function GET(request: Request) {
-  let dataSource;
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
@@ -16,7 +13,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Usuário não fornecido' }, { status: 400 })
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const clienteRepository = dataSource.getRepository(Cliente)
 
     const clientes = await clienteRepository.find({
@@ -27,23 +24,26 @@ export async function GET(request: Request) {
     return NextResponse.json({ clientes })
   } catch (error) {
     console.error('Erro ao buscar clientes:', error)
-    return NextResponse.json({ error: 'Erro ao buscar clientes' }, { status: 500 })
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      await dataSource.destroy()
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
     }
+    
+    return NextResponse.json({ error: 'Erro ao buscar clientes' }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
-  let dataSource;
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const clienteRepository = dataSource.getRepository(Cliente)
     const userRepository = dataSource.getRepository(User)
 
@@ -65,10 +65,14 @@ export async function POST(request: Request) {
     return NextResponse.json(cliente)
   } catch (error) {
     console.error('Erro ao criar cliente:', error)
-    return NextResponse.json({ error: 'Erro ao criar cliente' }, { status: 500 })
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      await dataSource.destroy()
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
     }
+    
+    return NextResponse.json({ error: 'Erro ao criar cliente' }, { status: 500 })
   }
-} 
+}

@@ -1,215 +1,53 @@
-export const runtime = 'nodejs'
-
 import { NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
-import { User, TipoPlano, UserStatus } from '@/src/entities/User'
-import { Cupom, StatusCupom } from '@/src/entities/Cupom'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
+import { User } from '@/src/entities/User'
 import { Subscription } from '@/src/entities/Subscription'
-import { asaasService } from '@/src/services/AsaasService'
-import bcrypt from 'bcryptjs'
-import { DeepPartial } from 'typeorm'
 
-const VALORES_PLANO = {
-  BASICO: 39.50,
-  PRO: 47.50
-}
-
-export async function POST(request: Request) {
-  let dataSource;
+export async function GET(request: Request) {
   try {
-    // Inicializa a conexão com o banco
-    dataSource = await initializeDB()
-    
-    const data = await request.json()
-    let descontoAplicado = 0;
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
 
+    const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
-    const cupomRepository = dataSource.getRepository(Cupom)
     const subscriptionRepository = dataSource.getRepository(Subscription)
 
-    // Verifica se já existe usuário com este email
-    const existingEmail = await userRepository.findOne({
-      where: { email: data.email }
+    const user = await userRepository.findOne({
+      where: { id: Number(session.user.id) },
+      select: ['id', 'name', 'email', 'plano', 'status', 'valorPlano', 'markupIdeal', 'createdAt']
     })
 
-    if (existingEmail) {
-      return NextResponse.json({
-        message: 'Já existe um usuário com este email',
-        field: 'email'
-      }, { status: 400 })
+    if (!user) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
-    // Verifica se já existe usuário com este CPF/CNPJ
-    const existingCpfCnpj = await userRepository.findOne({
-      where: { cpfOuCnpj: data.cpfCnpj }
+    // Buscar assinatura do usuário
+    const subscription = await subscriptionRepository.findOne({
+      where: { userId: user.id },
+      order: { createdAt: 'DESC' }
     })
-
-    if (existingCpfCnpj) {
-      return NextResponse.json({
-        message: 'Já existe um usuário com este CPF/CNPJ',
-        field: 'cpfCnpj'
-      }, { status: 400 })
-    }
-
-    // Calcula o valor do plano
-    let valorPlano = VALORES_PLANO[data.plano as keyof typeof VALORES_PLANO]
-    let cupomAplicado = null
-
-    // Se tem cupom, valida e aplica o desconto
-    if (data.cupomDesconto) {
-      const cupom = await cupomRepository.findOne({
-        where: { codigo: data.cupomDesconto.toUpperCase() }
-      })
-
-      if (cupom && cupom.status === StatusCupom.ATIVO) {
-        // Verifica se não atingiu o limite de usos
-        if (!cupom.limiteUsos || cupom.quantidadeUsos < cupom.limiteUsos) {
-          // Aplica o desconto
-         // valorPlano = Number((valorPlano * (1 - cupom.desconto / 100)).toFixed(2))
-         // cupomAplicado = cupom
-          descontoAplicado = cupom.desconto
-
-          // Atualiza a quantidade de usos do cupom
-          await cupomRepository.update(cupom.id, {
-            quantidadeUsos: cupom.quantidadeUsos + 1,
-            // Se atingiu o limite, marca como inativo
-            status: cupom.limiteUsos && cupom.quantidadeUsos + 1 >= cupom.limiteUsos 
-              ? StatusCupom.INATIVO 
-              : StatusCupom.ATIVO
-          })
-        }
-      }
-    }
-
-    // Cria o cliente no Asaas
-    const customerResponse = await asaasService.createCustomer({
-      name: data.name,
-      email: data.email,
-      cpfCnpj: data.cpfCnpj.replace(/\D/g, '')
-    })
-
-    interface AsaasSubscriptionResponse {
-      id: string
-      customer: string
-      value: number
-      nextDueDate: string
-      cycle: string
-      description: string
-      billingType: string
-      status: string
-      createdAt: string
-      updatedAt: string
-      endDate: string
-    }
-    // Cria a assinatura no Asaas
-    const subscriptionResponse: AsaasSubscriptionResponse = await asaasService.createSubscription({
-      customer: customerResponse.id,
-      billingType: 'CREDIT_CARD',
-      value: valorPlano,
-      nextDueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 7 dias a partir de hoje
-      cycle: 'MONTHLY',
-      description: `${data.cupomDesconto?.toUpperCase().length > 0 ? `Cupom: ${data.cupomDesconto.toUpperCase()}` : ''} : Assinatura ${data.plano} - Doce Gestão`,
-      creditCard: {
-        holderName: data.cartao.nome,
-        number: data.cartao.numero,
-        expiryMonth: data.cartao.mes,
-        expiryYear: data.cartao.ano,
-        ccv: data.cartao.cvv
-      },
-      creditCardHolderInfo: {
-        name: data.cartao.nome,
-        email: data.email,
-        cpfCnpj: data.cpfCnpj,
-        postalCode: data.cep,
-        addressNumber: data.numero,
-        phone: data.telefone
-      },
-      maxPayments: 2,
-      discount: {
-        value: descontoAplicado,
-        dueDateLimitDays: 1,
-        type: 'PERCENTAGE'
-      }
-    })
-
-    // Cria hash da senha
-    const hashedPassword = await bcrypt.hash(data.password, 10)
-
-    // Cria o usuário
-    const userData: DeepPartial<User> = {
-      name: data.name,
-      email: data.email,
-      cpfOuCnpj: data.cpfCnpj,
-      password: hashedPassword,
-      plano: data.plano as TipoPlano,
-      valorPlano: valorPlano,
-      status: UserStatus.ATIVO,
-      cupomDesconto: data.cupomDesconto.toUpperCase(),
-      idAssinatura: subscriptionResponse.id,
-      idCustomer: customerResponse.id,
-      telefone: data.telefone.replace(/\D/g, '')
-    }
-
-    const user = userRepository.create(userData)
-
-    // Salva o usuário no banco
-    const savedUser = await userRepository.save(user)
-
-    // Grava a assinatura no banco de dados
-    const subscriptionData: DeepPartial<Subscription> = {
-      externalId: subscriptionResponse.id,
-      customerId: customerResponse.id,
-      value: valorPlano,
-      cycle: 'MONTHLY',
-      description: subscriptionResponse.description || `${data.cupomDesconto?.toUpperCase().length > 0 ? `Cupom: ${data.cupomDesconto.toUpperCase()}` : ''} : Assinatura ${data.plano} - Doce Gestão`,
-      billingType: 'CREDIT_CARD',
-      status: subscriptionResponse.status || 'ACTIVE',
-      dateCreated: new Date(),
-      nextDueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      endDate: subscriptionResponse.endDate,
-      externalReference: '',
-      paymentLink: '',
-      checkoutSession: '',
-      creditCardNumber: data.cartao.numero.slice(-4), // Últimos 4 dígitos
-      creditCardBrand: 'UNKNOWN',
-      creditCardToken: '',
-      userId: savedUser.id,
-      deleted: false
-    }
-
-    const subscription = subscriptionRepository.create(subscriptionData)
-    await subscriptionRepository.save(subscription)
-
-    // Remove a senha do retorno
-    const { password, ...userWithoutPassword } = savedUser
 
     return NextResponse.json({
-      message: 'Usuário criado com sucesso',
-      user: {
-        ...userWithoutPassword,
-        valorPlano,
-        cupom: cupomAplicado ? {
-          valorFinal: valorPlano
-        } : null
-      },
-      subscription: {
-        id: subscription.id,
-        externalId: subscription.externalId,
-        status: subscription.status,
-        value: subscription.value,
-        nextDueDate: subscription.nextDueDate
-      }
-    }, { status: 201 })
-
+      user,
+      subscription
+    })
   } catch (error) {
-    console.error('Erro ao processar dados do registro:', error)
-    return NextResponse.json(
-      { message: 'Erro ao processar dados do registro' },
-      { status: 500 }
-    )
-  } finally {
-    if (dataSource && dataSource.isInitialized) {
-      await dataSource.destroy()
+    console.error('Erro ao buscar dados do usuário:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
     }
+    
+    return NextResponse.json({ 
+      error: 'Erro interno do servidor',
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 })
   }
-}
+} 

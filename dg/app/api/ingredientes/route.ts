@@ -1,24 +1,21 @@
-export const runtime = 'nodejs'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/auth'
-import { initializeDB } from '../../../src/lib/db'
-import { Ingredient } from '../../../src/entities/Ingredient'
-import { User } from '../../../src/entities/User'
-import { FichaTecnica } from '../../../src/entities/FichaTecnica'
-import { Product } from '../../../src/entities/Product'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
+import { Ingredient } from '@/src/entities/Ingredient'
+import { User } from '@/src/entities/User'
+import { FichaTecnica } from '@/src/entities/FichaTecnica'
+import { Product } from '@/src/entities/Product'
 
 // GET /api/ingredientes
 export async function GET() {
-  let dataSource;
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
     const ingredientRepository = dataSource.getRepository(Ingredient)
 
@@ -45,18 +42,23 @@ export async function GET() {
     return NextResponse.json(formattedIngredients)
   } catch (error) {
     console.error('Erro ao buscar ingredientes:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { error: 'Erro ao buscar ingredientes' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) await dataSource.destroy()
   }
 }
 
 // POST /api/ingredientes
 export async function POST(request: NextRequest) {
-  let dataSource;
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
@@ -73,7 +75,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
     const ingredientRepository = dataSource.getRepository(Ingredient)
 
@@ -99,18 +101,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(ingredient)
   } catch (error) {
     console.error('Erro ao criar ingrediente:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { error: 'Erro ao criar ingrediente' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) await dataSource.destroy()
   }
 }
 
 // PUT /api/ingredientes?id=123
 export async function PUT(request: NextRequest) {
-  let dataSource;
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
@@ -135,7 +142,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
     const ingredientRepository = dataSource.getRepository(Ingredient)
 
@@ -170,19 +177,23 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(ingredient)
   } catch (error) {
     console.error('Erro ao atualizar ingrediente:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { error: 'Erro ao atualizar ingrediente' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) await dataSource.destroy()
   }
 }
 
 // DELETE /api/ingredientes?id=123
 export async function DELETE(request: Request) {
-  let dataSource;
-
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -200,7 +211,7 @@ export async function DELETE(request: Request) {
       )
     }
 
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
 
     // 1. Buscar o ingrediente com suas relações
     const ingredient = await dataSource
@@ -258,13 +269,17 @@ export async function DELETE(request: Request) {
 
   } catch (error) {
     console.error('Erro ao deletar ingrediente:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { error: 'Erro ao deletar ingrediente' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource?.isInitialized) {
-      await dataSource.destroy()
-    }
   }
 } 

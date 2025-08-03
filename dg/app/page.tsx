@@ -222,7 +222,7 @@ export default function HomePage() {
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] rounded-2xl lg:rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
                       <div className="relative">
-                        <Image
+                <Image
                           src="/images/mari.jpeg"
                           alt="Mari Tolentino - Embaixadora da Doce Gestão"
                           width={240}
@@ -326,7 +326,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
+                  </div>
       </section>
       {/* Preços Section */}
       <section className="py-20 bg-[#2D1810]">
@@ -412,57 +412,57 @@ export default function HomePage() {
                 </div>
                 <p className="text-[#0B7A48] font-semibold text-sm mt-2">
                   Aumente seu faturamento em até 76%
-                </p>
-              </div>
-              
+                  </p>
+                </div>
+                
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Controle completo de ingredientes e estoque</span>
-                </li>
+                    <span>Controle completo de ingredientes e estoque</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span><strong className="text-yellow-400">TODAS</strong> as suas receitas gerenciadas</span>
-                </li>
+                    <span><strong className="text-yellow-400">TODAS</strong> as suas receitas gerenciadas</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Calculadora avançada de preços e custos</span>
-                </li>
+                    <span>Calculadora avançada de preços e custos</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Simulador de orçamentos</span>
-                </li>
+                    <span>Simulador de orçamentos</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Atualização automática de preços</span>
-                </li>
+                    <span>Atualização automática de preços</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Sistema de apoio à decisão</span>
-                </li>
+                    <span>Sistema de apoio à decisão</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Interface intuitiva e amigável</span>
-                </li>
+                    <span>Interface intuitiva e amigável</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Menu Online completo (ilimitados)</span>
-                </li>
+                    <span>Menu Online completo (ilimitados)</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Orçamentos Digitais profissionais</span>
-                </li>
+                    <span>Orçamentos Digitais profissionais</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Controle seus clientes</span>
-                </li>
+                    <span>Controle seus clientes</span>
+                  </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
                   <span>Linktree Doce Gestão</span>
                 </li>
-                
+                  
                 {/* Seção Em Breve */}
-                <li className="mt-4 pt-4 border-t border-white/10">
+                  <li className="mt-4 pt-4 border-t border-white/10">
                   <div className="flex items-center mb-2">
                     <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded mr-2">Em breve</span>
                     <span className="text-white font-medium text-sm">Recursos exclusivos</span>
@@ -471,36 +471,36 @@ export default function HomePage() {
                     <li className="flex items-center text-white/70">
                       <span className="text-[#0B7A48] mr-2 text-xs">•</span>
                       <span className="text-xs">IA para cozinheiros</span>
-                    </li>
+                      </li>
                     <li className="flex items-center text-white/70">
                       <span className="text-[#0B7A48] mr-2 text-xs">•</span>
                       <span className="text-xs">Tendências culinárias</span>
-                    </li>
+                      </li>
                     <li className="flex items-center text-white/70">
                       <span className="text-[#0B7A48] mr-2 text-xs">•</span>
                       <span className="text-xs">Produtos em alta</span>
-                    </li>
+                      </li>
                     <li className="flex items-center text-white/70">
                       <span className="text-[#0B7A48] mr-2 text-xs">•</span>
                       <span className="text-xs">Receitas mais buscadas</span>
-                    </li>
+                      </li>
                     <li className="flex items-center text-white/70">
                       <span className="text-[#0B7A48] mr-2 text-xs">•</span>
                       <span className="text-xs">Cursos</span>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
               
               <Link href="/register" className="block">
                 <button className="w-full py-3 bg-[#0B7A48] text-white rounded-lg font-medium hover:bg-[#0ea65f] transition-colors">
                   Quero Lucrar Mais
-                </button>
-              </Link>
+                    </button>
+                  </Link>
               
               <p className="text-center text-white/50 text-xs mt-3">
-                Experimente por 7 dias com garantia de satisfação
-              </p>
+                    Experimente por 7 dias com garantia de satisfação
+                  </p>
             </div>
           </div>
           
@@ -683,8 +683,8 @@ export default function HomePage() {
         <div className="container relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              ENTRE EM CONTATO
-            </h2>
+            ENTRE EM CONTATO
+          </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Estamos aqui para ajudar você a transformar sua confeitaria em um negócio de sucesso
             </p>

@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../api/auth/[...nextauth]/route'
 import { LogoutButton } from './components/LogoutButton'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { TipoPlano, User } from '@/src/entities/User'
 import { MarkupAlert } from './components/MarkupAlert'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,7 +17,8 @@ import {
   SparklesIcon,
   ArrowTrendingUpIcon,
   LockClosedIcon,
-  LinkIcon
+  LinkIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline'
 import { ExpandableSection } from './components/ExpandableSection'
 import { ReactNode } from 'react'
@@ -28,6 +29,7 @@ import { Menu } from '@/src/entities/Menu'
 import { Orcamento } from '@/src/entities/Orcamento'
 import { Cliente } from '@/src/entities/Cliente'
 import { LinkTree } from '@/src/entities/LinkTree'
+import { Feedback } from '@/src/entities/Feedback'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,7 +41,7 @@ export default async function DashboardPage() {
   }
 
   // Inicializa o banco de dados
-  const dataSource = await initializeDB()
+  const dataSource = await getDataSource()
   
   // Busca dados do usuário no banco
   const userRepository = dataSource.getRepository(User)
@@ -100,10 +102,15 @@ export default async function DashboardPage() {
     where: { user: { id: user.id } }
   })
 
+  // Busca dados de questionários de feedback
+  const feedbacksCount = await dataSource.getRepository(Feedback).count({
+    where: { user: { id: user.id } }
+  })
+
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto p-4">
-        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
           <h1 className="text-2xl font-bold text-[#111827]">Dashboard</h1>
           <LogoutButton />
         </div>
@@ -119,7 +126,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Cartas de resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
           <StatCard 
             title="Produtos" 
             value={productsCount} 
@@ -149,6 +156,12 @@ export default async function DashboardPage() {
                 href="/dashboard/linktree"
               />
               <StatCard 
+                title="Questionários" 
+                value={feedbacksCount} 
+                icon={<ChatBubbleLeftRightIcon className="h-8 w-8 text-[#0B7A48]" />} 
+                href="/dashboard/feedback"
+              />
+              <StatCard 
                 title="Clientes" 
                 value={clientesCount} 
                 icon={<UserGroupIcon className="h-8 w-8 text-[#0B7A48]" />} 
@@ -158,13 +171,13 @@ export default async function DashboardPage() {
           )}
           {isPlanoBasico && (
             <>
-              <div className="col-span-2 bg-gray-50 rounded-lg p-6 flex flex-col justify-center items-center border border-gray-200">
+              <div className="sm:col-span-2 lg:col-span-3 xl:col-span-2 bg-gray-50 rounded-lg p-6 flex flex-col justify-center items-center border border-gray-200">
                 <div className="bg-gray-100 p-3 rounded-full mb-3">
                   <LockClosedIcon className="h-6 w-6 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-500 mb-2">Recursos PRO bloqueados</h3>
+                <h3 className="text-lg font-medium text-gray-500 mb-2 text-center">Recursos PRO bloqueados</h3>
                 <p className="text-sm text-gray-400 text-center mb-4">
-                  Acesse Menu Online, LinkTrees, Orçamentos, Gerenciamento de Clientes e muito mais
+                  Acesse Menu Online, LinkTrees, Questionários de Feedback, Orçamentos, Gerenciamento de Clientes e muito mais
                 </p>
                 <Link href="/dashboard/planos">
                   <button className="px-4 py-2 bg-[#0B7A48] text-white rounded-lg text-sm hover:bg-[#0ea65f] transition-colors">
@@ -186,7 +199,7 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <h3 className="text-lg font-medium">Total de orçamentos: {totalOrcamentos}</h3>
                 <a 
                   href="/dashboard/orcamentos" 
@@ -199,7 +212,7 @@ export default async function DashboardPage() {
                 </a>
               </div>
               {totalOrcamentos > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   <StatusCard label="Pendentes" value={statusCounts['PENDENTE'] || 0} color="bg-yellow-100 text-yellow-800" />
                   <StatusCard label="Aprovados" value={statusCounts['APROVADO'] || 0} color="bg-green-100 text-green-800" />
                   <StatusCard label="Recusados" value={statusCounts['RECUSADO'] || 0} color="bg-red-100 text-red-800" />
@@ -208,7 +221,9 @@ export default async function DashboardPage() {
               ) : (
                 <div className="text-center py-8 text-gray-500">
                   <p>Você ainda não possui orçamentos cadastrados.</p>
+                  <Link href="/dashboard/orcamentos" className="text-[#0B7A48] hover:underline font-medium">
                     Criar seu primeiro orçamento
+                  </Link>
                 </div>
               )}
             </div>
@@ -253,8 +268,8 @@ export default async function DashboardPage() {
           comingSoon={true}
           accentColor="bg-gradient-to-r from-blue-500 to-indigo-500"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
               <h3 className="font-semibold text-lg mb-2 text-blue-700">Receitas Mais Buscadas</h3>
               <p className="text-sm text-blue-600">Descubra quais receitas estão em alta e são mais procuradas pelos clientes atualmente.</p>
               <div className="mt-4 space-y-2">
@@ -266,7 +281,7 @@ export default async function DashboardPage() {
                 </ul>
               </div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+            <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
               <h3 className="font-semibold text-lg mb-2 text-blue-700">Produtos em Alta</h3>
               <p className="text-sm text-blue-600">Acompanhe os produtos com maior demanda e crie sua linha de acordo com o mercado.</p>
               <div className="mt-4 space-y-2">
@@ -278,7 +293,7 @@ export default async function DashboardPage() {
                 </ul>
               </div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+            <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
               <h3 className="font-semibold text-lg mb-2 text-blue-700">Insights de Mercado</h3>
               <p className="text-sm text-blue-600">Análises de comportamento dos consumidores para ajudar na tomada de decisões.</p>
               <div className="mt-4 space-y-2">
@@ -303,10 +318,10 @@ export default async function DashboardPage() {
           comingSoon={true}
           accentColor="bg-gradient-to-r from-green-500 to-emerald-500"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-green-50 rounded-lg p-6 border border-green-200 flex gap-4">
-              <div className="w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
-                <AcademicCapIcon className="h-12 w-12 text-green-600" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-green-50 rounded-lg p-4 sm:p-6 border border-green-200 flex flex-col sm:flex-row gap-4">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                <AcademicCapIcon className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1 text-green-700">Gestão de Negócios para Confeiteiros</h3>
@@ -314,9 +329,9 @@ export default async function DashboardPage() {
                 <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">Em breve</span>
               </div>
             </div>
-            <div className="bg-green-50 rounded-lg p-6 border border-green-200 flex gap-4">
-              <div className="w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
-                <AcademicCapIcon className="h-12 w-12 text-green-600" />
+            <div className="bg-green-50 rounded-lg p-4 sm:p-6 border border-green-200 flex flex-col sm:flex-row gap-4">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                <AcademicCapIcon className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1 text-green-700">Técnicas Avançadas de Confeitos</h3>
@@ -353,14 +368,14 @@ function StatCard({ title, value, icon, href, disabled }: StatCardProps) {
         <CardTitle className={`text-sm font-medium ${
           disabled ? 'text-gray-400' : 'text-gray-500'
         }`}>
-          {title}
+          <span className="block sm:inline">{title}</span>
           {disabled && (
-            <span className="ml-2 text-xs text-orange-600 font-normal">
+            <span className="block sm:ml-2 text-xs text-orange-600 font-normal">
               (Markup necessário)
             </span>
           )}
         </CardTitle>
-        <div className={disabled ? 'opacity-50' : ''}>
+        <div className={`${disabled ? 'opacity-50' : ''} shrink-0`}>
           {icon}
         </div>
       </CardHeader>
@@ -389,9 +404,9 @@ interface StatusCardProps {
 
 function StatusCard({ label, value, color }: StatusCardProps) {
   return (
-    <div className={`p-4 rounded-lg ${color}`}>
-      <div className="text-lg font-bold">{value}</div>
-      <div className="text-sm">{label}</div>
+    <div className={`p-3 sm:p-4 rounded-lg ${color}`}>
+      <div className="text-lg sm:text-xl font-bold">{value}</div>
+      <div className="text-xs sm:text-sm">{label}</div>
     </div>
   )
 } 

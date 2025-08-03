@@ -67,10 +67,10 @@ export default function LinkTreePublicPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0B7A48] mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-[#0B7A48] mx-auto mb-4"></div>
+          <p className="text-gray-600 text-sm sm:text-base">Carregando...</p>
         </div>
       </div>
     )
@@ -78,11 +78,11 @@ export default function LinkTreePublicPage() {
 
   if (error || !linkTree) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">LinkTree não encontrado</h1>
-          <p className="text-gray-600">O LinkTree que você está procurando não existe ou foi desativado.</p>
+          <div className="text-4xl sm:text-6xl mb-4">😕</div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">LinkTree não encontrado</h1>
+          <p className="text-gray-600 text-sm sm:text-base">O LinkTree que você está procurando não existe ou foi desativado.</p>
         </div>
       </div>
     )
@@ -90,21 +90,21 @@ export default function LinkTreePublicPage() {
 
   return (
     <div 
-      className="min-h-screen py-8 px-4"
+      className="min-h-screen py-4 sm:py-8 px-3 sm:px-4"
       style={{ backgroundColor: linkTree.backgroundColor }}
     >
-      <div className="max-w-md mx-auto">
+      <div className="max-w-sm sm:max-w-md mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <h1 
-            className="text-3xl font-bold mb-2"
+            className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3"
             style={{ color: linkTree.textColor }}
           >
             {linkTree.name}
           </h1>
           {linkTree.description && (
             <p 
-              className="text-lg opacity-90"
+              className="text-base sm:text-lg opacity-90 px-2"
               style={{ color: linkTree.textColor }}
             >
               {linkTree.description}
@@ -113,7 +113,7 @@ export default function LinkTreePublicPage() {
         </div>
 
         {/* Links */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {linkTree.links.length > 0 ? (
             linkTree.links.map((link) => (
               <a
@@ -121,24 +121,24 @@ export default function LinkTreePublicPage() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full backdrop-blur-sm border rounded-xl p-4 text-center hover:scale-105 transition-all duration-300 group"
+                className="block w-full backdrop-blur-sm border rounded-xl p-3 sm:p-4 text-center hover:scale-105 transition-all duration-300 group"
                 style={{
                   backgroundColor: linkTree.backgroundColor + '20',
                   borderColor: linkTree.accentColor + '40',
                   color: linkTree.textColor
                 }}
               >
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
                   {link.imageUrl ? (
                     <img 
                       src={link.imageUrl} 
                       alt={link.title}
-                      className="w-6 h-6 object-contain"
+                      className="w-5 h-5 sm:w-6 sm:h-6 object-contain rounded-full"
                     />
                   ) : (
-                    <span className="text-2xl">{link.icon || '🔗'}</span>
+                    <span className="text-lg sm:text-2xl">{link.icon || '🔗'}</span>
                   )}
-                  <span className="font-semibold text-lg group-hover:transition-colors duration-300" style={{ color: linkTree.textColor }}>
+                  <span className="font-semibold text-base sm:text-lg group-hover:transition-colors duration-300" style={{ color: linkTree.textColor }}>
                     {link.title}
                   </span>
                 </div>
@@ -146,22 +146,22 @@ export default function LinkTreePublicPage() {
             ))
           ) : (
             <div 
-              className="text-center p-8 rounded-xl border"
+              className="text-center p-6 sm:p-8 rounded-xl border"
               style={{
                 backgroundColor: linkTree.backgroundColor + '20',
                 borderColor: linkTree.accentColor + '40',
                 color: linkTree.textColor + '80'
               }}
             >
-              <p>Nenhum link disponível</p>
+              <p className="text-sm sm:text-base">Nenhum link disponível</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6 sm:mt-8">
           <p 
-            className="text-sm opacity-70"
+            className="text-xs sm:text-sm opacity-70"
             style={{ color: linkTree.textColor }}
           >
             Criado com Doce Gestão

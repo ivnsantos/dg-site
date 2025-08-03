@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { Menu } from '@/src/entities/Menu'
 import { MenuSection } from '@/src/entities/MenuSection'
 import { MenuItem } from '@/src/entities/MenuItem'
@@ -9,13 +9,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, codigo, description, template, status, telefone, instagram, imageUrl, imageUrlBackground, sections, userId } = body
-    const db = await initializeDB()
+    const dataSource = await getDataSource()
 
-    // Busca o usuário (ajuste conforme autenticação depois)
-    const user = await db.getRepository(User).findOneByOrFail({ id: userId })
+    // Busca o usuário
+    const user = await dataSource.getRepository(User).findOneByOrFail({ id: userId })
 
     // Verifica se o usuário já tem 2 menus (limite máximo)
-    const existingMenusCount = await db.getRepository(Menu).count({
+    const existingMenusCount = await dataSource.getRepository(Menu).count({
       where: { user: { id: userId } }
     })
 
@@ -68,23 +68,31 @@ export async function POST(request: NextRequest) {
       menu.sections.push(section)
     }
 
-    await db.manager.save(menu)
+    await dataSource.manager.save(menu)
     return NextResponse.json({ success: true, menuId: menu.id })
   } catch (error) {
     console.error('Erro ao salvar menu:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ error: 'Erro ao salvar menu' }, { status: 500 })
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const db = await initializeDB()
+    const dataSource = await getDataSource()
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
     if (!userId) {
       return NextResponse.json({ menus: [] })
     }
-    const menus = await db.getRepository(Menu).find({
+    const menus = await dataSource.getRepository(Menu).find({
       where: { user: { id: Number(userId) } },
       order: { createdAt: 'DESC' },
     })
@@ -98,6 +106,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ menus: result })
   } catch (error) {
     console.error('Erro ao buscar menus:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({ menus: [] }, { status: 500 })
   }
 } 

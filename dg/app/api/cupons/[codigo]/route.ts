@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeDB } from '../../../../src/lib/db'
-import { Cupom, StatusCupom } from '../../../../src/entities/Cupom'
+import { getDataSource } from '@/src/lib/db'
+import { Cupom, StatusCupom } from '@/src/entities/Cupom'
 
 export const runtime = 'nodejs'
 
@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { codigo } = params
     
-    const dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const cupomRepository = dataSource.getRepository(Cupom)
     
     const cupom = await cupomRepository.findOne({
@@ -66,6 +66,14 @@ export async function GET(
 
   } catch (error) {
     console.error('Erro ao validar cupom:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { error: 'Erro ao validar cupom' },
       { status: 500 }

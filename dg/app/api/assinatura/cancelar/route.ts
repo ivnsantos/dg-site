@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/auth'
-import { initializeDB } from '@/src/lib/db'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
 import { TipoPlano, User, UserStatus } from '@/src/entities/User'
 import { asaasService } from '@/src/services/AsaasService'
 import { IsNull } from 'typeorm'
 
 export async function POST() {
-  let connection;
   try {
     const session = await getServerSession(authOptions)
 
@@ -15,8 +14,8 @@ export async function POST() {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    connection = await initializeDB()
-    const userRepository = connection.getRepository(User)
+    const dataSource = await getDataSource()
+    const userRepository = dataSource.getRepository(User)
 
     // Busca o usuário
     const user = await userRepository.findOne({
@@ -57,6 +56,14 @@ export async function POST() {
 
   } catch (error) {
     console.error('Erro ao cancelar assinatura:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
       { 
         error: 'Erro ao cancelar assinatura',
@@ -64,7 +71,5 @@ export async function POST() {
       },
       { status: 500 }
     )
-  } finally {
-    // Removido destroy da conexão para evitar erro de Connection terminated
   }
 } 

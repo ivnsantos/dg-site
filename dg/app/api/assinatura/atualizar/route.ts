@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { User, UserStatus } from '@/src/entities/User'
 import { AsaasService } from '@/src/services/AsaasService'
 
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     }
 
     console.log("Conectando ao banco de dados...")
-    const connection = await initializeDB()
-    const userRepository = connection.getRepository(User)
+    const dataSource = await getDataSource()
+    const userRepository = dataSource.getRepository(User)
     const asaasService = new AsaasService()
 
     console.log("Buscando usuário:", userId)
@@ -64,6 +64,7 @@ export async function POST(request: Request) {
         nextDueDate: new Date().toISOString().split('T')[0],
         cycle: 'MONTHLY',
         description: `Assinatura ${plano} - Doce Gestão`,
+        maxPayments: 2,
         creditCard: {
           holderName: cartao.nome,
           number: cartao.numero.replace(/\D/g, ''),
@@ -90,7 +91,6 @@ export async function POST(request: Request) {
       user.idAssinatura = subscriptionResponse.id
 
       await userRepository.save(user)
-      await connection.destroy()
 
       console.log("Processo finalizado com sucesso")
       return NextResponse.json({
@@ -99,21 +99,42 @@ export async function POST(request: Request) {
           id: user.id,
           name: user.name,
           email: user.email,
-          status: user.status,
-          plano: user.plano
+          plano: user.plano,
+          valorPlano: user.valorPlano,
+          status: user.status
+        },
+        subscription: {
+          id: subscriptionResponse.id,
+          status: subscriptionResponse.status
         }
       })
+
     } catch (asaasError) {
-      console.error('Erro ao criar assinatura no Asaas:', asaasError)
+      console.error("Erro ao criar assinatura no Asaas:", asaasError)
       return NextResponse.json(
-        { message: 'Erro ao processar pagamento' },
+        { 
+          message: 'Erro ao criar assinatura no Asaas',
+          details: asaasError instanceof Error ? asaasError.message : 'Erro desconhecido'
+        },
         { status: 500 }
       )
     }
+
   } catch (error) {
-    console.error('Erro ao atualizar plano:', error)
+    console.error('Erro ao processar atualização de assinatura:', error)
+    
+    if (error instanceof Error && error.message.includes('Driver not Connected')) {
+      return NextResponse.json({ 
+        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
+        code: 'DB_CONNECTION_ERROR'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json(
-      { message: 'Erro ao atualizar plano' },
+      { 
+        message: 'Erro ao processar atualização de assinatura',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      },
       { status: 500 }
     )
   }

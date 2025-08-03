@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar tamanho (máximo 20MB)
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 20 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'O arquivo deve ter no máximo 5MB' },
+        { error: 'O arquivo deve ter no máximo 20MB' },
         { status: 400 }
       )
     }
@@ -52,4 +52,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}

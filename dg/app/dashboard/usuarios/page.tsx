@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../../api/auth/[...nextauth]/route'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { User, UserStatus } from '@/src/entities/User'
 import { Subscription } from '@/src/entities/Subscription'
 import { Card } from "@/components/ui/card"
@@ -19,7 +19,7 @@ export default async function UsuariosPage() {
   }
 
   // Inicializa o banco de dados
-  const connection = await initializeDB()
+  const connection = await getDataSource()
 
   // Busca dados do usuário no banco
   const userRepository = connection.getRepository(User)
@@ -39,7 +39,7 @@ export default async function UsuariosPage() {
   })
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Minha Conta</h1>
       </div>

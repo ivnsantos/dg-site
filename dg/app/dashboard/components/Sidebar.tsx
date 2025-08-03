@@ -19,7 +19,8 @@ import {
   ChatBubbleLeftRightIcon,
   SparklesIcon,
   LockClosedIcon,
-  LinkIcon
+  LinkIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../components/ui/button'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
@@ -42,6 +43,7 @@ const navigation: NavigationItem[] = [
   { name: 'Linktree', href: '/dashboard/linktree', icon: LinkIcon, restrictedTo: [] },
   { name: 'Menu Online', href: '/dashboard/menu-online', icon: Bars3Icon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Orçamentos', href: '/dashboard/orcamentos', icon: DocumentTextIcon, restrictedTo: [TipoPlano.BASICO] },
+  { name: 'Questionários', href: '/dashboard/feedback', icon: ClipboardDocumentListIcon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Usuários', href: '/dashboard/usuarios', icon: UserIcon, restrictedTo: [] },
   { 
     name: 'IA para Cozinheiros', 

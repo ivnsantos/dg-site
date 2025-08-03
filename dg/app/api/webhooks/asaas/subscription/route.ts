@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { Subscription } from '@/src/entities/Subscription'
 import { User, UserStatus } from '@/src/entities/User'
 import crypto from 'crypto'
@@ -94,6 +94,11 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
     return { success: false, message: 'Assinatura não encontrada' }
   }
 
+  // Buscar o usuário uma vez para todos os casos
+  const user = await userRepository.findOne({
+    where: { id: existingSubscription.userId }
+  })
+
   switch (event) {
     case 'SUBSCRIPTION_CREATED':
       console.log(`Assinatura ${existingSubscription.id} sendo criada`)
@@ -108,10 +113,7 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.nextDueDate = parseBrazilianDate(subscriptionData.nextDueDate) || existingSubscription.nextDueDate
       existingSubscription.externalReference = subscriptionData.externalReference
       existingSubscription.paymentLink = subscriptionData.paymentLink
-      
-      await subscriptionRepository.save(existingSubscription)
-      console.log(`Assinatura ${existingSubscription.id} atualizada com sucesso`)
-      return { success: true, message: 'Assinatura criada/atualizada com sucesso' }
+      break
 
     case 'SUBSCRIPTION_UPDATED':
       console.log(`Assinatura ${existingSubscription.id} sendo atualizada`)
@@ -125,10 +127,7 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.nextDueDate = parseBrazilianDate(subscriptionData.nextDueDate) || existingSubscription.nextDueDate
       existingSubscription.externalReference = subscriptionData.externalReference
       existingSubscription.paymentLink = subscriptionData.paymentLink
-      
-      await subscriptionRepository.save(existingSubscription)
-      console.log(`Assinatura ${existingSubscription.id} atualizada com sucesso`)
-      return { success: true, message: 'Assinatura atualizada com sucesso' }
+      break
 
     case 'SUBSCRIPTION_INACTIVATED':
       console.log(`Assinatura ${existingSubscription.id} sendo inativada`)
@@ -136,49 +135,47 @@ async function processSubscriptionEvent(event: string, subscriptionData: any, da
       existingSubscription.status = 'INACTIVE'
       existingSubscription.deleted = true
       
-      // Buscar e inativar o usuário
-      const user = await userRepository.findOne({
-        where: { id: existingSubscription.userId }
-      })
-      
+      // Inativar o usuário
       if (user) {
         user.status = UserStatus.INATIVO
         await userRepository.save(user)
         console.log(`Usuário ${user.id} inativado devido à assinatura inativa`)
       }
-      
-      await subscriptionRepository.save(existingSubscription)
-      console.log(`Assinatura ${existingSubscription.id} inativada com sucesso`)
-      return { success: true, message: 'Assinatura e usuário inativados com sucesso' }
+      break
 
     case 'SUBSCRIPTION_DELETED':
-      // Marcar assinatura como deletada 
       console.log(`Assinatura ${existingSubscription.id} sendo deletada`)
+      // Marcar assinatura como deletada 
       existingSubscription.status = 'INACTIVE'
       existingSubscription.deleted = true
 
-      const user1 = await userRepository.findOne({
-        where: { id: existingSubscription.userId }
-      })
-      
-      if (user1) {
-        user1.status = UserStatus.INATIVO
-        await userRepository.save(user1)
-        console.log(`Usuário ${user1.id} inativado devido à assinatura inativa`)
+      // Inativar o usuário
+      if (user) {
+        user.status = UserStatus.INATIVO
+        await userRepository.save(user)
+        console.log(`Usuário ${user.id} inativado devido à assinatura deletada`)
       }
-      
-      await subscriptionRepository.save(existingSubscription)
-      console.log(`Assinatura ${existingSubscription.id} deletada com sucesso`)
-      return { success: true, message: 'Assinatura deletada com sucesso' }
+      break
 
     default:
       return { success: false, message: 'Evento não reconhecido' }
   }
+
+  // Salvar a assinatura uma vez após todas as modificações
+  await subscriptionRepository.save(existingSubscription)
+  
+  const eventMessages = {
+    'SUBSCRIPTION_CREATED': 'Assinatura criada/atualizada com sucesso',
+    'SUBSCRIPTION_UPDATED': 'Assinatura atualizada com sucesso',
+    'SUBSCRIPTION_INACTIVATED': 'Assinatura e usuário inativados com sucesso',
+    'SUBSCRIPTION_DELETED': 'Assinatura deletada com sucesso'
+  }
+
+  console.log(`Assinatura ${existingSubscription.id} processada com sucesso: ${event}`)
+  return { success: true, message: eventMessages[event as keyof typeof eventMessages] || 'Evento processado com sucesso' }
 }
 
 export async function POST(request: NextRequest) {
-  let dataSource: any = null
-  
   try {
     // Obter o corpo da requisição como string para validação da assinatura
     const rawBody = await request.text()
@@ -211,7 +208,7 @@ export async function POST(request: NextRequest) {
     console.log(`Webhook recebido: ${payload.event} - ${payload.subscription.id}`)
 
     // Inicializar banco de dados
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     
     // Processar o evento
     const result = await processSubscriptionEvent(
@@ -240,18 +237,18 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Erro ao processar webhook de assinatura:', error)
     
+    // Verificar se é erro de conexão com banco
+    if (error.message?.includes('Driver not Connected')) {
+      return NextResponse.json(
+        { error: 'Erro de conexão com banco de dados' },
+        { status: 503 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource) {
-      try {
-        await dataSource.destroy()
-      } catch (error) {
-        console.warn('Erro ao destruir conexão:', error)
-      }
-    }
   }
 }
 

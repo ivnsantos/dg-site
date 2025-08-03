@@ -3,6 +3,8 @@ import { Confeitaria } from './Confeitaria'
 import { Ingredient } from './Ingredient'
 import { Product } from './Product'
 import { Menu } from './Menu'
+import { LinkTree } from './LinkTree'
+import { Feedback } from './Feedback'
 
 export enum TipoPlano {
   BASICO = 'BASICO',
@@ -113,6 +115,9 @@ export class User{
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt!: Date
+
+  @OneToMany('Feedback', 'user')
+  feedbacks!: any[]
 
 } 
 

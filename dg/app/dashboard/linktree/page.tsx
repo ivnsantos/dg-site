@@ -136,22 +136,22 @@ export default function LinkTreePage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-4 sm:px-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold">LinkTree</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold">LinkTree</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Crie e gerencie seus LinkTrees para compartilhar todos os seus links importantes
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           {linkTrees.length >= 2 && (
-            <div className="text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-200">
+            <div className="text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-md border border-amber-200 w-full sm:w-auto text-center">
               Limite de 2 LinkTrees atingido
             </div>
           )}
           <Button 
-            className="bg-[#0B7A48] text-white"
+            className="bg-[#0B7A48] text-white w-full sm:w-auto"
             onClick={() => router.push('/dashboard/linktree/novo')}
             disabled={linkTrees.length >= 2}
           >
@@ -165,10 +165,10 @@ export default function LinkTreePage() {
         <div className="text-center text-muted-foreground">Carregando LinkTrees...</div>
       ) : linkTrees.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <LinkIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhum LinkTree criado</h3>
-            <p className="text-muted-foreground mb-4">
+          <CardContent className="p-6 sm:p-8 text-center">
+            <LinkIcon className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold mb-2">Nenhum LinkTree criado</h3>
+            <p className="text-muted-foreground mb-4 text-sm sm:text-base">
               Crie seu primeiro LinkTree para compartilhar todos os seus links importantes em um só lugar.
             </p>
             <Button 
@@ -181,7 +181,7 @@ export default function LinkTreePage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6">
           {linkTrees.map(linkTree => {
             const fullLink = typeof window !== 'undefined' 
               ? `${window.location.origin}/linktree/${linkTree.code}` 
@@ -189,79 +189,83 @@ export default function LinkTreePage() {
             
             return (
               <Card key={linkTree.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg">{linkTree.name}</h3>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Código: <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{linkTree.code}</span>
-                          </p>
-                          {linkTree.description && (
-                            <p className="text-sm text-gray-600 mt-1">{linkTree.description}</p>
-                          )}
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col gap-4">
+                    {/* Header com título e status */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div>
+                            <h3 className="font-semibold text-lg sm:text-xl">{linkTree.name}</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Código: <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{linkTree.code}</span>
+                            </p>
+                            {linkTree.description && (
+                              <p className="text-sm text-gray-600 mt-1">{linkTree.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={linkTree.isActive ? "default" : "secondary"}>
+                              {linkTree.isActive ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={linkTree.isActive ? "default" : "secondary"}>
-                            {linkTree.isActive ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </div>
-                      </div>
 
-                      <div className="mt-3 text-sm text-gray-600">
-                        <p>Link: <span className="font-mono text-xs">/linktree/{linkTree.code}</span></p>
-                        <p>{linkTree.links.length} links • Criado em {new Date(linkTree.createdAt).toLocaleDateString('pt-BR')}</p>
-                      </div>
-                      
-                      {/* Preview das cores */}
-                      <div className="mt-3 flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">Cores:</span>
-                        <div className="flex items-center gap-1">
-                          <div 
-                            className="w-4 h-4 rounded border"
-                            style={{ backgroundColor: linkTree.backgroundColor }}
-                            title={`Fundo: ${linkTree.backgroundColor}`}
-                          />
-                          <div 
-                            className="w-4 h-4 rounded border"
-                            style={{ backgroundColor: linkTree.textColor }}
-                            title={`Texto: ${linkTree.textColor}`}
-                          />
-                          <div 
-                            className="w-4 h-4 rounded border"
-                            style={{ backgroundColor: linkTree.accentColor }}
-                            title={`Destaque: ${linkTree.accentColor}`}
-                          />
+                        <div className="mt-3 text-sm text-gray-600">
+                          <p>Link: <span className="font-mono text-xs">/linktree/{linkTree.code}</span></p>
+                          <p>{linkTree.links.length} links • Criado em {new Date(linkTree.createdAt).toLocaleDateString('pt-BR')}</p>
                         </div>
-                      </div>
-                      
-                      {/* Preview dos links */}
-                      {linkTree.links.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-1">
-                          {linkTree.links.slice(0, 5).map((link, linkIndex) => (
-                            <div key={linkIndex} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
-                              {renderIconOrImage(link)}
-                              <span className="text-gray-600">{link.title}</span>
-                            </div>
-                          ))}
-                          {linkTree.links.length > 5 && (
-                            <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
-                              +{linkTree.links.length - 5} mais
-                            </div>
-                          )}
+                        
+                        {/* Preview das cores */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Cores:</span>
+                          <div className="flex items-center gap-1">
+                            <div 
+                              className="w-4 h-4 rounded border"
+                              style={{ backgroundColor: linkTree.backgroundColor }}
+                              title={`Fundo: ${linkTree.backgroundColor}`}
+                            />
+                            <div 
+                              className="w-4 h-4 rounded border"
+                              style={{ backgroundColor: linkTree.textColor }}
+                              title={`Texto: ${linkTree.textColor}`}
+                            />
+                            <div 
+                              className="w-4 h-4 rounded border"
+                              style={{ backgroundColor: linkTree.accentColor }}
+                              title={`Destaque: ${linkTree.accentColor}`}
+                            />
+                          </div>
                         </div>
-                      )}
+                        
+                        {/* Preview dos links */}
+                        {linkTree.links.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {linkTree.links.slice(0, 3).map((link, linkIndex) => (
+                              <div key={linkIndex} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
+                                {renderIconOrImage(link)}
+                                <span className="text-gray-600">{link.title}</span>
+                              </div>
+                            ))}
+                            {linkTree.links.length > 3 && (
+                              <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
+                                +{linkTree.links.length - 3} mais
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    {/* Botões de ação */}
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => window.open(fullLink, '_blank')}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 text-xs sm:text-sm"
                       >
-                        <EyeIcon className="h-4 w-4" />
+                        <EyeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                         Visualizar
                       </Button>
                       
@@ -269,9 +273,9 @@ export default function LinkTreePage() {
                         variant="outline"
                         size="sm"
                         onClick={() => router.push(`/dashboard/linktree/${linkTree.id}/editar`)}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 text-xs sm:text-sm"
                       >
-                        <PencilIcon className="h-4 w-4" />
+                        <PencilIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                         Editar
                       </Button>
                       
@@ -279,10 +283,10 @@ export default function LinkTreePage() {
                         variant="outline"
                         size="sm"
                         onClick={() => router.push(`/dashboard/linktree/${linkTree.id}/cores`)}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 text-xs sm:text-sm"
                         title="Editar cores"
                       >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
                         </svg>
                         Cores
@@ -292,7 +296,7 @@ export default function LinkTreePage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleToggleStatus(linkTree.id, linkTree.isActive)}
-                        className={`flex items-center gap-1 ${
+                        className={`flex items-center gap-1 text-xs sm:text-sm ${
                           linkTree.isActive 
                             ? 'text-orange-600 hover:text-orange-700' 
                             : 'text-green-600 hover:text-green-700'
@@ -305,9 +309,9 @@ export default function LinkTreePage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleDelete(linkTree.id)}
-                        className="text-red-600 hover:text-red-700 flex items-center gap-1"
+                        className="text-red-600 hover:text-red-700 flex items-center gap-1 text-xs sm:text-sm"
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                         Excluir
                       </Button>
                     </div>

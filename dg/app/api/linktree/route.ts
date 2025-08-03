@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeDB } from '@/src/lib/db'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getDataSource } from '@/src/lib/db'
 import { LinkTree } from '@/src/entities/LinkTree'
 import { LinkTreeLink } from '@/src/entities/LinkTreeLink'
 
 export async function GET(request: NextRequest) {
-  let dataSource: any = null
-  
   try {
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
@@ -59,21 +59,12 @@ export async function GET(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource) {
-      try {
-        await dataSource.destroy()
-      } catch (error) {
-        console.warn('Erro ao destruir conexão:', error)
-      }
-    }
   }
 }
 
 export async function POST(request: NextRequest) {
-  let dataSource: any = null
   try {
-    dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const linkTreeRepository = dataSource.getRepository(LinkTree)
     const linkTreeLinkRepository = dataSource.getRepository(LinkTreeLink)
 
@@ -172,13 +163,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )
-  } finally {
-    if (dataSource) {
-      try {
-        await dataSource.destroy()
-      } catch (error) {
-        console.warn('Erro ao destruir conexão:', error)
-      }
-    }
   }
 } 
