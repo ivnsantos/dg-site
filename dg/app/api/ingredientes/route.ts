@@ -239,9 +239,9 @@ export async function DELETE(request: Request) {
         product.totalCost = Number((product.totalCost - Number(ft.totalCost)).toFixed(2))
         product.totalWeight = Number((product.totalWeight - Number(ft.quantityUsed)).toFixed(3))
         
-        // Recalcular preço sugerido e margem
+        // Recalcular preço sugerido e margem (idealMarkup já é fator x)
         if (product.totalCost > 0) {
-          product.suggestedPrice = Number((product.totalCost * (1 + product.idealMarkup)).toFixed(2))
+          product.suggestedPrice = Number((product.totalCost * product.idealMarkup).toFixed(2))
           product.profitMargin = Number(
             ((product.sellingPrice - product.totalCost) / product.totalCost * 100).toFixed(2)
           )

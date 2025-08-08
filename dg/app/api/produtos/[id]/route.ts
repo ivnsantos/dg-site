@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/auth'
-import { AppDataSource } from '../../../../src/lib/db'
+import { getDataSource } from '@/src/lib/db'
 import { Product } from '../../../../src/entities/Product'
 import { FichaTecnica } from '../../../../src/entities/FichaTecnica'
 import { User } from '../../../../src/entities/User'
-import { initializeDB } from '@/src/lib/db'
 
 export async function PUT(
   request: Request,
@@ -19,20 +18,20 @@ export async function PUT(
     }
 
     // Inicializar conexão com o banco
-    const dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const productRepository = dataSource.getRepository(Product)
     const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
     const userRepository = dataSource.getRepository(User)
 
     // Buscar usuário para obter o markup ideal
-    const user = await userRepository.findOne({ where: { id: session.user.id } })
+    const user = await userRepository.findOne({ where: { id: Number(session.user.id) } })
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
     // Buscar produto existente
     const existingProduct = await productRepository.findOne({
-      where: { id: parseInt(params.id), user: { id: session.user.id } },
+      where: { id: parseInt(params.id), user: { id: Number(session.user.id) } },
       relations: ['fichaTecnicas']
     })
 
@@ -104,12 +103,9 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Inicializar conexão apenas se não estiver inicializada
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize()
-    }
+    const dataSource = await getDataSource()
 
-    const produto = await AppDataSource
+    const produto = await dataSource
       .getRepository(Product)
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.fichaTecnicas', 'fichaTecnicas')
@@ -169,13 +165,13 @@ export async function DELETE(
     }
 
     // Inicializar conexão com o banco
-    const dataSource = await initializeDB()
+    const dataSource = await getDataSource()
     const productRepository = dataSource.getRepository(Product)
     const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
 
     // Buscar produto
     const product = await productRepository.findOne({
-      where: { id: parseInt(params.id), user: { id: session.user.id } }
+      where: { id: parseInt(params.id), user: { id: Number(session.user.id) } }
     })
 
     if (!product) {

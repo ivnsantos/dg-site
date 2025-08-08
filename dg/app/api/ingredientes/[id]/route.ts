@@ -108,7 +108,8 @@ export async function PUT(
 
           product.totalWeight = Number(novoPesoTotal.toFixed(3))
           product.totalCost = Number(novoCustoTotal.toFixed(2))
-          product.suggestedPrice = Number((novoCustoTotal * (1 + product.idealMarkup)).toFixed(2))
+          // idealMarkup já é um fator (ex.: 2.5x). Não somar 1 novamente.
+          product.suggestedPrice = Number((novoCustoTotal * product.idealMarkup).toFixed(2))
           product.profitMargin = Number(
             ((product.sellingPrice - novoCustoTotal) / novoCustoTotal * 100).toFixed(2)
           )
@@ -177,7 +178,8 @@ export async function DELETE(
           product.totalWeight = Number((product.totalWeight - pesoRemover).toFixed(3))
           
           if (product.totalCost > 0) {
-            product.suggestedPrice = Number((product.totalCost * (1 + product.idealMarkup)).toFixed(2))
+            // idealMarkup já é um fator (ex.: 2.5x)
+            product.suggestedPrice = Number((product.totalCost * product.idealMarkup).toFixed(2))
             product.profitMargin = Number(
               ((product.sellingPrice - product.totalCost) / product.totalCost * 100).toFixed(2)
             )
