@@ -46,19 +46,61 @@ export default function LoginPage() {
 
       if (result?.ok) {
         console.log('Login bem-sucedido, redirecionando para dashboard...')
+        // Mantém o loading ativo durante o redirecionamento
         router.push('/dashboard')
         return
       }
     } catch (err) {
       console.error('Erro no login:', err)
       setError('Ocorreu um erro ao tentar fazer login. Tente novamente.')
-    } finally {
       setIsLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#2D1810] relative">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-[#2D1810]/95 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center space-y-6">
+            {/* Logo animado */}
+            <div className="relative">
+              <Image
+                src="/images/logo.png"
+                alt="Doce Gestão Logo"
+                width={120}
+                height={120}
+                className="animate-pulse"
+                priority
+              />
+              {/* Efeito de brilho */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+            </div>
+            
+            {/* Texto de carregamento */}
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold text-white">Doce Gestão</h3>
+              <p className="text-[#0B7A48] font-medium">Entrando no sistema...</p>
+            </div>
+            
+            {/* Spinner personalizado */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-12 h-12 border-4 border-[#0B7A48]/30 rounded-full"></div>
+                <div className="absolute top-0 left-0 w-12 h-12 border-4 border-[#0B7A48] rounded-full border-t-transparent animate-spin"></div>
+              </div>
+            </div>
+            
+            {/* Dots animados */}
+            <div className="flex justify-center space-x-2">
+              <div className="w-2 h-2 bg-[#0B7A48] rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-[#0B7A48] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-[#0B7A48] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Botão Voltar */}
       <Button
         onClick={() => router.push('/')}
@@ -173,17 +215,10 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className={`w-full ${isLoading ? 'bg-white text-[#0B7A48]' : 'bg-[#0B7A48] text-white'} hover:bg-[#0B7A48]/80 hover:text-white transition-colors`}
+              className="w-full bg-[#0B7A48] text-white hover:bg-[#0B7A48]/80 transition-colors"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <div className="flex flex-col items-center gap-1 py-1">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-4 border-[#0B7A48]"></div>
-                  <span className="text-sm font-semibold">Carregando...</span>
-                </div>
-              ) : (
-                'Entrar'
-              )}
+              Entrar
             </Button>
 
             <div className="text-center">
