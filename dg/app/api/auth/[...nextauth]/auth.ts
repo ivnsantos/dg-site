@@ -71,8 +71,9 @@ export const authOptions: AuthOptions = {
             phoneVerified
           } as any // Força o tipo para alinhar com o esperado pelo NextAuth
         } catch (error) {
-          console.error('Erro durante autenticação:', error)
-          throw new Error('Erro ao autenticar usuário')
+          console.error('AUTH authorize error:', error)
+          // Em produção, retornar null evita 500 e responde 401 para credenciais inválidas
+          return null
         }
       }
     })
