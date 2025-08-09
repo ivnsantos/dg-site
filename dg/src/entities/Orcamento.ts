@@ -8,7 +8,7 @@ export class Orcamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, user => user.orcamentos, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, user => user.id)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 

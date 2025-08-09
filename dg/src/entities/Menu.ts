@@ -12,7 +12,7 @@ export class Menu {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, user => user.menus, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, user => user.id)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
