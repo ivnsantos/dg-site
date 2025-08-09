@@ -46,7 +46,7 @@ export class Feedback {
   @Column()
   userId!: number
 
-  @ManyToOne(() => User, user => user.feedbacks)
+  @ManyToOne(() => User, user => user.id)
   @JoinColumn({ name: 'userId' })
   user!: User
 

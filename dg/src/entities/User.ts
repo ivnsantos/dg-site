@@ -1,9 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, OneToOne, OneToMany } from 'typeorm'
-import { Confeitaria } from './Confeitaria'
-import { Ingredient } from './Ingredient'
-import { Product } from './Product'
-import { Menu } from './Menu'
-import { LinkTree } from './LinkTree'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, } from 'typeorm'
 
 
 
@@ -116,9 +111,6 @@ export class User{
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt!: Date
-
-  @OneToMany('Feedback', 'user')
-  feedbacks!: any[]
 
 } 
 
