@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm'
-import { Feedback } from './Feedback'
 
 @Entity('feedback_responses')
 export class FeedbackResponse {
@@ -21,9 +20,9 @@ export class FeedbackResponse {
   @Column({ type: 'varchar', nullable: true })
   clientEmail!: string
 
-  @ManyToOne(() => Feedback, (feedback) => feedback.responses)
+  @ManyToOne('Feedback', 'responses')
   @JoinColumn({ name: 'feedbackId' })
-  feedback?: Feedback
+  feedback?: any
 
   @CreateDateColumn()
   createdAt!: Date
