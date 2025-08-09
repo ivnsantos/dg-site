@@ -64,7 +64,7 @@ export class AsaasService {
   constructor() {
     // Permite configurar a URL (sandbox/produção) via env. Padrão: sandbox
     this.apiUrl = process.env.ASAAS_API_URL || 'https://api-sandbox.asaas.com/v3'
-    this.accessToken = (process.env.ASAAS_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ASAAS_ACCESS_TOKEN || '').trim()
+    this.accessToken = (process.env.ASAAS_ACCESS_TOKEN || '')
     if (!this.accessToken) {
       throw new Error('ASAAS_ACCESS_TOKEN não configurado nas variáveis de ambiente')
     }
@@ -105,6 +105,7 @@ export class AsaasService {
 
       return response.json()
     } catch (error) {
+      console.log('Erro na requisição RR:', error)
       console.error(`Erro na requisição ${method} para ${endpoint}:`, error)
       throw error
     }

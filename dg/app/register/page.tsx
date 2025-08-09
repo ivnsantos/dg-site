@@ -61,7 +61,7 @@ export default function RegisterPage() {
     cpfCnpj: '',
     password: '',
     confirmPassword: '',
-    plano: 'BASICO',
+    plano: 'PRO',
     cartao: {
       numero: '',
       nome: '',
@@ -79,6 +79,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorPulse, setErrorPulse] = useState(false)
+
+  // Sempre que mudar de etapa, volta para o topo
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [step])
 
   // Quando ocorrer erro, rola para o topo no mobile e aplica destaque na caixa de erro
   useEffect(() => {
@@ -438,11 +445,16 @@ export default function RegisterPage() {
             bairro: formData.bairro
           })
         })
-
+        console.log('users POST response:', response)
         const data = await response.json()
+        console.log('users POST response:', data)
 
         if (!response.ok) {
-          throw new Error(data.message || 'Erro ao criar usuário')
+          const serverMsg = (data && (data.details || data.message)) || 'Erro ao criar usuário'
+          console.log('serverMsg:', serverMsg)
+          setError(serverMsg)
+          setLoading(false)
+          return
         }
 
         // Mostra mensagem de sucesso
@@ -454,9 +466,10 @@ export default function RegisterPage() {
           router.push('/login')
         }, 2500)
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('Erro ao processar registro:', error)
-        setError(error instanceof Error ? error.message : 'Erro ao processar registro')
+        const msg = error?.message || 'Erro ao processar registro'
+        setError(msg)
       } finally {
         setLoading(false)
       }

@@ -25,11 +25,11 @@ export class FichaTecnica {
     @Column()
     unit!: string // Unidade de medida (g, kg, ml, etc)
 
-    @ManyToOne(() => Product, product => product.fichaTecnicas)
+    @ManyToOne(() => Product, product => product.fichaTecnicas, { onDelete: 'CASCADE' })
     @JoinColumn({ name: "productId" })
     product!: Product
 
-    @ManyToOne(() => Ingredient, ingredient => ingredient.fichaTecnicas)
+    @ManyToOne(() => Ingredient, ingredient => ingredient.fichaTecnicas, { onDelete: 'CASCADE' })
     @JoinColumn({ name: "ingredientId" })
     ingredient!: Ingredient
 

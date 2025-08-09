@@ -168,13 +168,12 @@ export async function POST(request: Request) {
         }
       })
     } catch (asaasErr: any) {
-      // Garante que nenhum usuário seja criado quando a integração falhar
-      const message = asaasErr?.message || 'Falha na integração com Asaas'
-      const isEnv = message.includes('ASAAS_ACCESS_TOKEN')
-      return NextResponse.json(
-        { message: isEnv ? 'Configuração do Asaas ausente' : 'Erro ao processar com Asaas', details: message },
-        { status: 400 }
-      )
+      const message =
+      asaasErr instanceof Error
+        ? asaasErr.message
+        : String((asaasErr as any)?.message ?? asaasErr)
+  
+    return NextResponse.json({ message }, { status: 400 })
     }
 
   } catch (error: any) {
