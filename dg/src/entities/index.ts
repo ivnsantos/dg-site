@@ -15,4 +15,7 @@ export { FooterOrcamento } from './FooterOrcamento'
 export { FichaTecnica } from './FichaTecnica'
 export { LinkTree } from './LinkTree'
 export { LinkTreeLink } from './LinkTreeLink' 
+export { Subscription } from './Subscription'
+export { Feedback } from './Feedback'
+export { FeedbackResponse } from './FeedbackResponse'
 
