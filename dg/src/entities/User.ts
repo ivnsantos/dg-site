@@ -116,8 +116,8 @@ export class User{
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt!: Date
 
-  @OneToMany('Feedback', 'user')
-  feedbacks!: any[]
+  @OneToMany(() => Feedback, (feedback) => feedback.user)
+  feedbacks!: Feedback[]
 
 } 
 
