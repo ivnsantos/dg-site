@@ -43,9 +43,6 @@ export class Feedback {
   })
   status!: FeedbackStatus
 
-  @Column()
-  userId!: number
-
   @ManyToOne(() => User, user => user.id)
   @JoinColumn({ name: 'userId' })
   user!: User
