@@ -49,7 +49,7 @@ const dataSourceConfig = {
         Feedback,
         FeedbackResponse
     ],
-    synchronize: true,
+    synchronize: false,
     logging: false,
     extra: {
         max: 5,
