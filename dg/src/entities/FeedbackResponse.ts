@@ -20,7 +20,7 @@ export class FeedbackResponse {
   @Column({ type: 'varchar', nullable: true })
   clientEmail!: string
 
-  @ManyToOne('Feedback', 'responses')
+  @ManyToOne('Feedback', { onDelete: 'CASCADE' } as any)
   @JoinColumn({ name: 'feedbackId' })
   feedback?: any
 
