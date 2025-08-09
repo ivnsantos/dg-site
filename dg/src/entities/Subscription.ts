@@ -63,7 +63,7 @@ export class Subscription {
   creditCardToken?: string // Token do cartão
 
   // Relacionamento com o usuário
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, user => user.subscriptions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user!: User
 

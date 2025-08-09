@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm'
+import { Feedback } from './Feedback'
 
 @Entity('feedback_responses')
 export class FeedbackResponse {
@@ -20,9 +21,9 @@ export class FeedbackResponse {
   @Column({ type: 'varchar', nullable: true })
   clientEmail!: string
 
-  @ManyToOne('Feedback', 'responses', { onDelete: 'CASCADE' } as any)
+  @ManyToOne(() => Feedback, feedback => feedback.responses, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'feedbackId' })
-  feedback?: any
+  feedback?: Feedback
 
   @CreateDateColumn()
   createdAt!: Date
