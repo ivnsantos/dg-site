@@ -16,13 +16,13 @@ import {
     ItemOrcamento,
     HeaderOrcamento,
     FooterOrcamento,
-    FichaTecnica
+    FichaTecnica,
+    LinkTree,
+    LinkTreeLink,
+    Subscription,
+    Feedback,
+    FeedbackResponse
 } from '../entities'
-import { LinkTree } from '../entities/LinkTree'
-import { LinkTreeLink } from '../entities/LinkTreeLink'
-import { Subscription } from '../entities/Subscription'
-import { Feedback } from '../entities/Feedback'
-import { FeedbackResponse } from '../entities/FeedbackResponse'
 
 // Configuração do DataSource
 const dataSourceConfig = {
@@ -33,6 +33,7 @@ const dataSourceConfig = {
         Cupom,
         Orcamento,
         Product,
+        Ingredient,
         Confeitaria,
         Menu,
         MenuSection,
@@ -41,7 +42,6 @@ const dataSourceConfig = {
         ItemOrcamento,
         HeaderOrcamento,
         FooterOrcamento,
-        Ingredient,
         FichaTecnica,
         LinkTree,
         LinkTreeLink,

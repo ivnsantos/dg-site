@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm'
 import { User } from './User'
-import { FeedbackResponse } from './FeedbackResponse'
 
 export enum FeedbackStatus {
   ACTIVE = 'ACTIVE',
@@ -50,8 +49,8 @@ export class Feedback {
   @JoinColumn({ name: 'userId' })
   user!: User
 
-  @OneToMany(() => FeedbackResponse, response => response.feedback)
-  responses!: FeedbackResponse[]
+  @OneToMany('FeedbackResponse', 'feedback')
+  responses!: any[]
 
   @CreateDateColumn()
   createdAt!: Date

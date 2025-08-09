@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
+import { Product } from './Product'
+import { Ingredient } from './Ingredient'
+import { Subscription } from './Subscription'
+import { Orcamento } from './Orcamento'
+import { LinkTree } from './LinkTree'
+import { Menu } from './Menu'
+import { Cliente } from './Cliente'
+import { Confeitaria } from './Confeitaria'
+import { HeaderOrcamento } from './HeaderOrcamento'
+import { FooterOrcamento } from './FooterOrcamento'
 
 
 

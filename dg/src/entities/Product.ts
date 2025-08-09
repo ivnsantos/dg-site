@@ -49,7 +49,7 @@ export class Product {
   @Column({ type: 'timestamp' })
   lastUpdate!: Date
 
-  @ManyToOne(() => User, user => user.products)
+  @ManyToOne(() => User, user => user.id)
   user!: User
 
   @OneToMany(() => FichaTecnica, (fichaTecnica: FichaTecnica) => fichaTecnica.product)

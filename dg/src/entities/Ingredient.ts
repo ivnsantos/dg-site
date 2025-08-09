@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColum
 import { User } from './User'
 import { FichaTecnica } from './FichaTecnica'
 
-@Entity()
+@Entity({ name: 'ingredient' })
 export class Ingredient {
   @PrimaryGeneratedColumn()
   id!: number
@@ -25,7 +25,7 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
-  @ManyToOne(() => User, user => user.ingredients)
+  @ManyToOne(() => User, user => user.id)
   @JoinColumn({ name: 'userId' })
   user!: User
 
