@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getDataSource } from '@/src/lib/db'
 import { TipoPlano, User, UserStatus } from '@/src/entities/User'
-import { asaasService } from '@/src/services/AsaasService'
+import { AsaasService } from '@/src/services/AsaasService'
 import { IsNull } from 'typeorm'
 
 export async function POST() {
@@ -28,6 +28,7 @@ export async function POST() {
 
     // Cancela a assinatura no Asaas
     if (user.idAssinatura) {
+      const asaasService = new AsaasService()
       await asaasService.cancelarSubscription(user.idAssinatura)
     }
 

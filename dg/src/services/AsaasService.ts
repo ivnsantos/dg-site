@@ -62,8 +62,12 @@ export class AsaasService {
   private accessToken: string
 
   constructor() {
-    this.apiUrl = 'https://api-sandbox.asaas.com/v3'
-    this.accessToken = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmEzMzRhYzc2LTdhYTMtNDg3Ni05OGU5LWZjMjVjNmMxZTQyOTo6JGFhY2hfYmJjNDNlNTktYTJhMC00YzhhLTljOTItNzhhM2M3ZDMyYjZi'
+    // Permite configurar a URL (sandbox/produção) via env. Padrão: sandbox
+    this.apiUrl = process.env.ASAAS_API_URL || 'https://api-sandbox.asaas.com/v3'
+    this.accessToken = (process.env.ASAAS_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ASAAS_ACCESS_TOKEN || '').trim()
+    if (!this.accessToken) {
+      throw new Error('ASAAS_ACCESS_TOKEN não configurado nas variáveis de ambiente')
+    }
   }
 
   private async request<T>(
@@ -74,13 +78,6 @@ export class AsaasService {
     const url = `${this.apiUrl}${endpoint}`
     
     try {
-      console.log("TESTEEEEEE________data_____________")
-      console.log(data)
-      console.log("TESTEEEEEE________url_____________")
-      console.log(url)
-      console.log("TESTEEEEEE________accessToken_____________") 
-      console.log(this.accessToken)
-
       const response = await fetch(url, {
         method,
         headers: {
@@ -91,11 +88,19 @@ export class AsaasService {
         },
         body: data ? JSON.stringify(data) : undefined
       })
-      console.log("TESTEEEEEE_____________________")
-      console.log(response)
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Erro na requisição ao Asaas')
+        // A API do Asaas retorna mensagens no corpo. Tentamos extrair detalhes úteis
+        let payload: any = null
+        try {
+          payload = await response.json()
+        } catch {
+          // fallback para texto cru
+          const text = await response.text()
+          throw new Error(text || 'Erro na requisição ao Asaas')
+        }
+
+        const detailed = payload?.errors?.[0]?.description || payload?.error || payload?.message
+        throw new Error(detailed || 'Erro na requisição ao Asaas')
       }
 
       return response.json()
@@ -111,9 +116,6 @@ export class AsaasService {
   }
 
   async createSubscription(data: CreateSubscriptionRequest): Promise<AsaasSubscriptionResponse> {
-    console.log("TESTEEEEEE________data_____________")
-    console.log(data)
-  
     return this.request<AsaasSubscriptionResponse>('POST', '/subscriptions', data)
   }
 
@@ -123,4 +125,4 @@ export class AsaasService {
 }
 
 // Exporta uma instância única do serviço
-export const asaasService = new AsaasService() 
+// Removido export singleton para evitar inicialização antecipada com env ausente

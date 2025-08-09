@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -78,6 +78,19 @@ export default function RegisterPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errorPulse, setErrorPulse] = useState(false)
+
+  // Quando ocorrer erro, rola para o topo no mobile e aplica destaque na caixa de erro
+  useEffect(() => {
+    if (error) {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+      setErrorPulse(true)
+      const t = setTimeout(() => setErrorPulse(false), 1200)
+      return () => clearTimeout(t)
+    }
+  }, [error])
 
   const formatCpfCnpj = (value: string) => {
     // Remove tudo que não é número
@@ -699,8 +712,8 @@ export default function RegisterPage() {
             </div>
             
             {/* Resumo do plano escolhido */}
-            <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 mb-8">
-              <div className="flex justify-between items-center mb-4">
+            <div className="bg-white/5 backdrop-blur-sm p-4 sm:p-6 rounded-xl border border-white/10 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                 <div>
                   <h4 className="text-lg font-semibold text-white">
                     {PLANOS.find(p => p.id === formData.plano)?.nome}
@@ -722,7 +735,7 @@ export default function RegisterPage() {
               
               {/* Campo de Cupom */}
               <div className="border-t border-white/10 pt-4 mt-4">
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <div className="flex-1">
                     <Input
                       id="cupomDesconto"
@@ -750,7 +763,7 @@ export default function RegisterPage() {
                       cupomStatus === 'loading' ? 'bg-gray-600 cursor-not-allowed' :
                       cupomStatus === 'success' ? 'bg-green-600 hover:bg-green-700' :
                       'bg-[#0B7A48] hover:bg-[#0B7A48]/80'
-                    } text-white shadow-lg hover:shadow-xl`}
+                    } text-white shadow-lg hover:shadow-xl w-full sm:w-auto`}
                     disabled={cupomStatus === 'loading'}
                     onClick={async () => {
                       if (!formData.cupomDesconto) {
@@ -827,7 +840,7 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
               <h4 className="text-lg font-medium text-white">Dados do Cartão</h4>
               <div className="space-y-2">
                 <label htmlFor="cartao.numero" className="text-sm font-medium text-gray-300">
@@ -866,7 +879,7 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <label htmlFor="cartao.validade" className="text-sm font-medium text-gray-300">
                     Validade
@@ -929,11 +942,11 @@ export default function RegisterPage() {
       )}
 
       {/* Botão Voltar */}
-      <div className="absolute top-4 left-4 flex flex-col gap-2">
+      <div className="fixed top-3 left-3 z-50 flex flex-col gap-2">
         <Button
           onClick={() => step > 1 ? setStep(step - 1) : router.push('/')}
           variant="ghost"
-          className="text-white hover:bg-white/10 flex items-center"
+          className="text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center px-3 py-2 sm:px-3 rounded-full shadow-md border border-white/20"
         >
           <ArrowLeft className="h-5 w-5 mr-2" />
           {step > 1 ? 'Voltar uma etapa' : 'Início'}
@@ -942,7 +955,7 @@ export default function RegisterPage() {
           <Button
             onClick={() => setStep(1)}
             variant="outline"
-            className="bg-white/5 border-[#0B7A48] text-white hover:bg-[#0B7A48]/20 flex items-center justify-center gap-2"
+            className="bg-white/20 backdrop-blur-sm border-white/20 text-white hover:bg-white/30 items-center justify-center gap-2 hidden sm:flex rounded-full shadow-md"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -986,8 +999,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Formulário de Registro */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex items-start sm:items-center justify-center px-4 py-16 sm:p-8">
+        <div className="w-full max-w-sm sm:max-w-md space-y-8">
           <div className="text-center space-y-2">
             <div className="md:hidden flex justify-center mb-8">
               <Image
@@ -999,7 +1012,7 @@ export default function RegisterPage() {
                 priority
               />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               {step === 1 && 'Crie sua conta'}
               {step === 2 && 'Escolha seu plano'}
               {step === 3 && 'Dados de pagamento'}
@@ -1011,11 +1024,11 @@ export default function RegisterPage() {
             </p>
 
             {/* Indicador de Progresso */}
-            <div className="flex justify-center items-center space-x-2 mt-4">
+            <div className="flex justify-center items-center space-x-1 sm:space-x-2 mt-3 sm:mt-4">
               {[1, 2, 3].map((s) => (
                 <div
                   key={s}
-                  className={`h-2 rounded-full transition-all ${s === step ? 'w-8 bg-[#0B7A48]' : 'w-2 bg-white/20'}`}
+                  className={`h-1.5 sm:h-2 rounded-full transition-all ${s === step ? 'w-6 sm:w-8 bg-[#0B7A48]' : 'w-2 bg-white/20'}`}
                 />
               ))}
             </div>
@@ -1023,17 +1036,17 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-900/30 border border-red-500 p-4 rounded-lg flex items-start gap-3 animate-shake">
+              <div role="alert" aria-live="assertive" className={`bg-red-700/30 border border-red-400 p-4 rounded-lg flex items-start gap-3 ${errorPulse ? 'animate-shake ring-2 ring-red-400/60' : ''}` }>
                 <div className="min-w-[20px] mt-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-red-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-red-300">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="8" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-red-500 font-medium mb-1">Ops! Algo deu errado</p>
-                  <p className="text-red-400/90 text-sm">{error}</p>
+                  <p className="text-red-200 font-semibold mb-1">Ops! Algo deu errado</p>
+                  <p className="text-red-100/90 text-sm">{error}</p>
                 </div>
               </div>
             )}

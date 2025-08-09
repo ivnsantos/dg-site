@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getDataSource } from '@/src/lib/db'
-import { User } from '@/src/entities/User'
+import { User, TipoPlano, UserStatus } from '@/src/entities/User'
 import { Subscription } from '@/src/entities/Subscription'
+import bcrypt from 'bcrypt'
+import { AsaasService } from '@/src/services/AsaasService'
 
 export async function GET(request: Request) {
   try {
@@ -51,3 +53,143 @@ export async function GET(request: Request) {
     }, { status: 500 })
   }
 } 
+
+// Registro de usuário + criação de cliente/assinatura no Asaas
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+
+    const {
+      name,
+      email,
+      cpfCnpj,
+      password,
+      plano,
+      cupomDesconto,
+      cartao,
+      telefone,
+      cep,
+      numero
+    } = body || {}
+
+    if (!name || !email || !cpfCnpj || !password || !plano || !cartao?.nome || !cartao?.numero || !cartao?.mes || !cartao?.ano || !cartao?.cvv || !telefone || !cep || !numero) {
+      return NextResponse.json({ message: 'Dados inválidos' }, { status: 400 })
+    }
+
+    const dataSource = await getDataSource()
+    const userRepository = dataSource.getRepository(User)
+
+    // Normalizar dados
+    const cpfLimpo = String(cpfCnpj).replace(/\D/g, '')
+    const telefoneLimpo = String(telefone || '').replace(/\D/g, '')
+
+    // Evitar duplicidade por email/CPF
+    const existingByEmail = await userRepository.findOne({ where: { email } })
+    if (existingByEmail) {
+      return NextResponse.json({ message: 'E-mail já cadastrado' }, { status: 409 })
+    }
+
+    const existingByCpf = await userRepository.findOne({ where: { cpfOuCnpj: cpfLimpo } })
+    if (existingByCpf) {
+      return NextResponse.json({ message: 'CPF/CNPJ já cadastrado' }, { status: 409 })
+    }
+
+    // Integração com Asaas (somente se tudo der certo, criamos o usuário)
+    let customer
+    let subscription
+    let asaas: AsaasService
+    try {
+      asaas = new AsaasService()
+      customer = await asaas.createCustomer({
+        name,
+        cpfCnpj: cpfLimpo,
+        email,
+        notificationDisabled: false
+      })
+
+      const planoEscolhido = (plano === 'PRO' ? TipoPlano.PRO : TipoPlano.BASICO)
+      const valorPlano = planoEscolhido === TipoPlano.PRO ? 47.89 : 40.99
+
+      const descricaoAssinatura = `Assinatura ${planoEscolhido} - Doce Gestão: ${cupomDesconto ? ` (cupom: ${String(cupomDesconto).toUpperCase()})` : ''}`
+      subscription = await asaas.createSubscription({
+        customer: customer.id,
+        billingType: 'CREDIT_CARD',
+        value: valorPlano,
+        nextDueDate: new Date().toISOString().split('T')[0],
+        cycle: 'MONTHLY',
+        description: descricaoAssinatura,
+        maxPayments: 2,
+        creditCard: {
+          holderName: cartao.nome,
+          number: String(cartao.numero).replace(/\D/g, ''),
+          expiryMonth: cartao.mes,
+          expiryYear: cartao.ano,
+          ccv: cartao.cvv
+        },
+        creditCardHolderInfo: {
+          name: cartao.nome,
+          email,
+          cpfCnpj: cpfLimpo,
+          postalCode: String(cep).replace(/\D/g, ''),
+          addressNumber: String(numero),
+          phone: telefoneLimpo || ''
+        }
+      })
+
+      // Sucesso no Asaas → criar o usuário agora
+      const hashedPassword = await bcrypt.hash(password, 10)
+      const user = new User()
+      user.name = name
+      user.email = email
+      user.password = hashedPassword
+      user.cpfOuCnpj = cpfLimpo
+      user.telefone = telefoneLimpo
+      user.cupomDesconto = cupomDesconto || (null as any)
+      user.plano = planoEscolhido
+      user.status = UserStatus.ATIVO
+      user.idCustomer = customer.id
+      user.idAssinatura = subscription.id
+      user.valorPlano = valorPlano
+
+      const savedUser = await userRepository.save(user)
+
+      return NextResponse.json({
+        success: true,
+        user: {
+          id: savedUser.id,
+          name: savedUser.name,
+          email: savedUser.email,
+          plano: savedUser.plano,
+          status: savedUser.status
+        },
+        subscription: {
+          id: subscription.id,
+          status: subscription.status
+        }
+      })
+    } catch (asaasErr: any) {
+      // Garante que nenhum usuário seja criado quando a integração falhar
+      const message = asaasErr?.message || 'Falha na integração com Asaas'
+      const isEnv = message.includes('ASAAS_ACCESS_TOKEN')
+      return NextResponse.json(
+        { message: isEnv ? 'Configuração do Asaas ausente' : 'Erro ao processar com Asaas', details: message },
+        { status: 400 }
+      )
+    }
+
+  } catch (error: any) {
+    console.error('Erro no registro/assinatura:', error)
+    // Tratar violação de chave única (email/cpf)
+    if (error?.code === '23505') {
+      const detail: string = error?.detail || ''
+      const isCpf = detail.includes('cpf_ou_cnpj')
+      const isEmail = detail.includes('email')
+      const message = isCpf ? 'CPF/CNPJ já cadastrado' : isEmail ? 'E-mail já cadastrado' : 'Registro duplicado'
+      return NextResponse.json({ message, details: detail }, { status: 409 })
+    }
+    return NextResponse.json(
+      { message: 'Erro ao processar registro', details: error?.message || 'Erro desconhecido' },
+      { status: 500 }
+    )
+  }
+}
