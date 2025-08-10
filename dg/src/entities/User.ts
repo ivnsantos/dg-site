@@ -36,7 +36,7 @@ export class User{
     nullable: true,
     name: 'image_url',
   })
-  imageUrl!: string;
+  imageUrl?: string;
 
   @Column({ nullable: true })
   telefone?: string
@@ -54,7 +54,7 @@ export class User{
   password!: string
 
   @Column({ length: 50, nullable: true })
-  nivelAcesso!: string; // admin, vendedor, cozinha
+  nivelAcesso?: string; // admin, vendedor, cozinha
 
   @Column({
     type: 'enum',
@@ -114,7 +114,7 @@ export class User{
     scale: 2,
     nullable: true
   })
-  markupIdeal!: number;
+  markupIdeal?: number;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date

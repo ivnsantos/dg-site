@@ -18,7 +18,7 @@ const planos = [
   {
     id: TipoPlano.BASICO,
     nome: 'Plano Básico',
-    preco: 39.50,
+    preco: 26.99,
     recursos: [
       'Controle de ingredientes',
       'Controle apenas de UMA receita',
@@ -30,7 +30,7 @@ const planos = [
   {
     id: TipoPlano.PRO,
     nome: 'Plano PRO',
-    preco: 47.50,
+    preco: 29.89,
     recursos: [
       'Controle completo de ingredientes e estoque',
       'Gerenciamento de TODAS as receitas',

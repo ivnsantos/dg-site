@@ -72,7 +72,7 @@ export default function HomePage() {
         <div className="container px-4 md:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <div className="bg-black/40 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-[#0B7A48]/20 transform hover:scale-105 transition-all duration-300 text-center group hover:border-[#0B7A48]/40">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#0B7A48] mb-3 group-hover:text-[#0ea65f] transition-colors">+1000</div>
+              <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#0B7A48] mb-3 group-hover:text-[#0ea65f] transition-colors">+500</div>
               <div className="text-white/90 text-lg md:text-xl font-medium">Confeiteiros Ativos</div>
               <p className="text-white/60 text-sm md:text-base mt-2">Profissionais transformando suas receitas em negócios</p>
             </div>
@@ -352,7 +352,7 @@ export default function HomePage() {
               
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold text-white">R$ 40,99</span>
+                  <span className="text-4xl font-bold text-white">R$ 26,99</span>
                   <span className="text-white/60 ml-2">/mês</span>
                 </div>
               </div>
@@ -407,7 +407,7 @@ export default function HomePage() {
               
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold text-white">R$ 47,89</span>
+                  <span className="text-4xl font-bold text-white">R$ 29,89</span>
                   <span className="text-white/60 ml-2">/mês</span>
                 </div>
                 <p className="text-[#0B7A48] font-semibold text-sm mt-2">
@@ -582,7 +582,7 @@ export default function HomePage() {
       </section>
 
       {/* Nós na Mídia Section */}
-      <section className="py-6 md:py-16 bg-gray-100 -mt-4 md:mt-0">
+      {/* <section className="py-6 md:py-16 bg-gray-100 -mt-4 md:mt-0">
         <div className="container px-3 md:px-8">
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#2D1810] mb-4 md:mb-12 text-center">Nós na mídia</h2>
           
@@ -640,7 +640,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
 
       {/* Join Section */}
@@ -658,7 +658,7 @@ export default function HomePage() {
             </div>
             <div className="md:w-1/2">
               <h2 className="text-3xl font-bold text-[#2D1810] mb-4">
-                Junte-se a mais de 1000 confeiteiros e confeitarias
+                Junte-se a mais de 500 confeiteiros e confeitarias
               </h2>
               <Link href="/register">
                 <button className="button-primary">Venha Conhecer</button>

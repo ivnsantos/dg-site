@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getDataSource } from '@/src/lib/db'
 import { User, TipoPlano, UserStatus } from '@/src/entities/User'
 import { Subscription } from '@/src/entities/Subscription'
+import { Cupom, StatusCupom } from '@/src/entities/Cupom'
 import bcrypt from 'bcrypt'
 import { AsaasService } from '@/src/services/AsaasService'
 
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
 
     const dataSource = await getDataSource()
     const userRepository = dataSource.getRepository(User)
+    const cupomRepository = dataSource.getRepository(Cupom)
 
     // Normalizar dados
     const cpfLimpo = String(cpfCnpj).replace(/\D/g, '')
@@ -94,6 +96,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'CPF/CNPJ já cadastrado' }, { status: 409 })
     }
 
+    // Validar cupom se fornecido
+    let cupomValido = null
+    if (cupomDesconto) {
+      try {
+        cupomValido = await cupomRepository.findOne({
+          where: { codigo: cupomDesconto.toUpperCase() }
+        })
+
+        if (!cupomValido) {
+          return NextResponse.json({ message: 'Cupom não encontrado' }, { status: 400 })
+        }
+
+        if (cupomValido.status !== StatusCupom.ATIVO) {
+          return NextResponse.json({ message: 'Cupom inativo' }, { status: 400 })
+        }
+
+        if (cupomValido.dataExpiracao && new Date() > new Date(cupomValido.dataExpiracao)) {
+          return NextResponse.json({ message: 'Cupom expirado' }, { status: 400 })
+        }
+
+        if (cupomValido.limiteUsos && cupomValido.quantidadeUsos >= cupomValido.limiteUsos) {
+          return NextResponse.json({ message: 'Cupom atingiu o limite de usos' }, { status: 400 })
+        }
+      } catch (cupomError) {
+        console.error('Erro ao validar cupom:', cupomError)
+        return NextResponse.json({ message: 'Erro ao validar cupom' }, { status: 500 })
+      }
+    }
+
     // Integração com Asaas (somente se tudo der certo, criamos o usuário)
     let customer
     let subscription
@@ -108,13 +139,14 @@ export async function POST(request: Request) {
       })
 
       const planoEscolhido = (plano === 'PRO' ? TipoPlano.PRO : TipoPlano.BASICO)
-      const valorPlano = planoEscolhido === TipoPlano.PRO ? 47.89 : 40.99
+      const valorPlano = planoEscolhido === TipoPlano.PRO ? 29.89 : 26.99
 
-      const descricaoAssinatura = `Assinatura ${planoEscolhido} - Doce Gestão: ${cupomDesconto ? ` (cupom: ${String(cupomDesconto).toUpperCase()})` : ''}`
+      const descricaoAssinatura = `Assinatura ${planoEscolhido} - Doce Gestão: ${cupomValido ? ` (cupom: ${cupomValido.codigo} - ${cupomValido.desconto}% de desconto)` : ''}`
+      
       subscription = await asaas.createSubscription({
         customer: customer.id,
         billingType: 'CREDIT_CARD',
-        value: valorPlano,
+        value: valorPlano, // Mantém o valor original do plano
         nextDueDate: new Date().toISOString().split('T')[0],
         cycle: 'MONTHLY',
         description: descricaoAssinatura,
@@ -133,7 +165,12 @@ export async function POST(request: Request) {
           postalCode: String(cep).replace(/\D/g, ''),
           addressNumber: String(numero),
           phone: telefoneLimpo || ''
-        }
+        },
+        discount: cupomValido ? {
+          value: cupomValido.desconto, // Usa a porcentagem de desconto do cupom validado
+          dueDateLimitDays: 1,
+          type: 'PERCENTAGE'
+        } : undefined
       })
 
       // Sucesso no Asaas → criar o usuário agora
@@ -144,7 +181,7 @@ export async function POST(request: Request) {
       user.password = hashedPassword
       user.cpfOuCnpj = cpfLimpo
       user.telefone = telefoneLimpo
-      user.cupomDesconto = cupomDesconto || (null as any)
+      user.cupomDesconto = cupomValido ? cupomValido.codigo : ''
       user.plano = planoEscolhido
       user.status = UserStatus.ATIVO
       user.idCustomer = customer.id
@@ -152,6 +189,23 @@ export async function POST(request: Request) {
       user.valorPlano = valorPlano
 
       const savedUser = await userRepository.save(user)
+
+      // Atualizar uso do cupom após salvar o usuário com sucesso
+      if (cupomValido) {
+        try {
+          cupomValido.quantidadeUsos = (cupomValido.quantidadeUsos || 0) + 1
+          
+          // Se atingiu o limite de usos, marcar como inativo
+          if (cupomValido.limiteUsos && cupomValido.quantidadeUsos >= cupomValido.limiteUsos) {
+            cupomValido.status = StatusCupom.INATIVO
+          }
+          
+          await cupomRepository.save(cupomValido)
+        } catch (cupomUpdateError) {
+          console.error('Erro ao atualizar uso do cupom:', cupomUpdateError)
+          // Não falha o registro se não conseguir atualizar o cupom
+        }
+      }
 
       return NextResponse.json({
         success: true,
