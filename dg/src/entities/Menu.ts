@@ -14,7 +14,7 @@ export class Menu {
 
   @ManyToOne(() => User, (user) => user.menus)
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user!: any;
 
   @Column({ unique: true })
   codigo!: string;

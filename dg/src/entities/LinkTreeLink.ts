@@ -29,5 +29,5 @@ export class LinkTreeLink {
 
   @ManyToOne(() => LinkTree, (linkTree) => linkTree.links, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'linkTreeId' })
-  linkTree!: LinkTree
+  linkTree!: any
 } 

@@ -27,7 +27,7 @@ export class FichaTecnica {
 
     @ManyToOne(()=> Product, (product) => product.fichaTecnicas)
     @JoinColumn({ name: "productId" })
-    product!: Product
+    product!: any
 
     @ManyToOne(() => Ingredient, (ingredient) => ingredient.fichaTecnicas)
     @JoinColumn({ name: "ingredientId" })

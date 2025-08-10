@@ -8,7 +8,7 @@ export class FooterOrcamento {
 
   @ManyToOne(() => User, (user) => user.footerOrcamentos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user!: any;
 
   @Column({ type: 'text', default: 'Pix ou Kix no cartão de crédito' })
   formaPagamento!: string;

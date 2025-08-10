@@ -50,7 +50,7 @@ export class Product {
   lastUpdate!: Date
 
   @ManyToOne(() => User, (user) => user.products)
-  user!: User
+  user!: any
 
   @OneToMany(() => FichaTecnica, (fichaTecnica) => fichaTecnica.product)
   fichaTecnicas!: FichaTecnica[]

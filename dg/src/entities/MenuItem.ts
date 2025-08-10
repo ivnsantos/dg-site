@@ -8,7 +8,7 @@ export class MenuItem {
 
   @ManyToOne(() => MenuSection, (section) => section.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'section_id' })
-  section!: MenuSection;
+  section!: any;
 
   @Column({ length: 100 })
   name!: string;

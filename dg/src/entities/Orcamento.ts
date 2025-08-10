@@ -10,7 +10,7 @@ export class Orcamento {
 
   @ManyToOne(() => User, (user) => user.orcamentos)
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user!: any;
 
   @ManyToOne(() => Cliente, (cliente) => cliente.orcamentos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cliente_id' })

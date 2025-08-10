@@ -25,9 +25,12 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
+  @Column({ type: 'int' })
+  userId!: number
+
   @ManyToOne(() => User, (user) => user.ingredients)
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: any
 
   @OneToMany(() => FichaTecnica, (fichaTecnica) => fichaTecnica.ingredient)
   fichaTecnicas!: FichaTecnica[]

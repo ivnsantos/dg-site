@@ -8,7 +8,7 @@ export class ItemOrcamento {
 
   @ManyToOne(() => Orcamento, (orcamento) => orcamento.itens, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'orcamento_id' })
-  orcamento!: Orcamento;
+  orcamento!: any;
 
   @Column({ type: 'varchar', length: 100 })
   descricao!: string;

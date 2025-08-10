@@ -24,7 +24,7 @@ export class FeedbackResponse {
 
   @ManyToOne(() => Feedback, (feedback) => feedback.feedbackResponses)
   @JoinColumn({ name: 'feedbackId' })
-  feedback!: Feedback
+  feedback!: any
 
   @CreateDateColumn()
   createdAt!: Date

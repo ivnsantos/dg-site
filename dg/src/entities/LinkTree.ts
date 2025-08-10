@@ -25,7 +25,7 @@ export class LinkTree {
 
   @ManyToOne(() => User, (user) => user.linkTrees, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: any
 
   @Column({ type: 'int' })
   userId!: number

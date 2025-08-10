@@ -125,37 +125,37 @@ export class User{
 
    // Relações OneToMany
    @OneToMany(() => Product, (product) => product.user)
-   products!: Product[];
+   products!: any[];
  
    @OneToMany(() => Ingredient, (ingredient) => ingredient.user)
-   ingredients!: Ingredient[];
+   ingredients!: any[];
  
    @OneToMany(() => Subscription, (subscription) => subscription.user)
-   subscriptions!: Subscription[]
+   subscriptions!: any[]
  
    @OneToMany(() => Orcamento, (orcamento) => orcamento.user)
-   orcamentos!: Orcamento[];
+   orcamentos!: any[];
  
    @OneToMany(() => LinkTree, (linkTree) => linkTree.user)
-   linkTrees!: LinkTree[]
+   linkTrees!: any[]
  
    @OneToMany(() => Menu, (menu) => menu.user)
-   menus!: Menu[];
+   menus!: any[];
  
    @OneToMany(() => Cliente, (cliente) => cliente.user)
-   clientes!: Cliente[]
+   clientes!: any[]
 
    @OneToMany(() => Confeitaria, (confeitaria) => confeitaria.usuario)
-   confeitarias!: Confeitaria[]
+   confeitarias!: any[]
 
    @OneToMany(() => Feedback, (feedback) => feedback.user)
-   feedbacks!: Feedback[]
+   feedbacks!: any[]
 
    @OneToMany(() => HeaderOrcamento, (header) => header.user)
-   headerOrcamentos!: HeaderOrcamento[]
+   headerOrcamentos!: any[]
 
    @OneToMany(() => FooterOrcamento, (footer) => footer.user)
-   footerOrcamentos!: FooterOrcamento[]
+   footerOrcamentos!: any[]
  
 } 
 

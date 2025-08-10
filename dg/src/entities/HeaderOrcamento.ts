@@ -8,7 +8,7 @@ export class HeaderOrcamento {
 
   @ManyToOne(() => User, (user) => user.headerOrcamentos)
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user!: any;
 
   @Column({ length: 100 })
   nomeFantasia!: string;

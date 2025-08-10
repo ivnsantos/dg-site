@@ -65,7 +65,7 @@ export class Subscription {
   // Relacionamento com o usuário
   @ManyToOne(() => User, (user) => user.subscriptions)
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: any
 
   @Column({ type: 'int' })
   userId!: number

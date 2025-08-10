@@ -12,7 +12,7 @@ export class Confeitaria implements IConfeitaria {
 
   @OneToOne(() => User, (user) => user.confeitarias, { cascade: true })
   @JoinColumn({ name: 'userId' })
-  usuario!: User;
+  usuario!: any;
 
   @Column({ type: 'text', nullable: true })
   endereco?: string;
