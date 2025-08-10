@@ -41,10 +41,8 @@ export default function HomePage() {
               <span className="bg-gradient-to-r from-[#0B7A48] to-[#0ea65f] text-transparent bg-clip-text"> Gestão</span>
             </span>
             <span className="block text-2xl md:text-5xl font-medium text-white/90 mt-4 md:mt-6">
-              para
-              <span className="text-[#0B7A48] font-bold hover:text-[#0ea65f] transition-colors duration-300"> confeiteiros</span>
-              <span className="mx-2 md:mx-3 text-[#0B7A48]">&</span>
-              <span className="text-[#0B7A48] font-bold hover:text-[#0ea65f] transition-colors duration-300">cozinheiros</span>
+              para você
+              <span className="text-[#0B7A48] font-bold hover:text-[#0ea65f] transition-colors duration-300"> Empreendedoras & Empreendedores</span>
             </span>
           </h1>
 
