@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm'
 import { User } from './User'
 import { FichaTecnica } from './FichaTecnica'
 
@@ -50,8 +50,9 @@ export class Product {
   lastUpdate!: Date
 
   @ManyToOne('User', 'products')
+  @JoinColumn({ name: 'userId' })
   user!: User
 
-  @OneToMany('FichaTecnica', 'product')
+  @OneToMany('FichaTecnica', 'products')
   fichaTecnicas!: FichaTecnica[]
 } 
