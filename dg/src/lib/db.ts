@@ -29,23 +29,30 @@ const dataSourceConfig = {
     type: 'postgres' as const,
     url: process.env.DATABASE_URL,
     entities: [
+        // Entidades base primeiro
         User,
         Cupom,
-        Orcamento,
+        
+        // Entidades que dependem de User
         Product,
         Ingredient,
+        Subscription,
+        Orcamento,
+        Cliente,
         Confeitaria,
         Menu,
+        LinkTree,
+        
+        // Entidades que dependem das anteriores
         MenuSection,
         MenuItem,
-        Cliente,
+        LinkTreeLink,
         ItemOrcamento,
         HeaderOrcamento,
         FooterOrcamento,
         FichaTecnica,
-        LinkTree,
-        LinkTreeLink,
-        Subscription,
+        
+        // Entidades de feedback por último
         Feedback,
         FeedbackResponse
     ],

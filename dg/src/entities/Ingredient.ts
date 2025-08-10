@@ -25,9 +25,9 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
-  @ManyToOne('User', 'ingredients')
-  @JoinColumn({ name: 'userId' })
-  user!: User
+  // @ManyToOne('User', 'ingredients')
+  // @JoinColumn({ name: 'userId' })
+  // user!: User
 
   @OneToMany('FichaTecnica', 'ingredient')
   fichaTecnicas!: FichaTecnica[]
