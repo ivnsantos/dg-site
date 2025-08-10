@@ -53,6 +53,6 @@ export class Product {
   @JoinColumn({ name: 'userId' })
   user!: User
 
-  @OneToMany('FichaTecnica', 'products')
+  @OneToMany('FichaTecnica', 'product')
   fichaTecnicas!: FichaTecnica[]
 } 
