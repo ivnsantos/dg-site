@@ -45,10 +45,10 @@ export class Feedback {
 
   @ManyToOne(() => User, (user) => user.feedbacks)
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: any
 
   @OneToMany(() => FeedbackResponse, (response) => response.feedback)
-  feedbackResponses!: FeedbackResponse[]
+  feedbackResponses!: any[]
 
   @CreateDateColumn()
   createdAt!: Date
