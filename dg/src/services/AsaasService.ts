@@ -66,7 +66,7 @@ export class AsaasService {
     this.apiUrl = process.env.ASAAS_API_URL || 'https://api-sandbox.asaas.com/v3'
     this.accessToken = (process.env.ASAAS_ACCESS_TOKEN || '')
     if (!this.accessToken) {
-      throw new Error('ASAAS_ACCESS_TOKEN não configurado nas variáveis de ambiente')
+      throw new Error('TOKEN não configurado')
     }
   }
 

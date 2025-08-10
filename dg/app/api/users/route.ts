@@ -138,15 +138,19 @@ export async function POST(request: Request) {
         notificationDisabled: false
       })
 
+      // valores do plano
       const planoEscolhido = (plano === 'PRO' ? TipoPlano.PRO : TipoPlano.BASICO)
       const valorPlano = planoEscolhido === TipoPlano.PRO ? 29.89 : 26.99
+
+      const desconto = cupomValido ? cupomValido.desconto : 0
+      const valorFinal = valorPlano * (1 - desconto / 100) // Calcula o valor final com desconto percentual
 
       const descricaoAssinatura = `Assinatura ${planoEscolhido} - Doce Gestão: ${cupomValido ? ` (cupom: ${cupomValido.codigo} - ${cupomValido.desconto}% de desconto)` : ''}`
       
       subscription = await asaas.createSubscription({
         customer: customer.id,
         billingType: 'CREDIT_CARD',
-        value: valorPlano, // Mantém o valor original do plano
+        value: valorFinal, // Envia o valor final já com desconto aplicado
         nextDueDate: new Date().toISOString().split('T')[0],
         cycle: 'MONTHLY',
         description: descricaoAssinatura,
@@ -165,12 +169,7 @@ export async function POST(request: Request) {
           postalCode: String(cep).replace(/\D/g, ''),
           addressNumber: String(numero),
           phone: telefoneLimpo || ''
-        },
-        discount: cupomValido ? {
-          value: cupomValido.desconto, // Usa a porcentagem de desconto do cupom validado
-          dueDateLimitDays: 1,
-          type: 'PERCENTAGE'
-        } : undefined
+        }
       })
 
       // Sucesso no Asaas → criar o usuário agora
