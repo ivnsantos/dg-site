@@ -9,6 +9,7 @@ import EmailVerificationModal from '@/components/EmailVerificationModal'
 import WhatsAppFloat from '@/components/WhatsAppFloat'
 import { toast } from 'react-hot-toast'
 import { uploadFileViaAPI } from '@/src/lib/s3'
+import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -49,9 +50,15 @@ export default function DashboardLayout({
     }
   }, [session, status, pathname, router])
 
-  if (status === 'loading') {
-    return <div>Carregando...</div>
-  }
+    if (status === 'loading') {
+      return (
+        <DoceGestaoLoading 
+          message="Carregando dashboard..." 
+          size="lg" 
+          fullScreen={true} 
+        />
+      )
+    }
 
   if (!session) {
     redirect('/login')
@@ -95,7 +102,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="min-h-screen lg:pl-64 pt-16 lg:pt-0">
+      <main className="min-h-screen lg:pl-64 lg:pt-0">
         <div className="container mx-auto p-4 lg:p-6">
           {children}
         </div>
