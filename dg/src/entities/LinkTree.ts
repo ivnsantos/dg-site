@@ -49,5 +49,5 @@ export class LinkTree {
   updatedAt!: Date
 
   @OneToMany(() => LinkTreeLink, (link) => link.linkTree, { cascade: true })
-  links!: LinkTreeLink[]
+  links!: any[]
 } 

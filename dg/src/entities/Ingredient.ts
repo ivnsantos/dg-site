@@ -33,5 +33,5 @@ export class Ingredient {
   user!: any
 
   @OneToMany(() => FichaTecnica, (fichaTecnica) => fichaTecnica.ingredient)
-  fichaTecnicas!: FichaTecnica[]
+  fichaTecnicas!: any[]
 } 

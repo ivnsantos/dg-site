@@ -31,7 +31,7 @@ export class FichaTecnica {
 
     @ManyToOne(() => Ingredient, (ingredient) => ingredient.fichaTecnicas)
     @JoinColumn({ name: "ingredientId" })
-    ingredient!: Ingredient
+    ingredient!: any
 
     @Column()
     productId!: number

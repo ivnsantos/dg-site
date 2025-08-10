@@ -14,7 +14,7 @@ export class Orcamento {
 
   @ManyToOne(() => Cliente, (cliente) => cliente.orcamentos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cliente_id' })
-  cliente!: Cliente;
+  cliente!: any;
 
   @Column({ type: 'varchar', length: 50 })
   numero!: string;
@@ -35,7 +35,7 @@ export class Orcamento {
   status!: string;
 
   @OneToMany(() => ItemOrcamento, (item) => item.orcamento)
-  itens!: ItemOrcamento[];
+  itens!: any[];
 
   @CreateDateColumn()
   createdAt!: Date;

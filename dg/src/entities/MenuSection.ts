@@ -27,5 +27,5 @@ export class MenuSection {
   createdAt!: Date;
 
   @OneToMany(() => MenuItem, (item) => item.section, { cascade: true, eager: true })
-  items?: MenuItem[];
+  items?: any[];
 } 

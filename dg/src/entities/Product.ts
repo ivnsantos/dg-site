@@ -53,5 +53,5 @@ export class Product {
   user!: any
 
   @OneToMany(() => FichaTecnica, (fichaTecnica) => fichaTecnica.product)
-  fichaTecnicas!: FichaTecnica[]
+  fichaTecnicas!: any[]
 } 
