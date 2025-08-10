@@ -50,7 +50,6 @@ export class Product {
   lastUpdate!: Date
 
   @ManyToOne('User', 'products')
-  @JoinColumn({ name: 'userId' })
   user!: User
 
   @OneToMany('FichaTecnica', 'product')

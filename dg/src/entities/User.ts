@@ -124,31 +124,24 @@ export class User{
   updatedAt!: Date
 
    // Relações OneToMany
-   @OneToMany('Product', 'user')
-   products!: Product[]
+   @OneToMany(() => Product, (product) => product.user)
+   products!: Product[];
  
-   @OneToMany('Ingredient', 'user')
-   ingredients!: Ingredient[]
- 
-   @OneToMany('Subscription', 'user')
+   @OneToMany(() => Subscription, (subscription) => subscription.user)
    subscriptions!: Subscription[]
  
-   @OneToMany('Orcamento', 'user')
-   orcamentos!: Orcamento[]
+   @OneToMany(() => Orcamento, (orcamento) => orcamento.user)
+   orcamentos!: Orcamento[];
  
-   @OneToMany('LinkTree', 'user')
+   @OneToMany(() => LinkTree, (linkTree) => linkTree.user)
    linkTrees!: LinkTree[]
  
-   @OneToMany('Menu', 'user')
-   menus!: Menu[]
+   @OneToMany(() => Menu, (menu) => menu.user)
+   menus!: Menu[];
  
-   @OneToMany('Cliente', 'user')
+   @OneToMany(() => Cliente, (cliente) => cliente.user)
    clientes!: Cliente[]
  
-   @OneToMany('Confeitaria', 'user')
-   confeitarias!: Confeitaria[]
- 
-
 } 
 
 // ID da conta
