@@ -25,10 +25,6 @@ export class Ingredient {
   @Column()
   lastUpdate!: Date
 
-  // @ManyToOne('User', 'ingredients')
-  // @JoinColumn({ name: 'userId' })
-  // user!: User
-
-  @OneToMany('FichaTecnica', 'ingredient')
+  @OneToMany(() => FichaTecnica, (fichaTecnica) => fichaTecnica.ingredient)
   fichaTecnicas!: FichaTecnica[]
 } 
