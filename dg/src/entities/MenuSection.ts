@@ -7,7 +7,7 @@ export class MenuSection {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Menu, menu => menu.sections, { onDelete: 'CASCADE' })
+  @ManyToOne('Menu', 'sections', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'menu_id' })
   menu!: Menu;
 
@@ -26,6 +26,6 @@ export class MenuSection {
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @OneToMany(() => MenuItem, (item: MenuItem) => item.section, { cascade: true, eager: true })
+  @OneToMany('MenuItem', 'section', { cascade: true, eager: true })
   items?: MenuItem[];
 } 

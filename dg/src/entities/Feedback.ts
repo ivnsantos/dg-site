@@ -43,11 +43,11 @@ export class Feedback {
   })
   status!: FeedbackStatus
 
-  @ManyToOne(() => User, user => user.id)
+  @ManyToOne('User', 'feedbacks')
   @JoinColumn({ name: 'userId' })
   user!: User
 
-  @OneToMany(() => FeedbackResponse, feedbackResponse => feedbackResponse.feedback)
+  @OneToMany('FeedbackResponse', 'feedback')
   feedbackResponses!: FeedbackResponse[]
 
   @CreateDateColumn()

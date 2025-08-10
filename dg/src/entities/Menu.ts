@@ -12,7 +12,7 @@ export class Menu {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, user => user.id)
+  @ManyToOne('User', 'menus')
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
@@ -50,6 +50,6 @@ export class Menu {
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @OneToMany(() => MenuSection, (section: MenuSection) => section.menu, { cascade: true, eager: true })
+  @OneToMany('MenuSection', 'menu', { cascade: true, eager: true })
   sections?: MenuSection[];
 } 

@@ -63,7 +63,7 @@ export class Subscription {
   creditCardToken?: string // Token do cartão
 
   // Relacionamento com o usuário
-  @ManyToOne(() => User, user => user.id)
+  @ManyToOne('User', 'subscriptions')
   @JoinColumn({ name: 'userId' })
   user!: User
 
