@@ -6,7 +6,7 @@ export class ItemOrcamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('Orcamento', 'itens', { onDelete: 'CASCADE' })
+  @ManyToOne(() => Orcamento, (orcamento) => orcamento.itens, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'orcamento_id' })
   orcamento!: Orcamento;
 

@@ -6,7 +6,7 @@ export class FooterOrcamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('User', 'footerOrcamentos', { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.footerOrcamentos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user!: User;
 

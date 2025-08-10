@@ -6,7 +6,7 @@ export class HeaderOrcamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('User', 'headerOrcamentos')
+  @ManyToOne(() => User, (user) => user.headerOrcamentos)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 

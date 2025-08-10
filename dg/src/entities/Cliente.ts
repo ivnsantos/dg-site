@@ -1,14 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
+import { Orcamento } from './Orcamento';
 
 @Entity('clientes')
 export class Cliente {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('User', 'clientes', { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.clientes, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user!: User;
+
+  @OneToMany(() => Orcamento, (orcamento) => orcamento.cliente)
+  orcamentos!: Orcamento[];
 
   @Column({ length: 100 })
   nome!: string;

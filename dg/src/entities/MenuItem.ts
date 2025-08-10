@@ -6,7 +6,7 @@ export class MenuItem {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('MenuSection', 'items', { onDelete: 'CASCADE' })
+  @ManyToOne(() => MenuSection, (section) => section.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'section_id' })
   section!: MenuSection;
 

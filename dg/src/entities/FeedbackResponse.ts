@@ -22,7 +22,7 @@ export class FeedbackResponse {
   @Column()
   feedbackId!: number
 
-  @ManyToOne('Feedback', 'feedbackResponses')
+  @ManyToOne(() => Feedback, (feedback) => feedback.feedbackResponses)
   @JoinColumn({ name: 'feedbackId' })
   feedback!: Feedback
 

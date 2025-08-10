@@ -8,11 +8,11 @@ export class Orcamento {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne('User', 'orcamentos')
+  @ManyToOne(() => User, (user) => user.orcamentos)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToOne('Cliente', 'orcamentos', { onDelete: 'CASCADE' })
+  @ManyToOne(() => Cliente, (cliente) => cliente.orcamentos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cliente_id' })
   cliente!: Cliente;
 
@@ -34,7 +34,7 @@ export class Orcamento {
   @Column({ type: 'varchar', length: 20, default: 'PENDENTE' })
   status!: string;
 
-  @OneToMany('ItemOrcamento', 'orcamento')
+  @OneToMany(() => ItemOrcamento, (item) => item.orcamento)
   itens!: ItemOrcamento[];
 
   @CreateDateColumn()

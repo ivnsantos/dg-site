@@ -23,7 +23,7 @@ export class LinkTree {
   @Column({ type: 'boolean', default: true })
   isActive!: boolean
 
-  @ManyToOne('User', 'linkTrees', { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.linkTrees, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user!: User
 
@@ -48,6 +48,6 @@ export class LinkTree {
   @UpdateDateColumn()
   updatedAt!: Date
 
-  @OneToMany('LinkTreeLink', 'linkTree', { cascade: true })
+  @OneToMany(() => LinkTreeLink, (link) => link.linkTree, { cascade: true })
   links!: LinkTreeLink[]
 } 

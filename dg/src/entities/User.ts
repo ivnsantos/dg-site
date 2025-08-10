@@ -127,6 +127,9 @@ export class User{
    @OneToMany(() => Product, (product) => product.user)
    products!: Product[];
  
+   @OneToMany(() => Ingredient, (ingredient) => ingredient.user)
+   ingredients!: Ingredient[];
+ 
    @OneToMany(() => Subscription, (subscription) => subscription.user)
    subscriptions!: Subscription[]
  
@@ -141,6 +144,18 @@ export class User{
  
    @OneToMany(() => Cliente, (cliente) => cliente.user)
    clientes!: Cliente[]
+
+   @OneToMany(() => Confeitaria, (confeitaria) => confeitaria.usuario)
+   confeitarias!: Confeitaria[]
+
+   @OneToMany(() => Feedback, (feedback) => feedback.user)
+   feedbacks!: Feedback[]
+
+   @OneToMany(() => HeaderOrcamento, (header) => header.user)
+   headerOrcamentos!: HeaderOrcamento[]
+
+   @OneToMany(() => FooterOrcamento, (footer) => footer.user)
+   footerOrcamentos!: FooterOrcamento[]
  
 } 
 
