@@ -1,4 +1,17 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
+import { Product } from './Product'
+import { Ingredient } from './Ingredient'
+import { Subscription } from './Subscription'
+import { Orcamento } from './Orcamento'
+import { LinkTree } from './LinkTree'
+import { Menu } from './Menu'
+import { Cliente } from './Cliente'
+import { Confeitaria } from './Confeitaria'
+import { HeaderOrcamento } from './HeaderOrcamento'
+import { FooterOrcamento } from './FooterOrcamento'
+import { Feedback } from './Feedback'
+import { FeedbackResponse } from './FeedbackResponse'
+
 
 export enum TipoPlano {
   BASICO = 'BASICO',
@@ -95,7 +108,7 @@ export class User{
     name: 'status'
   })
   status!: UserStatus;
-
+  
   @Column({
     type: 'decimal',
     precision: 10,
@@ -109,6 +122,32 @@ export class User{
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt!: Date
+
+   // Relações OneToMany
+   @OneToMany('Product', 'user')
+   products!: Product[]
+ 
+   @OneToMany('Ingredient', 'user')
+   ingredients!: Ingredient[]
+ 
+   @OneToMany('Subscription', 'user')
+   subscriptions!: Subscription[]
+ 
+   @OneToMany('Orcamento', 'user')
+   orcamentos!: Orcamento[]
+ 
+   @OneToMany('LinkTree', 'user')
+   linkTrees!: LinkTree[]
+ 
+   @OneToMany('Menu', 'user')
+   menus!: Menu[]
+ 
+   @OneToMany('Cliente', 'user')
+   clientes!: Cliente[]
+ 
+   @OneToMany('Confeitaria', 'user')
+   confeitarias!: Confeitaria[]
+ 
 
 } 
 
