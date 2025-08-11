@@ -238,20 +238,20 @@ export default function ProdutosClient() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <Skeleton className="h-3 w-3" />
-                          <div className="space-y-1">
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-1.5">
+                            <Skeleton className="h-3 w-3" />
                             <Skeleton className="h-3 w-16" />
-                            <Skeleton className="h-3 w-12" />
                           </div>
+                          <Skeleton className="h-3 w-12" />
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Skeleton className="h-3 w-3" />
-                          <div className="space-y-1">
-                            <Skeleton className="h-3 w-16" />
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-1.5">
+                            <Skeleton className="h-3 w-3" />
                             <Skeleton className="h-3 w-12" />
                           </div>
+                          <Skeleton className="h-3 w-16" />
                         </div>
                       </div>
 
@@ -431,42 +431,38 @@ export default function ProdutosClient() {
                                   </div>
                                 )}
                                 
-                                                                {/* Informações Básicas */}
-                                <div className={`grid grid-cols-2 gap-2 mb-2 ${
-                                  expandedCharts[product.id] ? 'gap-4 mb-4' : ''
-                                }`}>
-                                  <div className="flex items-center gap-1.5">
-                                    <Package2 className={`text-gray-500 ${
-                                      expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
-                                    }`} />
-                                    <div>
-                                      <p className={`text-gray-500 ${
-                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
-                                      }`}>Rendimento</p>
-                                      <p className={`font-medium ${
-                                        expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                      }`}>{product.quantity} un</p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Scale className={`text-gray-500 ${
-                                      expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
-                                    }`} />
-                                    <div>
-                                      <p className={`text-gray-500 ${
-                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
-                                      }`}>Peso</p>
-                                      <p className={`font-medium ${
-                                        expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                      }`}>{product.totalWeight.toFixed(0)}g</p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                                    {/* Preços */}
+                                                                                                {/* Informações Básicas e Preços */}
                                 <div className={`space-y-1.5 mb-2 ${
                                   expandedCharts[product.id] ? 'space-y-3 mb-4' : ''
                                 }`}>
+                                  <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-1.5">
+                                      <Package2 className={`text-gray-500 ${
+                                        expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
+                                      }`} />
+                                      <span className={`text-gray-600 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>Rendimento</span>
+                                    </div>
+                                    <span className={`font-medium text-gray-900 ${
+                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                    }`}>{product.quantity} un</span>
+                                  </div>
+                                  
+                                  <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-1.5">
+                                      <Scale className={`text-gray-500 ${
+                                        expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
+                                      }`} />
+                                      <span className={`text-gray-600 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>Peso</span>
+                                    </div>
+                                    <span className={`font-medium text-gray-900 ${
+                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                    }`}>{product.totalWeight.toFixed(0)}g</span>
+                                  </div>
+                                  
                                   <div className="flex justify-between items-center">
                                     <span className={`text-gray-600 ${
                                       expandedCharts[product.id] ? 'text-sm' : 'text-xs'
@@ -475,6 +471,7 @@ export default function ProdutosClient() {
                                       expandedCharts[product.id] ? 'text-base' : 'text-sm'
                                     }`}>R$ {product.totalCost.toFixed(2)}</span>
                                   </div>
+                                  
                                   <div className="flex justify-between items-center">
                                     <span className={`text-gray-600 ${
                                       expandedCharts[product.id] ? 'text-sm' : 'text-xs'
@@ -483,6 +480,7 @@ export default function ProdutosClient() {
                                       expandedCharts[product.id] ? 'text-base' : 'text-sm'
                                     }`}>R$ {product.sellingPrice.toFixed(2)}</span>
                                   </div>
+                                  
                                   <div className="flex justify-between items-center">
                                     <span className={`text-gray-600 ${
                                       expandedCharts[product.id] ? 'text-sm' : 'text-xs'
