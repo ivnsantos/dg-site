@@ -45,6 +45,7 @@ export default function ProdutosClient() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [expandedCharts, setExpandedCharts] = useState<{[key: number]: boolean}>({})
 
   useEffect(() => {
     loadProducts()
@@ -121,25 +122,43 @@ export default function ProdutosClient() {
     router.push(`/dashboard/produtos/${product.id}/ingredientes`)
   }
 
-  const createProductChart = (product: Product) => {
+  const toggleChartExpansion = (productId: number) => {
+    setExpandedCharts(prev => ({
+      ...prev,
+      [productId]: !prev[productId]
+    }))
+  }
+
+    const createProductChart = (product: Product) => {
+    const lucroSugerido = product.suggestedPrice - product.totalCost
+    
     const chartData = {
       labels: ['Custo', 'Preço Atual', 'Preço Sugerido'],
       datasets: [
         {
-          label: 'Valores (R$)',
-          data: [product.totalCost, product.sellingPrice, product.suggestedPrice],
-          backgroundColor: [
-            'rgba(239, 68, 68, 0.8)',   // Vermelho para custo
-            'rgba(34, 197, 94, 0.8)',   // Verde para preço atual
-            'rgba(59, 130, 246, 0.8)',  // Azul para preço sugerido
-          ],
-          borderColor: [
-            'rgba(239, 68, 68, 1)',
-            'rgba(34, 197, 94, 1)',
-            'rgba(59, 130, 246, 1)',
-          ],
-          borderWidth: 1,
+          label: 'Custo',
+          data: [product.totalCost, 0, product.totalCost],
+          backgroundColor: 'rgba(220, 38, 38, 0.9)',   // Vermelho mais escuro para custo
+          borderColor: 'rgba(220, 38, 38, 1)',
+          borderWidth: 2,
+          stack: 'stack1',
         },
+        {
+          label: 'Preço Atual',
+          data: [0, product.sellingPrice, 0],
+          backgroundColor: 'rgba(37, 99, 235, 0.9)',   // Azul mais escuro para preço atual
+          borderColor: 'rgba(37, 99, 235, 1)',
+          borderWidth: 2,
+          stack: 'stack2',
+        },
+        {
+          label: 'Lucro Sugerido',
+          data: [0, 0, lucroSugerido],
+          backgroundColor: 'rgba(16, 185, 129, 0.9)',  // Verde esmeralda para lucro
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          stack: 'stack1',
+        }
       ],
     }
 
@@ -148,16 +167,32 @@ export default function ProdutosClient() {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false,
+          display: true,
         },
-                 title: {
-           display: true,
-           text: `${product.name}`,
-           font: {
-             size: 14,
-             weight: 'bold' as const
-           }
-         },
+        title: {
+          display: true,
+          text: `${product.name}`,
+          font: {
+            size: 18,
+            weight: 'bold' as const
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function(context: any) {
+              const value = context.parsed.y.toFixed(2)
+              if (context.datasetIndex === 0 && context.dataIndex === 2) {
+                return `Custo: R$ ${value}`
+              } else if (context.datasetIndex === 1) {
+                return `Preço Atual: R$ ${value}`
+              } else if (context.datasetIndex === 2) {
+                return `Lucro Sugerido: R$ ${value}`
+              }
+              return `${context.dataset.label}: R$ ${value}`
+            }
+          }
+        }
       },
       scales: {
         y: {
@@ -166,19 +201,19 @@ export default function ProdutosClient() {
             display: true,
             text: 'Valor (R$)',
             font: {
-              size: 12
+              size: 14
             }
           },
           ticks: {
             font: {
-              size: 10
+              size: 12
             }
           }
         },
         x: {
           ticks: {
             font: {
-              size: 10
+              size: 12
             }
           }
         },
@@ -188,82 +223,69 @@ export default function ProdutosClient() {
     return { chartData, chartOptions }
   }
 
-  const LoadingSkeleton = () => (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-5 w-24" />
-          </div>
-          <div className="flex gap-1">
-            <Skeleton className="h-8 w-8 rounded-md" />
-            <Skeleton className="h-8 w-8 rounded-md" />
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4" />
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4" />
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-          </div>
-        </div>
+                const LoadingSkeleton = () => (
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-3">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <Skeleton className="h-5 w-32" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                        <div className="flex gap-1">
+                          <Skeleton className="h-6 w-6 rounded-md" />
+                          <Skeleton className="h-6 w-6 rounded-md" />
+                        </div>
+                      </div>
 
-        <div className="space-y-2 pt-2 border-t">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </div>
-      </CardContent>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <Skeleton className="h-3 w-3" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-3 w-16" />
+                            <Skeleton className="h-3 w-12" />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Skeleton className="h-3 w-3" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-3 w-16" />
+                            <Skeleton className="h-3 w-12" />
+                          </div>
+                        </div>
+                      </div>
 
-      <CardFooter className="bg-gray-50 rounded-b-lg">
-        <div className="w-full space-y-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-4" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-            <div className="text-right space-y-1">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-20" />
-            </div>
-          </div>
+                      <div className="space-y-1.5 pt-2 border-t">
+                        <div className="flex justify-between items-center">
+                          <Skeleton className="h-3 w-12" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <Skeleton className="h-3 w-16" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <Skeleton className="h-3 w-20" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
 
-          <div className="flex justify-between items-center pt-2 border-t">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-4" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-            <div className="text-right space-y-1">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-20" />
-            </div>
-          </div>
-        </div>
-      </CardFooter>
-    </Card>
-  )
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+                        <div className="text-center p-1.5 bg-gray-50 rounded-lg">
+                          <Skeleton className="h-3 w-16 mx-auto mb-1" />
+                          <Skeleton className="h-4 w-12 mx-auto mb-1" />
+                          <Skeleton className="h-3 w-20 mx-auto" />
+                        </div>
+                        <div className="text-center p-1.5 bg-gray-50 rounded-lg">
+                          <Skeleton className="h-3 w-20 mx-auto mb-1" />
+                          <Skeleton className="h-4 w-12 mx-auto mb-1" />
+                          <Skeleton className="h-3 w-20 mx-auto" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
@@ -296,53 +318,63 @@ export default function ProdutosClient() {
 
 
 
-      <div className="space-y-4">
-        {isLoading ? (
-          <>
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-          </>
-        ) : filteredProducts.length === 0 ? (
-          <div className="col-span-full">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Package2 className="h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {searchTerm ? 'Nenhum produto encontrado' : 'Nenhum produto cadastrado'}
-                </h3>
-                <p className="text-gray-500 text-center mb-6">
-                  {searchTerm 
-                    ? `Nenhum produto encontrado para "${searchTerm}". Tente uma busca diferente.`
-                    : 'Comece cadastrando seu primeiro produto para gerenciar suas receitas'
-                  }
-                </p>
-                {!searchTerm && (
-                  <Link href="/dashboard/produtos/novo">
-                    <Button>
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Cadastrar Produto
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          filteredProducts.map((product) => {
-            const { chartData, chartOptions } = createProductChart(product)
-            
-            return (
-              <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                <div className="grid grid-cols-1 lg:grid-cols-2">
-                  {/* Seção do Produto */}
-                  <div className="p-6">
-                    {/* Header do Produto */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h2 className="text-xl font-bold text-gray-900">{product.name}</h2>
-                        <Badge variant="secondary" className="mt-2">{product.category}</Badge>
+                        <div className={`grid gap-4 ${
+                    expandedCharts[Object.keys(expandedCharts).find(key => expandedCharts[parseInt(key)]) ? parseInt(Object.keys(expandedCharts).find(key => expandedCharts[parseInt(key)])!) : 0] ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'
+                  }`}>
+                    {isLoading ? (
+                      <>
+                        <LoadingSkeleton />
+                        <LoadingSkeleton />
+                        <LoadingSkeleton />
+                      </>
+                    ) : filteredProducts.length === 0 ? (
+                      <div className="col-span-full">
+                        <Card className="hover:shadow-lg transition-shadow">
+                          <CardContent className="flex flex-col items-center justify-center py-12">
+                            <Package2 className="h-12 w-12 text-gray-400 mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                              {searchTerm ? 'Nenhum produto encontrado' : 'Nenhum produto cadastrado'}
+                            </h3>
+                            <p className="text-gray-500 text-center mb-6">
+                              {searchTerm
+                                ? `Nenhum produto encontrado para "${searchTerm}". Tente uma busca diferente.`
+                                : 'Comece cadastrando seu primeiro produto para gerenciar suas receitas'
+                              }
+                            </p>
+                            {!searchTerm && (
+                              <Link href="/dashboard/produtos/novo">
+                                <Button>
+                                  <PlusCircle className="mr-2 h-4 w-4" />
+                                  Cadastrar Produto
+                                </Button>
+                              </Link>
+                            )}
+                          </CardContent>
+                        </Card>
                       </div>
+                    ) : (
+                      filteredProducts.map((product) => {
+                        const { chartData, chartOptions } = createProductChart(product)
+
+                        return (
+                          <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${
+                            expandedCharts[product.id] ? 'lg:col-span-2' : ''
+                          }`}>
+                            <div className={`grid gap-0 ${
+                              expandedCharts[product.id] ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
+                            }`}>
+                              {/* Seção do Produto */}
+                              <div className={`transition-all duration-300 ${
+                                expandedCharts[product.id] ? 'p-6' : 'p-3'
+                              }`}>
+                                                    {/* Header do Produto */}
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <h2 className={`font-bold text-gray-900 ${
+                                      expandedCharts[product.id] ? 'text-xl' : 'text-base'
+                                    }`}>{product.name}</h2>
+                                    <Badge variant="secondary" className="mt-1">{product.category}</Badge>
+                                  </div>
                                                         <div className="flex gap-1">
                                     <Button
                                       variant="ghost"
@@ -368,99 +400,176 @@ export default function ProdutosClient() {
                                   </div>
                     </div>
                     
-                    {/* Alertas */}
-                    {product.profitMargin < 0 && (
-                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                          <span className="text-sm font-medium text-red-800">
-                            Prejuízo: R$ {(product.sellingPrice - product.totalCost).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {product.profitMargin >= 0 && product.profitMargin <= 15 && (
-                      <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                          <span className="text-sm font-medium text-yellow-800">
-                            Margem baixa: {product.profitMargin.toFixed(1)}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Informações Básicas */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Package2 className="h-4 w-4 text-gray-500" />
-                        <div>
-                          <p className="text-sm text-gray-500">Rendimento</p>
-                          <p className="font-medium">{product.quantity} un</p>
-                        </div>
+                                                    {/* Alertas */}
+                                {product.profitMargin < 0 && (
+                                  <div className={`mb-2 p-1.5 bg-red-50 border border-red-200 rounded-lg ${
+                                    expandedCharts[product.id] ? 'p-3 mb-4' : ''
+                                  }`}>
+                                    <div className="flex items-center gap-1.5">
+                                      <AlertTriangle className="h-3 w-3 text-red-600" />
+                                      <span className={`font-medium text-red-800 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>
+                                        Prejuízo: R$ {(product.sellingPrice - product.totalCost).toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {product.profitMargin >= 0 && product.profitMargin <= 15 && (
+                                  <div className={`mb-2 p-1.5 bg-yellow-50 border border-yellow-200 rounded-lg ${
+                                    expandedCharts[product.id] ? 'p-3 mb-4' : ''
+                                  }`}>
+                                    <div className="flex items-center gap-1.5">
+                                      <AlertTriangle className="h-3 w-3 text-yellow-600" />
+                                      <span className={`font-medium text-yellow-800 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>
+                                        Margem baixa: {product.profitMargin.toFixed(1)}%
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                                                {/* Informações Básicas */}
+                                <div className={`grid grid-cols-2 gap-2 mb-2 ${
+                                  expandedCharts[product.id] ? 'gap-4 mb-4' : ''
+                                }`}>
+                                  <div className="flex items-center gap-1.5">
+                                    <Package2 className={`text-gray-500 ${
+                                      expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
+                                    }`} />
+                                    <div>
+                                      <p className={`text-gray-500 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>Rendimento</p>
+                                      <p className={`font-medium ${
+                                        expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                      }`}>{product.quantity} un</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Scale className={`text-gray-500 ${
+                                      expandedCharts[product.id] ? 'h-4 w-4' : 'h-3 w-3'
+                                    }`} />
+                                    <div>
+                                      <p className={`text-gray-500 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>Peso</p>
+                                      <p className={`font-medium ${
+                                        expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                      }`}>{product.totalWeight.toFixed(0)}g</p>
+                                    </div>
+                                  </div>
+                                </div>
 
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Scale className="h-4 w-4 text-gray-500" />
-                        <div>
-                          <p className="text-sm text-gray-500">Peso</p>
-                          <p className="font-medium">{product.totalWeight.toFixed(0)}g</p>
-                        </div>
-                      </div>
-                    </div>
+                                                    {/* Preços */}
+                                <div className={`space-y-1.5 mb-2 ${
+                                  expandedCharts[product.id] ? 'space-y-3 mb-4' : ''
+                                }`}>
+                                  <div className="flex justify-between items-center">
+                                    <span className={`text-gray-600 ${
+                                      expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                    }`}>Custo</span>
+                                    <span className={`font-medium text-gray-900 ${
+                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                    }`}>R$ {product.totalCost.toFixed(2)}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <span className={`text-gray-600 ${
+                                      expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                    }`}>Preço Atual</span>
+                                    <span className={`font-medium text-gray-900 ${
+                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                    }`}>R$ {product.sellingPrice.toFixed(2)}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <span className={`text-gray-600 ${
+                                      expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                    }`}>Preço Sugerido</span>
+                                    <span className={`font-medium text-blue-600 ${
+                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
+                                    }`}>R$ {product.suggestedPrice.toFixed(2)}</span>
+                                  </div>
+                                </div>
 
-                    {/* Preços */}
-                    <div className="space-y-3 mb-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Custo</span>
-                        <span className="font-medium text-gray-900">R$ {product.totalCost.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Preço Atual</span>
-                        <span className="font-medium text-gray-900">R$ {product.sellingPrice.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Preço Sugerido</span>
-                        <span className="font-medium text-blue-600">R$ {product.suggestedPrice.toFixed(2)}</span>
-                      </div>
-                    </div>
-
-                    {/* Lucros */}
-                    <div className="pt-4 border-t">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <p className="text-xs text-gray-500 mb-1">Lucro Atual</p>
-                          <p className={`text-lg font-bold ${product.profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {product.profitMargin.toFixed(1)}%
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            R$ {(product.sellingPrice - product.totalCost).toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <p className="text-xs text-gray-500 mb-1">Lucro Sugerido</p>
-                          <p className="text-lg font-bold text-blue-600">
-                            {((product.suggestedPrice - product.totalCost) / product.totalCost * 100).toFixed(1)}%
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            R$ {(product.suggestedPrice - product.totalCost).toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                                                                {/* Lucros */}
+                                <div className={`pt-2 border-t ${
+                                  expandedCharts[product.id] ? 'pt-4' : ''
+                                }`}>
+                                  <div className={`grid grid-cols-2 gap-2 ${
+                                    expandedCharts[product.id] ? 'gap-4' : ''
+                                  }`}>
+                                    <div className={`text-center bg-gray-50 rounded-lg ${
+                                      expandedCharts[product.id] ? 'p-3' : 'p-1.5'
+                                    }`}>
+                                      <p className="text-xs text-gray-500 mb-1">Lucro Atual</p>
+                                      <p className={`font-bold ${product.profitMargin >= 0 ? 'text-green-600' : 'text-red-600'} ${
+                                        expandedCharts[product.id] ? 'text-lg' : 'text-sm'
+                                      }`}>
+                                        {product.profitMargin.toFixed(1)}%
+                                      </p>
+                                      <p className={`text-gray-600 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>
+                                        R$ {(product.sellingPrice - product.totalCost).toFixed(2)}
+                                      </p>
+                                    </div>
+                                    <div className={`text-center bg-blue-50 rounded-lg ${
+                                      expandedCharts[product.id] ? 'p-3' : 'p-1.5'
+                                    }`}>
+                                      <p className="text-xs text-gray-500 mb-1">Lucro Sugerido</p>
+                                      <p className={`font-bold text-blue-600 ${
+                                        expandedCharts[product.id] ? 'text-lg' : 'text-sm'
+                                      }`}>
+                                        {((product.suggestedPrice - product.totalCost) / product.totalCost * 100).toFixed(1)}%
+                                      </p>
+                                      <p className={`text-gray-600 ${
+                                        expandedCharts[product.id] ? 'text-sm' : 'text-xs'
+                                      }`}>
+                                        R$ {(product.suggestedPrice - product.totalCost).toFixed(2)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
                   </div>
 
                   {/* Seção do Gráfico */}
-                  <div className="p-6">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Análise de Preços</h3>
+                  <div className={`transition-all duration-300 ${
+                    expandedCharts[product.id] ? 'p-6' : 'p-3'
+                  }`}>
+                    <div className={`flex justify-between items-center ${
+                      expandedCharts[product.id] ? 'mb-4' : 'mb-2'
+                    }`}>
+                      <h3 className={`font-semibold text-gray-900 ${
+                        expandedCharts[product.id] ? 'text-lg' : 'text-sm'
+                      }`}>Análise de Preços</h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleChartExpansion(product.id)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        {expandedCharts[product.id] ? (
+                          <>
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            Ocultar
+                          </>
+                        ) : (
+                          <>
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            Mostrar Gráfico
+                          </>
+                        )}
+                      </Button>
                     </div>
-                    <div className="h-64">
-                      {typeof window !== 'undefined' && (
-                        <Bar data={chartData} options={chartOptions} />
-                      )}
-                    </div>
+                    {expandedCharts[product.id] && (
+                      <div className="h-96 transition-all duration-300 ease-in-out">
+                        {typeof window !== 'undefined' && (
+                          <Bar data={chartData} options={chartOptions} />
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
