@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
-import { PlusCircle, Pencil, Trash2, Package2, Scale, TrendingUp, AlertTriangle, Search, BarChart3 } from 'lucide-react'
+import { PlusCircle, Pencil, Trash2, Package2, Scale, TrendingUp, AlertTriangle, Search, BarChart3, FlaskConical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import dynamic from 'next/dynamic'
@@ -36,7 +37,10 @@ interface Product {
   lastUpdate: Date
 }
 
+
+
 export default function ProdutosClient() {
+  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -99,18 +103,22 @@ export default function ProdutosClient() {
     setFilteredProducts(filtered)
   }
 
-  const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number) => {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return
 
     try {
       const response = await fetch(`/api/produtos/${id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error('Erro ao excluir produto')
-      
+
       toast.success('Produto excluído com sucesso!')
       loadProducts()
     } catch (error) {
       toast.error('Erro ao excluir produto')
     }
+  }
+
+  const handleViewIngredients = (product: Product) => {
+    router.push(`/dashboard/produtos/${product.id}/ingredientes`)
   }
 
   const createProductChart = (product: Product) => {
@@ -335,21 +343,29 @@ export default function ProdutosClient() {
                         <h2 className="text-xl font-bold text-gray-900">{product.name}</h2>
                         <Badge variant="secondary" className="mt-2">{product.category}</Badge>
                       </div>
-                      <div className="flex gap-1">
-                        <Link href={`/dashboard/produtos/${product.id}/editar`}>
-                          <Button variant="ghost" size="icon" title="Editar produto">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleDelete(product.id)}
-                          title="Excluir produto"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
+                                                        <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleViewIngredients(product)}
+                                      title="Ver ingredientes"
+                                    >
+                                      <FlaskConical className="h-4 w-4 text-blue-600" />
+                                    </Button>
+                                    <Link href={`/dashboard/produtos/${product.id}/editar`}>
+                                      <Button variant="ghost" size="icon" title="Editar produto">
+                                        <Pencil className="h-4 w-4" />
+                                      </Button>
+                                    </Link>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleDelete(product.id)}
+                                      title="Excluir produto"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-red-500" />
+                                    </Button>
+                                  </div>
                     </div>
                     
                     {/* Alertas */}
