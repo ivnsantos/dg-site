@@ -42,7 +42,7 @@ export default function HomePage() {
             </span>
             <span className="block text-2xl md:text-5xl font-medium text-white/90 mt-4 md:mt-6">
               para você
-              <span className="text-[#0B7A48] font-bold hover:text-[#0ea65f] transition-colors duration-300"> Empreendedoras & Empreendedores</span>
+              <span className="text-[#0B7A48] font-bold hover:text-[#0ea65f] transition-colors duration-300"> Confeiteiros & Empreendedores</span>
             </span>
           </h1>
 
