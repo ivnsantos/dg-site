@@ -350,7 +350,7 @@ export default function HomePage() {
               
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold text-white">R$ 26,99</span>
+                  <span className="text-4xl font-bold text-white">R$ 36,99</span>
                   <span className="text-white/60 ml-2">/mês</span>
                 </div>
               </div>
@@ -405,7 +405,7 @@ export default function HomePage() {
               
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold text-white">R$ 29,89</span>
+                  <span className="text-4xl font-bold text-white">R$ 39,89</span>
                   <span className="text-white/60 ml-2">/mês</span>
                 </div>
                 <p className="text-[#0B7A48] font-semibold text-sm mt-2">

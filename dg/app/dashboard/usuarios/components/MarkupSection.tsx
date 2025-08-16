@@ -12,6 +12,13 @@ interface MarkupSectionProps {
 
 export function MarkupSection({ markupIdeal }: MarkupSectionProps) {
   const [showForm, setShowForm] = useState(false)
+  const [currentMarkup, setCurrentMarkup] = useState(markupIdeal)
+
+  const handleFormClose = () => {
+    setShowForm(false)
+    // Recarregar a página para atualizar o markup
+    window.location.reload()
+  }
 
   return (
     <Card className="p-6">
@@ -44,7 +51,7 @@ export function MarkupSection({ markupIdeal }: MarkupSectionProps) {
 
       {showForm && (
         <div className="mt-6">
-          <ConfiguracaoMarkupForm />
+          <ConfiguracaoMarkupForm onClose={handleFormClose} />
         </div>
       )}
     </Card>

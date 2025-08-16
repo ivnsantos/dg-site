@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { useRouter } from 'next/navigation'
 import { useToast } from "@/components/ui/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { AlertTriangle } from 'lucide-react'
 
 type RegimeTributario = 'MEI' | 'Simples' | 'Lucro Presumido' | 'Lucro Real'
 
@@ -22,7 +24,10 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
   const router = useRouter()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [loadingData, setLoadingData] = useState(true)
   const [pagaComissao, setPagaComissao] = useState(false)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingSubmit, setPendingSubmit] = useState(false)
   const [formData, setFormData] = useState({
     nome: '',
     endereco: '',
@@ -44,8 +49,89 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
     porcentagemLucroDesejado: ''
   })
 
+  // Carregar dados existentes quando o formulário for aberto
+  useEffect(() => {
+    console.log('🚀 ConfiguracaoMarkupForm montado - iniciando carregamento...')
+    loadExistingData()
+  }, [])
+
+  const loadExistingData = async () => {
+    try {
+      setLoadingData(true)
+      console.log('🔄 Carregando dados da confeitaria...')
+      
+      const response = await fetch('/api/confeitaria')
+      console.log('📡 Response status:', response.status)
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('📊 Dados recebidos:', data)
+        
+        const confeitaria = data.confeitaria
+        console.log('🏪 Dados da confeitaria:', confeitaria)
+        
+        // Preencher o formulário com os dados existentes
+        const newFormData = {
+          nome: confeitaria.nome || '',
+          endereco: confeitaria.endereco || '',
+          logo: confeitaria.logo || '',
+          horarioFuncionamento: confeitaria.horarioFuncionamento || '',
+          horasTrabalhoDiarias: confeitaria.horasTrabalhoDiarias?.toString() || '',
+          quantidadeFuncionarios: confeitaria.quantidadeFuncionarios?.toString() || '',
+          folhaPagamentoTotal: confeitaria.folhaPagamentoTotal?.toString() || '',
+          faturamentoMedio: confeitaria.faturamentoMedio?.toString() || '',
+          faturamentoDesejado: confeitaria.faturamentoDesejado?.toString() || '',
+          regimeTributario: (confeitaria.regimeTributario as RegimeTributario) || '',
+          porcentagemImposto: confeitaria.porcentagemImposto?.toString() || '',
+          custosFixos: confeitaria.custosFixos?.toString() || '',
+          proLabore: confeitaria.proLabore?.toString() || '',
+          diasTrabalhadosMes: confeitaria.diasTrabalhadosMes?.toString() || '',
+          pagaComissao: confeitaria.pagaComissao || false,
+          porcentagemComissao: confeitaria.porcentagemComissao?.toString() || '',
+          taxaMaquininha: confeitaria.taxaMaquininha?.toString() || '',
+          porcentagemLucroDesejado: confeitaria.porcentagemLucroDesejado?.toString() || ''
+        }
+        
+        console.log('📝 Novo formData:', newFormData)
+        setFormData(newFormData)
+        setPagaComissao(confeitaria.pagaComissao || false)
+        
+        console.log('✅ Dados carregados com sucesso!')
+      } else {
+        console.log('❌ Response não ok:', response.status, response.statusText)
+        const errorData = await response.json().catch(() => ({}))
+        console.log('❌ Erro detalhado:', errorData)
+        
+        // Se for 404, significa que não há dados existentes (normal para primeira configuração)
+        if (response.status === 404) {
+          console.log('ℹ️ Primeira configuração - não há dados existentes para carregar')
+        }
+      }
+    } catch (error) {
+      console.error('💥 Erro ao carregar dados existentes:', error)
+      // Não mostrar erro se não houver dados (usuário ainda não configurou)
+    } finally {
+      setLoadingData(false)
+      console.log('🏁 Carregamento finalizado')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Verificar se é uma alteração de markup existente
+    const isUpdating = formData.nome && formData.folhaPagamentoTotal
+    
+    if (isUpdating) {
+      setShowConfirmDialog(true)
+      setPendingSubmit(true)
+      return
+    }
+    
+    await submitForm()
+  }
+
+  const submitForm = async () => {
     setLoading(true)
 
     try {
@@ -79,14 +165,25 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
       }
 
       toast({
-        title: "Configuração salva com sucesso!",
+        title: data.markupAlterado ? "Markup Atualizado!" : "Configuração salva com sucesso!",
         description: (
           <div className="mt-2 flex flex-col gap-1">
             <p>Markup ideal calculado para sua confeitaria:</p>
             <p className="font-semibold text-[#0B7A48]">{data.markupIdeal}%</p>
-            <p className="text-sm text-gray-500">
-              Este é o percentual que você deve aplicar sobre seus custos para atingir o faturamento desejado.
-            </p>
+            {data.markupAlterado ? (
+              <>
+                <p className="text-sm text-orange-600 font-medium">
+                  ⚠️ {data.produtosAtualizados} produtos foram atualizados com o novo markup!
+                </p>
+                <p className="text-sm text-gray-500">
+                  Todos os preços sugeridos dos seus produtos foram recalculados automaticamente.
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-gray-500">
+                Este é o percentual que você deve aplicar sobre seus custos para atingir o faturamento desejado.
+              </p>
+            )}
           </div>
         ),
         duration: 8000,
@@ -116,8 +213,31 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
     }))
   }
 
+  const handleConfirmSubmit = async () => {
+    setShowConfirmDialog(false)
+    setPendingSubmit(false)
+    await submitForm()
+  }
+
+  const handleCancelSubmit = () => {
+    setShowConfirmDialog(false)
+    setPendingSubmit(false)
+  }
+
+  if (loadingData) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0B7A48] mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando configurações existentes...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border border-gray-200">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border border-gray-200">
       <div className="grid grid-cols-2 gap-6">
         {/* Dados Básicos */}
         <div className="col-span-2 space-y-4">
@@ -428,5 +548,43 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
         </Button>
       </div>
     </form>
+
+    {/* Dialog de Confirmação */}
+    <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-orange-500" />
+            Atenção - Alteração de Markup
+          </DialogTitle>
+          <DialogDescription className="text-left">
+            <p className="mb-3 font-medium text-orange-700">
+              ⚠️ Esta alteração irá atualizar automaticamente todos os preços sugeridos dos seus produtos!
+            </p>
+            <p className="text-gray-600">
+              Todos os produtos terão seus preços sugeridos recalculados com base no novo markup. 
+              Os preços atuais de venda não serão alterados.
+            </p>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancelSubmit}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={handleConfirmSubmit}
+            className="bg-orange-600 hover:bg-orange-700 text-white"
+          >
+            Continuar e Atualizar Produtos
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 } 

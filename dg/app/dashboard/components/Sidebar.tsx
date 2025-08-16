@@ -20,7 +20,8 @@ import {
   SparklesIcon,
   LockClosedIcon,
   LinkIcon,
-  ClipboardDocumentListIcon
+  ClipboardDocumentListIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../components/ui/button'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
@@ -38,6 +39,7 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, restrictedTo: [] },
+  { name: 'Agenda', href: '/dashboard/agenda', icon: CalendarIcon, restrictedTo: [] },
   { name: 'Produtos', href: '/dashboard/produtos', icon: CubeIcon, restrictedTo: [] },
   { name: 'Ingredientes', href: '/dashboard/ingredientes', icon: BeakerIcon, restrictedTo: [] },
   { name: 'Linktree', href: '/dashboard/linktree', icon: LinkIcon, restrictedTo: [] },

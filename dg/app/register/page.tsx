@@ -15,7 +15,7 @@ const PLANOS = [
   {
     id: 'BASICO',
     nome: 'Plano Básico',
-    preco: 'R$ 26,99',
+    preco: 'R$ 36,99',
     recursos: [
       'Controle de ingredientes',
       'Controle apenas de UMA receita',
@@ -27,7 +27,7 @@ const PLANOS = [
   {
     id: 'PRO',
     nome: 'Plano PRO',
-    preco: 'R$ 29,89',
+    preco: 'R$ 39,89',
     recursos: [
       'Controle completo de ingredientes e estoque',
       'Gerenciamento de TODAS as receitas',

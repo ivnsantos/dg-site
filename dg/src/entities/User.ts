@@ -11,6 +11,7 @@ import { HeaderOrcamento } from './HeaderOrcamento'
 import { FooterOrcamento } from './FooterOrcamento'
 import { Feedback } from './Feedback'
 import { FeedbackResponse } from './FeedbackResponse'
+import { AgendaItem } from './AgendaItem'
 
 
 export enum TipoPlano {
@@ -155,7 +156,10 @@ export class User{
    headerOrcamentos!: any[]
 
    @OneToMany(() => FooterOrcamento, (footer) => footer.user)
-   footerOrcamentos!: any[]
+footerOrcamentos!: any[]
+
+@OneToMany(() => AgendaItem, (agendaItem) => agendaItem.user)
+agendaItems!: any[]
  
 } 
 

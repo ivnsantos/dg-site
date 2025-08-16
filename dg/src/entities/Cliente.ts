@@ -12,7 +12,7 @@ export class Cliente {
   user!: any;
 
   @OneToMany(() => Orcamento, (orcamento) => orcamento.cliente)
-  orcamentos!: Orcamento[];
+  orcamentos!: any[];
 
   @Column({ length: 100 })
   nome!: string;

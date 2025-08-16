@@ -18,8 +18,10 @@ import {
   ArrowTrendingUpIcon,
   LockClosedIcon,
   LinkIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline'
+import { StickyNoteIcon, PackageIcon } from 'lucide-react'
 import { ExpandableSection } from './components/ExpandableSection'
 import { ReactNode } from 'react'
 import Link from 'next/link'
@@ -30,6 +32,7 @@ import { Orcamento } from '@/src/entities/Orcamento'
 import { Cliente } from '@/src/entities/Cliente'
 import { LinkTree } from '@/src/entities/LinkTree'
 import { Feedback } from '@/src/entities/Feedback'
+import { AgendaItem } from '@/src/entities/AgendaItem'
 
 export const dynamic = 'force-dynamic'
 
@@ -107,6 +110,41 @@ export default async function DashboardPage() {
     where: { user: { id: user.id } }
   })
 
+  // Busca dados da agenda
+  const agendaRepository = dataSource.getRepository(AgendaItem)
+  const agendaItems = await agendaRepository.find({
+    where: { userId: user.id },
+    order: { startDate: 'ASC' }
+  })
+
+  // Debug: verificar dados carregados
+  console.log('Agenda items carregados:', agendaItems.length)
+  console.log('Primeiros itens:', agendaItems.slice(0, 3))
+
+  // Busca itens da agenda para os próximos 7 dias
+  const today = new Date()
+  const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+  
+  const upcomingAgendaItems = agendaItems.filter(item => {
+    const itemDate = new Date(item.startDate)
+    // Normalizar datas para comparar apenas dia/mês/ano
+    const normalizedItemDate = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate())
+    const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const normalizedWeekFromNow = new Date(weekFromNow.getFullYear(), weekFromNow.getMonth(), weekFromNow.getDate())
+    
+    return normalizedItemDate >= normalizedToday && normalizedItemDate <= normalizedWeekFromNow
+  })
+
+  // Debug: verificar filtros
+  console.log('Data atual:', today.toISOString())
+  console.log('Semana que vem:', weekFromNow.toISOString())
+  console.log('Itens próximos 7 dias:', upcomingAgendaItems.length)
+  console.log('Itens próximos:', upcomingAgendaItems.slice(0, 3))
+
+  // Conta itens por tipo
+  const anotacoesCount = agendaItems.filter(item => item.type === 'anotacao').length
+  const encomendasCount = agendaItems.filter(item => item.type === 'encomenda').length
+
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto p-4">
@@ -117,12 +155,142 @@ export default async function DashboardPage() {
 
         {/* Alerta de Markup não configurado */}
         {!user?.markupIdeal && <MarkupAlert />}
-
-
-        <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <p className="text-[#374151] text-lg">
-            Bem-vindo, <span className="font-semibold text-[#0F5132]">{session.user.name}</span>!
-          </p>
+                 {/* Calendário de 7 dias */}
+        <div className="mb-8">
+          <Link href="/dashboard/agenda">
+            <Card className="p-6 hover:shadow-lg transition-all cursor-pointer">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CalendarIcon className="h-6 w-6 text-[#0B7A48]" />
+                  Agenda
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
+                  {Array.from({ length: 7 }, (_, index) => {
+                    const date = new Date()
+                    date.setDate(date.getDate() + index)
+                    const isToday = index === 0
+                    const dayName = date.toLocaleDateString('pt-BR', { weekday: 'short' })
+                    const dayNumber = date.getDate()
+                    const month = date.toLocaleDateString('pt-BR', { month: 'short' })
+                    
+                    // Buscar dados reais da agenda para este dia
+                    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                    
+                    // Itens que começam neste dia (data inicial)
+                    const startDateItems = upcomingAgendaItems.filter(item => {
+                      const itemStartDate = new Date(item.startDate)
+                      const normalizedItemStartDate = new Date(itemStartDate.getFullYear(), itemStartDate.getMonth(), itemStartDate.getDate())
+                      const normalizedCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+                      return normalizedItemStartDate.getTime() === normalizedCurrentDate.getTime()
+                    })
+                    
+                    // Itens que terminam neste dia (data final)
+                    const endDateItems = upcomingAgendaItems.filter(item => {
+                      const itemEndDate = new Date(item.endDate)
+                      const normalizedItemEndDate = new Date(itemEndDate.getFullYear(), itemEndDate.getMonth(), itemEndDate.getDate())
+                      const normalizedCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+                      return normalizedItemEndDate.getTime() === normalizedCurrentDate.getTime()
+                    })
+                    
+                    const hasStartDateItem = startDateItems.length > 0
+                    const hasEndDateItem = endDateItems.length > 0
+                    const hasAgendaItem = hasStartDateItem || hasEndDateItem
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`p-3 rounded-lg border text-center transition-all relative ${
+                          isToday
+                            ? 'bg-[#0B7A48] text-white border-[#0B7A48] shadow-lg'
+                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                        } ${index >= 4 ? 'hidden sm:block' : ''}`}
+                      >
+                        <div className={`text-xs font-medium mb-1 ${
+                          isToday ? 'text-white/80' : 'text-gray-500'
+                        }`}>
+                          {dayName}
+                        </div>
+                        <div className={`text-lg font-bold ${
+                          isToday ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {dayNumber}
+                        </div>
+                        <div className={`text-xs ${
+                          isToday ? 'text-white/80' : 'text-gray-400'
+                        }`}>
+                          {month}
+                        </div>
+                        
+                        {/* Indicadores de data inicial (azul) */}
+                        {hasStartDateItem && (
+                          <div className="absolute -top-2 -left-2 flex flex-col gap-1">
+                            {startDateItems.some(item => item.type === 'anotacao') && (
+                              <div className="w-5 h-5 bg-white border border-blue-200 rounded-full flex items-center justify-center shadow-sm">
+                                <StickyNoteIcon className="w-3 h-3 text-blue-600" />
+                              </div>
+                            )}
+                            {startDateItems.some(item => item.type === 'encomenda') && (
+                              <div className="w-5 h-5 bg-white border border-blue-200 rounded-full flex items-center justify-center shadow-sm">
+                                <PackageIcon className="w-3 h-3 text-blue-600" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Indicadores de data final (vermelho) */}
+                        {hasEndDateItem && (
+                          <div className="absolute -top-2 -right-2 flex flex-col gap-1">
+                            {endDateItems.some(item => item.type === 'anotacao') && (
+                              <div className="w-5 h-5 bg-white border border-red-200 rounded-full flex items-center justify-center shadow-sm">
+                                <StickyNoteIcon className="w-3 h-3 text-red-600" />
+                              </div>
+                            )}
+                            {endDateItems.some(item => item.type === 'encomenda') && (
+                              <div className="w-5 h-5 bg-white border border-red-200 rounded-full flex items-center justify-center shadow-sm">
+                                <PackageIcon className="w-3 h-3 text-red-600" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                
+                {/* Informações elegantes e minimalistas - só aparecem quando há dados */}
+                {(anotacoesCount > 0 || encomendasCount > 0 || upcomingAgendaItems.length > 0) && (
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-4 text-sm">
+                      {anotacoesCount > 0 && (
+                        <div className="flex items-center gap-2">
+                          <StickyNoteIcon className="h-4 w-4 text-amber-700" />
+                          <span className="text-gray-600">{anotacoesCount}</span>
+                        </div>
+                      )}
+                      {encomendasCount > 0 && (
+                        <div className="flex items-center gap-2">
+                          <PackageIcon className="h-4 w-4 text-amber-700" />
+                          <span className="text-gray-600">{encomendasCount}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500">Próxima</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {upcomingAgendaItems.length > 0 
+                          ? `${new Date(upcomingAgendaItems[0].startDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} - ${upcomingAgendaItems[0].title}`
+                          : 'Nenhuma programada'
+                        }
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Cartas de resumo */}

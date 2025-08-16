@@ -18,4 +18,5 @@ export { LinkTreeLink } from './LinkTreeLink'
 export { Subscription } from './Subscription'
 export { Feedback } from './Feedback'
 export { FeedbackResponse } from './FeedbackResponse'
+export { AgendaItem } from './AgendaItem'
 

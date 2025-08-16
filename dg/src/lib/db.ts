@@ -21,7 +21,8 @@ import {
     LinkTreeLink,
     Subscription,
     Feedback,
-    FeedbackResponse
+    FeedbackResponse,
+    AgendaItem
 } from '../entities'
 
 // Configuração do DataSource
@@ -54,7 +55,10 @@ const dataSourceConfig = {
         
         // Entidades de feedback por último
         Feedback,
-        FeedbackResponse
+        FeedbackResponse,
+        
+        // Entidades da agenda
+        AgendaItem
     ],
     synchronize: true,
     logging: false,

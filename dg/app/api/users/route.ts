@@ -140,7 +140,7 @@ export async function POST(request: Request) {
 
       // valores do plano
       const planoEscolhido = (plano === 'PRO' ? TipoPlano.PRO : TipoPlano.BASICO)
-      const valorPlano = planoEscolhido === TipoPlano.PRO ? 29.89 : 26.99
+      const valorPlano = planoEscolhido === TipoPlano.PRO ? 39.89 : 36.99
 
       const desconto = cupomValido ? cupomValido.desconto : 0
       const valorFinal = valorPlano * (1 - desconto / 100) // Calcula o valor final com desconto percentual

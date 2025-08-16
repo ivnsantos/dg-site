@@ -32,28 +32,28 @@ export class Cupom {
     enum: StatusCupom,
     default: StatusCupom.ATIVO
   })
-  status: StatusCupom
+  status!: StatusCupom
 
   @Column({ nullable: true })
-  dataExpiracao: Date
+  dataExpiracao!: Date
 
   @Column({ 
     type: 'integer',
     nullable: true,
     name: 'limite_usos'
   })
-  limiteUsos: number
+  limiteUsos!: number
 
   @Column({ 
     type: 'integer',
     default: 0,
     name: 'quantidade_usos'
   })
-  quantidadeUsos: number
+  quantidadeUsos!: number
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt!: Date
-} 
+}

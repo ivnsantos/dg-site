@@ -592,6 +592,11 @@ export default function NovoProdutoPage() {
                             <div className="text-sm text-gray-500">
                               Disponível: {formatQuantity(ingredient.quantity, ingredient.unit)}
                             </div>
+                            {quantities[ingredient.id] && parseFloat(quantities[ingredient.id].replace(',', '.')) > ingredient.quantity && (
+                              <div className="text-sm text-orange-600 font-medium mt-1">
+                                ⚠️ Quantidade maior que disponível
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
                             <div className="font-medium">
@@ -615,18 +620,19 @@ export default function NovoProdutoPage() {
                                   const numValue = parseFloat(value.replace(',', '.'))
                                   if (value !== '' && value !== ',' && value !== '.' && isNaN(numValue)) return
                                   
-                                  if (numValue > ingredient.quantity) {
-                                    toast.error(`Quantidade máxima disponível: ${formatQuantity(ingredient.quantity, ingredient.unit)}`)
-                                    return
-                                  }
-                                  
                                   handleQuantityChange(ingredient.id, value, ingredient.unit)
                                 }}
                                 placeholder={`Quantidade em ${ingredient.unit}`}
                               />
                             </div>
                             <Button
-                              onClick={() => handleIngredientToggle(ingredient, true)}
+                              onClick={() => {
+                                const quantity = parseFloat(quantities[ingredient.id]?.replace(',', '.') || '0')
+                                if (quantity > ingredient.quantity) {
+                                  toast.warning(`Atenção: Quantidade (${formatQuantity(quantity, ingredient.unit)}) maior que disponível (${formatQuantity(ingredient.quantity, ingredient.unit)})`)
+                                }
+                                handleIngredientToggle(ingredient, true)
+                              }}
                               disabled={!quantities[ingredient.id] || quantities[ingredient.id] === ''}
                               className="min-w-[120px]"
                             >
