@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon, PlusIcon, ArrowLeftIcon, CalendarDaysIcon, StickyNoteIcon, PackageIcon, FilterIcon, XIcon } from 'lucide-react'
+import { CalendarIcon, PlusIcon, ArrowLeftIcon, CalendarDaysIcon, StickyNoteIcon, PackageIcon, FilterIcon, XIcon, Pencil, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useToast } from "@/components/ui/use-toast"
 import DoceGestaoLoading from "@/components/ui/DoceGestaoLoading"
@@ -40,7 +40,7 @@ export default function AgendaPage() {
     startDate: '',
     endDate: '',
     priority: 'media' as 'baixa' | 'media' | 'alta',
-    status: 'pendente' as 'pendente' | 'em-andamento' | 'concluido'
+    status: 'pendente' as 'pendente' | 'em_andamento' | 'concluido'
   })
 
   // Filtros
@@ -48,10 +48,67 @@ export default function AgendaPage() {
     searchTerm: '',
     type: 'todos' as 'todos' | 'anotacao' | 'encomenda',
     priority: 'todos' as 'todos' | 'baixa' | 'media' | 'alta',
-    status: 'todos' as 'todos' | 'pendente' | 'em-andamento' | 'concluido',
+    status: 'todos' as 'todos' | 'pendente' | 'em_andamento' | 'concluido',
     dateRange: 'todos' as 'todos' | 'hoje' | 'semana' | 'mes'
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set())
+  const formRef = useRef<HTMLDivElement>(null)
+
+  const scrollToForm = () => {
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      })
+    }, 100)
+  }
+
+  // Scroll automático para o formulário quando estiver editando
+  useEffect(() => {
+    if (showForm && editingItem && formRef.current) {
+      scrollToForm()
+    }
+  }, [showForm, editingItem])
+
+  const toggleExpanded = (itemId: number) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId)
+      } else {
+        newSet.add(itemId)
+      }
+      return newSet
+    })
+  }
+
+  const TruncatedText = ({ text, itemId }: { text: string, itemId: number }) => {
+    if (!text || text.trim().length === 0) {
+      return null
+    }
+
+    const isExpanded = expandedItems.has(itemId)
+    const shouldTruncate = text.length > 100
+    
+    if (!shouldTruncate) {
+      return <p className="text-gray-600 mb-3">{text}</p>
+    }
+
+    return (
+      <div className="mb-3">
+        <p className="text-gray-600">
+          {isExpanded ? text : `${text.substring(0, 100)}`}
+        </p>
+        <button
+          onClick={() => toggleExpanded(itemId)}
+          className="text-[#0B7A48] hover:text-[#0B7A48]/80 text-sm font-medium mt-1 transition-colors"
+        >
+          {isExpanded ? 'Ver menos' : 'Ver mais...'}
+        </button>
+      </div>
+    )
+  }
 
   // Carregar dados da agenda da API
   useEffect(() => {
@@ -188,6 +245,7 @@ export default function AgendaPage() {
       status: item.status
     })
     setShowForm(true)
+    scrollToForm()
   }
 
   const handleDelete = async (id: number) => {
@@ -218,21 +276,76 @@ export default function AgendaPage() {
     }
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'alta': return 'bg-red-100 text-red-800'
-      case 'media': return 'bg-yellow-100 text-yellow-800'
-      case 'baixa': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+  const handleStatusChange = async (itemId: number, newStatus: 'pendente' | 'em_andamento' | 'concluido') => {
+    try {
+      const response = await fetch(`/api/agenda/${itemId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...items.find(item => item.id === itemId),
+          status: newStatus
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setItems(prev => prev.map(item => 
+          item.id === itemId 
+            ? data.agendaItem
+            : item
+        ))
+        toast({
+          title: "Status atualizado",
+          description: `Status alterado para ${newStatus}`,
+        })
+      } else {
+        throw new Error('Erro ao atualizar status')
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error)
+      toast({
+        title: "Erro ao atualizar status",
+        description: "Não foi possível alterar o status do item",
+        variant: "destructive",
+      })
     }
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pendente': return 'bg-gray-100 text-gray-800'
-      case 'em-andamento': return 'bg-blue-100 text-blue-800'
-      case 'concluido': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+  const getStatusButton = (item: AgendaItem) => {
+    const statusOptions = [
+      { value: 'pendente', label: 'Pendente', color: 'bg-gray-100 text-gray-800 border-gray-200' },
+      { value: 'em_andamento', label: 'Em Andamento', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+      { value: 'concluido', label: 'Concluído', color: 'bg-green-100 text-green-800 border-green-200' }
+    ]
+
+    return (
+      <div className="flex flex-wrap gap-1 sm:flex-nowrap">
+        {statusOptions.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => handleStatusChange(item.id, option.value as 'pendente' | 'em_andamento' | 'concluido')}
+            className={`px-2 py-1 text-xs rounded-full border transition-all flex-shrink-0 ${
+              item.status === option.value
+                ? `${option.color} font-semibold`
+                : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+            }`}
+            title={`Marcar como ${option.label}`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'alta': return 'bg-red-100 text-red-800 border border-red-200'
+      case 'media': return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+      case 'baixa': return 'bg-green-100 text-green-800 border border-green-200'
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200'
     }
   }
 
@@ -356,7 +469,10 @@ export default function AgendaPage() {
              </div>
              
              <Button
-               onClick={() => setShowForm(true)}
+               onClick={() => {
+                 setShowForm(true)
+                 scrollToForm()
+               }}
                className="bg-[#0B7A48] hover:bg-[#0B7A48]/90 text-white"
              >
                <PlusIcon className="h-4 w-4 mr-2" />
@@ -367,7 +483,7 @@ export default function AgendaPage() {
 
         {/* Formulário */}
         {showForm && (
-          <Card className="mb-6">
+          <Card className="mb-6" ref={formRef}>
             <CardHeader>
               <CardTitle>
                 {editingItem ? 'Editar Item' : 'Novo Item'}
@@ -395,68 +511,122 @@ export default function AgendaPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="priority">Prioridade</Label>
-                    <Select
-                      value={formData.priority}
-                      onValueChange={(value: 'baixa' | 'media' | 'alta') => 
-                        setFormData(prev => ({ ...prev, priority: value }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="baixa">Baixa</SelectItem>
-                        <SelectItem value="media">Média</SelectItem>
-                        <SelectItem value="alta">Alta</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="title">Título</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Digite o título..."
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Digite a descrição..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="startDate">Quando começar ?</Label>
+                    <Label htmlFor="title" className="text-sm font-medium text-gray-900">Título *</Label>
                     <Input
-                      id="startDate"
-                      type="date"
-                      value={formData.startDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-                      required
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Digite o título do item"
+                      className="mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
-                  
+                </div>
+
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="endDate">Data Final</Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      value={formData.endDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
-                      required
-                    />
+                    <Label htmlFor="description" className="text-sm font-medium text-gray-900">Descrição</Label>
+                    <div className="relative">
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Digite a descrição (opcional)"
+                        className="mt-1 border-gray-300 focus:border-blue-500 focus:border-blue-500 focus:ring-blue-500 resize-none"
+                        rows={4}
+                        maxLength={1000}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="flex items-center gap-2">
+                        {formData.description && formData.description.length > 800 && (
+                          <span className={`text-xs font-medium ${
+                            formData.description.length > 950 ? 'text-red-500' : 'text-yellow-500'
+                          }`}>
+                            {formData.description.length > 950 ? '⚠️' : '⚠️'}
+                          </span>
+                        )}
+                        {formData.description && formData.description.length > 800 && (
+                          <span className={`text-xs ${
+                            formData.description.length > 950 ? 'text-red-500' : 'text-yellow-500'
+                          }`}>
+                            {formData.description.length > 950 
+                              ? `Atenção! Restam apenas ${1000 - formData.description.length} caracteres.`
+                              : `Restam ${1000 - formData.description.length} caracteres.`
+                            }
+                          </span>
+                        )}
+                      </div>
+                      <span className={`text-xs font-medium ${
+                        formData.description.length > 950 ? 'text-red-500' : 
+                        formData.description.length > 800 ? 'text-yellow-500' : 'text-gray-400'
+                      }`}>
+                        {formData.description.length}/1000
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="startDate" className="text-sm font-medium text-gray-900">Quando devo me preocupar *</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={formData.startDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                        className="mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="endDate" className="text-sm font-medium text-gray-900">Data limite *</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={formData.endDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                        className="mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="priority" className="text-sm font-medium text-gray-900">Prioridade</Label>
+                      <Select
+                        value={formData.priority}
+                        onValueChange={(value: 'baixa' | 'media' | 'alta') => 
+                          setFormData(prev => ({ ...prev, priority: value }))
+                        }
+                      >
+                        <SelectTrigger className="mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="baixa">Baixa</SelectItem>
+                          <SelectItem value="media">Média</SelectItem>
+                          <SelectItem value="alta">Alta</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="status" className="text-sm font-medium text-gray-900">Status</Label>
+                      <Select
+                        value={formData.status}
+                        onValueChange={(value: 'pendente' | 'em_andamento' | 'concluido') => 
+                          setFormData(prev => ({ ...prev, status: value }))
+                        }
+                      >
+                        <SelectTrigger className="mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pendente">Pendente</SelectItem>
+                          <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                          <SelectItem value="concluido">Concluído</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
@@ -602,7 +772,7 @@ export default function AgendaPage() {
                   <Label htmlFor="statusFilter" className="text-sm font-medium text-blue-900">Status</Label>
                   <Select
                     value={filters.status}
-                    onValueChange={(value: 'todos' | 'pendente' | 'em-andamento' | 'concluido') => 
+                    onValueChange={(value: 'todos' | 'pendente' | 'em_andamento' | 'concluido') => 
                       setFilters(prev => ({ ...prev, status: value }))
                     }
                   >
@@ -612,7 +782,7 @@ export default function AgendaPage() {
                     <SelectContent>
                       <SelectItem value="todos">Todos</SelectItem>
                       <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="em-andamento">Em Andamento</SelectItem>
+                      <SelectItem value="em_andamento">Em Andamento</SelectItem>
                       <SelectItem value="concluido">Concluído</SelectItem>
                     </SelectContent>
                   </Select>
@@ -669,19 +839,22 @@ export default function AgendaPage() {
                 <CardContent className="p-6">
                                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                      <div className="flex-1">
-                       <div className="flex items-center gap-3 mb-2">
-                         {getTypeIcon(item.type)}
-                         <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(item.priority)}`}>
-                           {item.priority}
-                         </span>
-                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
-                           {item.status}
-                         </span>
+                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                         <div className="flex items-center gap-2">
+                           {getTypeIcon(item.type)}
+                           <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
+                         </div>
+                         <div className="flex flex-wrap items-center gap-2">
+                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(item.priority)}`}>
+                             {item.priority}
+                           </span>
+                           {/* Status com mudança rápida */}
+                           {getStatusButton(item)}
+                         </div>
                        </div>
                        
                        {item.description && (
-                         <p className="text-gray-600 mb-3">{item.description}</p>
+                         <TruncatedText text={item.description} itemId={item.id} />
                        )}
                        
                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -714,23 +887,22 @@ export default function AgendaPage() {
                        </div>
                      </div>
                      
-                     <div className="flex gap-2 sm:flex-shrink-0">
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => handleEdit(item)}
-                       >
-                         Editar
-                       </Button>
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => handleDelete(item.id)}
-                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                       >
-                         Excluir
-                       </Button>
-                     </div>
+                     <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            title="Editar item"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                            title="Excluir item"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                    </div>
                 </CardContent>
               </Card>

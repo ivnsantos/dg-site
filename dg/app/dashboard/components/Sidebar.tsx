@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { TipoPlano, UserStatus } from '../../../src/entities/User'
 import { 
   HomeIcon, 
@@ -21,7 +21,8 @@ import {
   LockClosedIcon,
   LinkIcon,
   ClipboardDocumentListIcon,
-  CalendarIcon
+  CalendarIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../components/ui/button'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
@@ -193,6 +194,18 @@ export function Sidebar() {
           );
         })
       )}
+
+      {/* Botão Sair */}
+      <div className="mt-6 p-3">
+        <Button 
+          variant="outline"
+          className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+          onClick={() => signOut({ callbackUrl: '/login' })}
+        >
+          <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+          Sair
+        </Button>
+      </div>
 
       {/* Botão para upgrade do plano - apenas para usuários do plano BÁSICO */}
       {userPlano === TipoPlano.BASICO && !isInactive && (

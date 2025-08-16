@@ -135,12 +135,6 @@ export default async function DashboardPage() {
     return normalizedItemDate >= normalizedToday && normalizedItemDate <= normalizedWeekFromNow
   })
 
-  // Debug: verificar filtros
-  console.log('Data atual:', today.toISOString())
-  console.log('Semana que vem:', weekFromNow.toISOString())
-  console.log('Itens próximos 7 dias:', upcomingAgendaItems.length)
-  console.log('Itens próximos:', upcomingAgendaItems.slice(0, 3))
-
   // Conta itens por tipo
   const anotacoesCount = agendaItems.filter(item => item.type === 'anotacao').length
   const encomendasCount = agendaItems.filter(item => item.type === 'encomenda').length
@@ -148,11 +142,6 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto p-4">
-        <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
-          <h1 className="text-2xl font-bold text-[#111827]">Dashboard</h1>
-          <LogoutButton />
-        </div>
-
         {/* Alerta de Markup não configurado */}
         {!user?.markupIdeal && <MarkupAlert />}
                  {/* Calendário de 7 dias */}
