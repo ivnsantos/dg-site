@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Sistema de gestão financeira para Confeiteiros',
   icons: {
     icon: '/images/favicon.ico',
-    apple: '/images/logo.png',
+    apple: '/images/logo.png'
   },
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
 }
