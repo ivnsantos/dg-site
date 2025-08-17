@@ -6,7 +6,6 @@ export class FeedbackResponse {
   @PrimaryGeneratedColumn()
   id!: number
 
-
   @Column()
   selectedOption!: string
 

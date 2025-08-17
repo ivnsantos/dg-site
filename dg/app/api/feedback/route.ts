@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     feedback.options = validOptions
     feedback.code = code!
     feedback.status = FeedbackStatus.ACTIVE
-    feedback.userId = parseInt(session.user.id)
+    feedback.user = { id: parseInt(session.user.id) } as any
 
     await dataSource.getRepository(Feedback).save(feedback)
 
@@ -118,21 +118,24 @@ export async function GET(request: NextRequest) {
     const feedbacks = await dataSource
       .getRepository(Feedback)
       .find({
-        where: { userId: parseInt(session.user.id) },
-        relations: ['responses'],
+        where: { user: { id: parseInt(session.user.id) } },
+        relations: ['feedbackResponses'],
         order: { createdAt: 'DESC' }
       })
 
-    const feedbacksWithStats = feedbacks.map((feedback: Feedback) => ({
+    const feedbacksWithStats = feedbacks.map(feedback => ({
       id: feedback.id,
       title: feedback.title,
       question: feedback.question,
+      options: feedback.options,
       description: feedback.description,
       logoUrl: feedback.logoUrl,
+      primaryColor: feedback.primaryColor,
+      secondaryColor: feedback.secondaryColor,
       code: feedback.code,
       status: feedback.status,
       createdAt: feedback.createdAt,
-      responsesCount: feedback.responses?.length || 0
+      responsesCount: feedback.feedbackResponses?.length || 0
     }))
 
     return NextResponse.json({ feedbacks: feedbacksWithStats })

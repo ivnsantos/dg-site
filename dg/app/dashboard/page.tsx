@@ -106,9 +106,15 @@ export default async function DashboardPage() {
   })
 
   // Busca dados de questionários de feedback
-  const feedbacksCount = await dataSource.getRepository(Feedback).count({
-    where: { user: { id: user.id } }
-  })
+  let feedbacksCount = 0
+  try {
+    feedbacksCount = await dataSource.getRepository(Feedback).count({
+      where: { user: { id: user.id } }
+    })
+  } catch (error) {
+    console.error('Erro ao buscar feedbacks:', error)
+    feedbacksCount = 0
+  }
 
   // Busca dados da agenda
   const agendaRepository = dataSource.getRepository(AgendaItem)
@@ -140,18 +146,18 @@ export default async function DashboardPage() {
   const encomendasCount = agendaItems.filter(item => item.type === 'encomenda').length
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB]">
-      <div className="max-w-7xl mx-auto p-4">
+   
+      <div className="max-w-7xl mx-auto">
         {/* Alerta de Markup não configurado */}
         {!user?.markupIdeal && <MarkupAlert />}
                  {/* Calendário de 7 dias */}
         <div className="mb-8">
           <Link href="/dashboard/agenda">
-            <Card className="p-6 hover:shadow-lg transition-all cursor-pointer">
+            <Card className=" hover:shadow-lg transition-all cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CalendarIcon className="h-6 w-6 text-[#0B7A48]" />
-                  Agenda
+                  <span className=" font-medium text-lg">Agenda</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -502,9 +508,9 @@ export default async function DashboardPage() {
           </div>
         </ExpandableSection>
       </div>
-    </div>
+   
   )
-}
+} 
 
 interface StatCardProps {
   title: string;

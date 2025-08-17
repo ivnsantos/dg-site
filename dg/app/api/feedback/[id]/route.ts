@@ -26,7 +26,7 @@ export async function DELETE(
     const feedback = await dataSource
       .getRepository(Feedback)
       .findOne({
-        where: { id: feedbackId, userId: session.user.id }
+        where: { id: feedbackId, user: { id: session.user.id } }
       })
 
     if (!feedback) {
@@ -84,8 +84,8 @@ export async function GET(
     const feedback = await dataSource
       .getRepository(Feedback)
       .findOne({
-        where: { id: feedbackId, userId: session.user.id },
-        relations: ['responses']
+        where: { id: feedbackId, user: { id: session.user.id } },
+        relations: ['feedbackResponses']
       })
 
     if (!feedback) {
@@ -98,7 +98,7 @@ export async function GET(
       optionStats[option] = 0
     })
 
-    feedback.responses?.forEach(response => {
+    feedback.feedbackResponses?.forEach(response => {
       if (optionStats.hasOwnProperty(response.selectedOption)) {
         optionStats[response.selectedOption]++
       }
@@ -107,7 +107,7 @@ export async function GET(
     const responseStats = Object.entries(optionStats).map(([option, count]) => ({
       option,
       count,
-      percentage: feedback.responses?.length ? Math.round((count / feedback.responses.length) * 100) : 0
+      percentage: feedback.feedbackResponses?.length ? Math.round((count / feedback.feedbackResponses.length) * 100) : 0
     }))
 
     return NextResponse.json({
@@ -120,7 +120,7 @@ export async function GET(
         status: feedback.status,
         options: feedback.options,
         createdAt: feedback.createdAt,
-        responses: feedback.responses?.map(response => ({
+        responses: feedback.feedbackResponses?.map(response => ({
           id: response.id,
           selectedOption: response.selectedOption,
           textResponse: response.textResponse,
@@ -129,7 +129,7 @@ export async function GET(
           createdAt: response.createdAt
         })) || [],
         stats: responseStats,
-        totalResponses: feedback.responses?.length || 0
+        totalResponses: feedback.feedbackResponses?.length || 0
       }
     })
 
