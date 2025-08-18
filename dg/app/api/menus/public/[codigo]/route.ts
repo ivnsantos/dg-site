@@ -25,6 +25,8 @@ export async function GET(request: NextRequest, { params }: { params: { codigo: 
       instagram: menu.instagram,
       template: menu.template,
       status: menu.status,
+      valorFrete: menu.valorFrete,
+      fazEntregas: menu.fazEntregas,
       sections: (menu.sections || []).map(section => ({
         id: section.id,
         title: section.title,

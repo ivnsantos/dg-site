@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node socket-server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node socket-server.js",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:run": "npm run typeorm migration:run -- -d src/config/typeorm.config.ts",
     "migration:revert": "npm run typeorm migration:revert -- -d src/config/typeorm.config.ts"
@@ -52,6 +52,8 @@
     "react-imask": "^7.6.1",
     "recharts": "^3.1.0",
     "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",

@@ -36,6 +36,8 @@ interface MenuForm {
   status: string
   telefone: string
   instagram: string
+  valorFrete: number
+  fazEntregas: boolean
   imageFile?: File | null
   imageUrl?: string
   imageBackgroundFile?: File | null
@@ -53,6 +55,8 @@ export default function NovoMenuPage() {
     status: 'Ativo',
     telefone: '',
     instagram: '',
+    valorFrete: 0.00,
+    fazEntregas: true,
     imageFile: null,
     imageUrl: '',
     imageBackgroundFile: null,
@@ -357,6 +361,32 @@ export default function NovoMenuPage() {
           <input type="text" className="w-full border rounded px-3 py-2" value={menu.instagram} onChange={e => handleMenuChange('instagram', e.target.value)} placeholder="Ex: @meuperfil" />
         </div>
         <div>
+          <label className="block text-sm font-medium mb-1">Valor do Frete</label>
+          <input 
+            type="text" 
+            className="w-full border rounded px-3 py-2" 
+            value={menu.valorFrete !== undefined && menu.valorFrete !== null ? `R$ ${Number(menu.valorFrete).toFixed(2).replace('.', ',')}` : ''} 
+            onChange={e => {
+              // Remove tudo exceto números
+              const numbers = e.target.value.replace(/\D/g, '')
+              // Converte para centavos e depois para reais
+              const value = numbers ? parseFloat(numbers) / 100 : 0
+              handleMenuChange('valorFrete', value)
+            }}
+            placeholder="R$ 0,00"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Digite apenas números (ex: 1500 = R$ 15,00)
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Faz Entregas</label>
+          <select className="w-full border rounded px-3 py-2" value={menu.fazEntregas ? 'true' : 'false'} onChange={e => handleMenuChange('fazEntregas', e.target.value === 'true')}>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </div>
+        <div>
           <label className="block text-sm font-medium mb-1">Logo</label>
           <div className="flex items-center gap-4">
             <label htmlFor="menuImageUpload" className="cursor-pointer inline-flex items-center px-4 py-2 bg-[#0B7A48] text-white rounded-md hover:bg-[#0B7A48]/80 transition-colors">
@@ -486,7 +516,19 @@ export default function NovoMenuPage() {
                       </div>
                       <div>
                         <label className="block text-xs font-medium mb-1">Preço</label>
-                        <input type="number" min="0" step="0.01" className="w-full border rounded px-2 py-1" value={item.price} onChange={e => updateItem(idx, itemIdx, 'price', e.target.value)} required />
+                        <input 
+                          type="text" 
+                          className="w-full border rounded px-2 py-1" 
+                          value={item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : ''} 
+                          onChange={e => {
+                            const value = e.target.value.replace(/\D/g, '')
+                            const priceInCents = parseInt(value) || 0
+                            const priceInReais = priceInCents / 100
+                            updateItem(idx, itemIdx, 'price', priceInReais.toString())
+                          }} 
+                          placeholder="R$ 0,00" 
+                          required 
+                        />
                       </div>
                       <div>
                         <label className="block text-xs font-medium mb-1">Disponível</label>

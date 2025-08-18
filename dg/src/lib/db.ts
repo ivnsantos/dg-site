@@ -22,7 +22,11 @@ import {
     Subscription,
     Feedback,
     FeedbackResponse,
-    AgendaItem
+    AgendaItem,
+    ClienteDG,
+    PedidoDG,
+    ItemPedidoDG,
+    EnderecoDG
 } from '../entities'
 
 // Configuração do DataSource
@@ -58,7 +62,13 @@ const dataSourceConfig = {
         FeedbackResponse,
         
         // Entidades da agenda
-        AgendaItem
+        AgendaItem,
+        
+        // Entidades DG (novo sistema)
+        ClienteDG,
+        PedidoDG,
+        ItemPedidoDG,
+        EnderecoDG
     ],
     synchronize: true,
     logging: false,

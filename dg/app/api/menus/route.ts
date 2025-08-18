@@ -8,7 +8,7 @@ import { User } from '@/src/entities/User'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, codigo, description, template, status, telefone, instagram, imageUrl, imageUrlBackground, sections, userId } = body
+    const { name, codigo, description, template, status, telefone, instagram, imageUrl, imageUrlBackground, valorFrete, fazEntregas, sections, userId } = body
     const dataSource = await getDataSource()
 
     // Busca o usuário
@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
     menu.instagram = instagram
     menu.imageUrl = imageUrl
     menu.imageUrlBackground = imageUrlBackground
+    menu.valorFrete = valorFrete || 0.00
+    menu.fazEntregas = fazEntregas !== undefined ? fazEntregas : true
     menu.user = user
     menu.sections = []
 
@@ -89,13 +91,23 @@ export async function GET(request: NextRequest) {
     const dataSource = await getDataSource()
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
+    
+    let menus
     if (!userId) {
-      return NextResponse.json({ menus: [] })
+      // Se não houver userId, retornar todos os menus
+      menus = await dataSource.getRepository(Menu).find({
+        order: { createdAt: 'DESC' },
+        relations: ['user']
+      })
+    } else {
+      // Se houver userId, filtrar por usuário
+      menus = await dataSource.getRepository(Menu).find({
+        where: { user: { id: Number(userId) } },
+        order: { createdAt: 'DESC' },
+        relations: ['user']
+      })
     }
-    const menus = await dataSource.getRepository(Menu).find({
-      where: { user: { id: Number(userId) } },
-      order: { createdAt: 'DESC' },
-    })
+    
     const result = menus.map(menu => ({
       id: menu.id,
       name: menu.name,
@@ -103,7 +115,12 @@ export async function GET(request: NextRequest) {
       status: menu.status,
       imageUrl: menu.imageUrl,
     }))
-    return NextResponse.json({ menus: result })
+    
+    return NextResponse.json({ 
+      success: true,
+      menus: result,
+      total: menus.length
+    })
   } catch (error) {
     console.error('Erro ao buscar menus:', error)
     
@@ -114,6 +131,10 @@ export async function GET(request: NextRequest) {
       }, { status: 503 })
     }
     
-    return NextResponse.json({ menus: [] }, { status: 500 })
+    return NextResponse.json({ 
+      success: false,
+      menus: [],
+      error: 'Erro interno do servidor'
+    }, { status: 500 })
   }
 } 

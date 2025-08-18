@@ -35,9 +35,9 @@ export default function DoceGestaoLoading({
   const currentSize = sizeClasses[size]
 
   const LoadingContent = () => (
-    <div className="text-center space-y-5">
+    <div className="flex flex-col items-center justify-center space-y-5">
       {/* Logo animado */}
-      <div className="relative">
+      <div className="relative flex justify-center">
         <Image
           src="/images/logo.png"
           alt="Doce Gestão Logo"
@@ -82,7 +82,7 @@ export default function DoceGestaoLoading({
   }
 
   return (
-    <div className="flex items-center justify-center p-8">
+    <div className="flex items-center justify-center p-8 w-full">
       <LoadingContent />
     </div>
   )

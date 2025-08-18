@@ -292,6 +292,49 @@ export default function EditarMenuPage() {
                 <option value="Inativo">Inativo</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Valor do Frete (R$)</label>
+              <input
+                type="text"
+                value={form?.valorFrete !== undefined && form.valorFrete !== null ? `R$ ${Number(form.valorFrete).toFixed(2).replace('.', ',')}` : ''}
+                onChange={(e) => {
+                  // Remove tudo exceto números
+                  const numbers = e.target.value.replace(/\D/g, '')
+                  // Converte para centavos e depois para reais
+                  const value = numbers ? parseFloat(numbers) / 100 : 0
+                  handleChange('valorFrete', value)
+                }}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Digite apenas números (ex: 1500 = R$ 15,00)
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Faz Entregas</label>
+              <select
+                value={form?.fazEntregas ? 'true' : 'false'}
+                onChange={(e) => handleChange('fazEntregas', e.target.value === 'true')}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Define se o menu oferece opção de entrega
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Código</label>
+              <input
+                type="text"
+                value={form?.codigo || ''}
+                onChange={(e) => handleChange('codigo', e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                required
+              />
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-2">Descrição</label>
               <textarea
@@ -439,10 +482,15 @@ export default function EditarMenuPage() {
                       <div>
                         <label className="block text-sm font-medium mb-1">Preço</label>
                         <input
-                          type="number"
-                          step="0.01"
-                          value={item.price || 0}
-                          onChange={(e) => handleItemChange(sectionIdx, itemIdx, 'price', parseFloat(e.target.value))}
+                          type="text"
+                          value={item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : ''}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '')
+                            const priceInCents = parseInt(value) || 0
+                            const priceInReais = priceInCents / 100
+                            handleItemChange(sectionIdx, itemIdx, 'price', priceInReais)
+                          }}
+                          placeholder="R$ 0,00"
                           className="w-full p-2 border border-gray-300 rounded-md text-sm"
                           required
                         />

@@ -37,34 +37,36 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     for (const sectionData of body.sections) {
       if ('id' in sectionData) delete sectionData.id
       const section = new MenuSection()
-      section.title = sectionData.title
-      section.description = sectionData.description
-      section.imageUrl = sectionData.imageUrl
-      section.position = sectionData.position
+      section.title = sectionData.name || sectionData.title || ''
+      section.description = sectionData.description || ''
+      section.imageUrl = sectionData.imageUrl || ''
+      section.position = sectionData.position || 1
       section.menu = menu
       section.items = []
       for (const itemData of sectionData.items) {
         if ('id' in itemData) delete itemData.id
         const item = new MenuItem()
-        item.name = itemData.name
-        item.description = itemData.description
-        item.price = Number(itemData.price)
-        item.available = itemData.available
-        item.position = itemData.position
+        item.name = itemData.name || ''
+        item.description = itemData.description || ''
+        item.price = Number(itemData.price) || 0
+        item.available = itemData.available !== undefined ? itemData.available : true
+        item.position = itemData.position || 1
         item.section = section
-        item.imageUrl = itemData.imageUrl
+        item.imageUrl = itemData.imageUrl || ''
         section.items.push(item)
       }
       menu.sections.push(section)
     }
-    menu.name = body.name
-    menu.codigo = body.codigo
-    menu.description = body.description
-    menu.template = body.template
-    menu.status = body.status
+    menu.name = body.name || ''
+    menu.codigo = body.codigo || ''
+    menu.description = body.description || ''
+    menu.template = body.template || 'default'
+    menu.status = body.status || 'Ativo'
+    menu.valorFrete = body.valorFrete || 0.00
+    menu.fazEntregas = body.fazEntregas !== undefined ? body.fazEntregas : true
     // Sanitizar Instagram para salvar apenas o usuário
     let instagram = body.instagram || ''
-    if (instagram.startsWith('http')) {
+    if (instagram && instagram.startsWith('http')) {
       // Extrai o usuário da URL
       const match = instagram.match(/instagram.com\/(.+?)(\/?$|\?|#)/)
       if (match && match[1]) {
@@ -76,16 +78,23 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     // Só atualiza telefone se vier preenchido
     if (body.telefone && body.telefone.trim() !== '') {
       menu.telefone = body.telefone
+    } else {
+      menu.telefone = menu.telefone || ''
     }
     menu.instagram = instagram
-    menu.imageUrl = body.imageUrl
-    menu.imageUrlBackground = body.imageUrlBackground
+    menu.imageUrl = body.imageUrl || ''
+    menu.imageUrlBackground = body.imageUrlBackground || ''
     await menuRepo.save(menu)
     // Buscar o menu atualizado para retornar
     const menuAtualizado = await menuRepo.findOne({ where: { id: menu.id }, relations: ['sections', 'sections.items'] })
     return NextResponse.json({ success: true, menu: menuAtualizado })
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao editar menu' }, { status: 500 })
+    console.error('ERRO AO EDITAR MENU:', error)
+    return NextResponse.json({ 
+      error: 'Erro ao editar menu', 
+      detalhe: String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    }, { status: 500 })
   }
 }
 

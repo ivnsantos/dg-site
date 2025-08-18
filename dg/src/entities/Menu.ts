@@ -47,6 +47,12 @@ export class Menu {
   @Column({ length: 50, default: 'default' })
   template!: string;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.00 })
+  valorFrete!: number;
+
+  @Column({ type: 'boolean', default: true })
+  fazEntregas!: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 

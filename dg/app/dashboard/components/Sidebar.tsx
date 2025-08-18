@@ -26,6 +26,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../components/ui/button'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
+import NotificationBell from '@/components/NotificationBell'
 import { link } from 'fs'
 
 // Define interface para os itens de navegação
@@ -45,6 +46,7 @@ const navigation: NavigationItem[] = [
   { name: 'Ingredientes', href: '/dashboard/ingredientes', icon: BeakerIcon, restrictedTo: [] },
   { name: 'Linktree', href: '/dashboard/linktree', icon: LinkIcon, restrictedTo: [] },
   { name: 'Menu Online', href: '/dashboard/menu-online', icon: Bars3Icon, restrictedTo: [TipoPlano.BASICO] },
+  { name: 'Pedidos', href: '/dashboard/pedidos', icon: ClipboardDocumentListIcon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Orçamentos', href: '/dashboard/orcamentos', icon: DocumentTextIcon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Questionários', href: '/dashboard/feedback', icon: ClipboardDocumentListIcon, restrictedTo: [TipoPlano.BASICO] },
   { name: 'Usuários', href: '/dashboard/usuarios', icon: UserIcon, restrictedTo: [] },
@@ -59,31 +61,41 @@ const navigation: NavigationItem[] = [
 ]
 
 const LogoFull = () => (
-  <Link href="/dashboard" className="flex items-center">
-    <Image
-      src="/images/logo.png"
-      alt="Doce Gestão"
-      width={40}
-      height={40}
-      className="rounded-lg"
-      priority
-    />
-    <span className="ml-2 text-lg font-semibold">Doce Gestão</span>
-  </Link>
+  <div className="flex items-center justify-between w-full">
+    <Link href="/dashboard" className="flex items-center">
+      <Image
+        src="/images/logo.png"
+        alt="Doce Gestão"
+        width={40}
+        height={40}
+        className="rounded-lg"
+        priority
+      />
+      <span className="ml-2 text-lg font-semibold">Doce Gestão</span>
+    </Link>
+    
+    {/* Sino de notificações no header da sidebar */}
+    <NotificationBell />
+  </div>
 )
 
 const LogoMobile = () => (
-  <Link href="/dashboard" className="flex items-center">
-    <Image
-      src="/images/logo.png"
-      alt="Doce Gestão"
-      width={42}
-      height={42}
-      className="rounded-lg"
-      priority
-    />
-    <span className="ml-2 text-base font-semibold">Doce Gestão</span>
-  </Link>
+  <div className="flex items-center gap-2">
+    <Link href="/dashboard" className="flex items-center">
+      <Image
+        src="/images/logo.png"
+        alt="Doce Gestão"
+        width={42}
+        height={42}
+        className="rounded-lg"
+        priority
+      />
+      <span className="ml-2 text-base font-semibold">Doce Gestão</span>
+    </Link>
+    
+    {/* Sino de notificações dentro da marcação azul */}
+    <NotificationBell />
+  </div>
 )
 
 export function Sidebar() {
@@ -234,6 +246,7 @@ export function Sidebar() {
       {/* Botão do menu mobile */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b px-4 flex items-center justify-between z-50">
         <LogoMobile />
+        
         <Button
           variant="ghost"
           size="icon"
