@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Bell, X, ShoppingCart, User, Clock, Package, DollarSign } from 'lucide-react'
 import { useSocketIO } from '@/hooks/useSocketIO'
-import OrderNotificationToast from './OrderNotificationToast'
 
 export default function NotificationBell() {
   const { notifications, isConnected, clearNotifications } = useSocketIO()
   const [isOpen, setIsOpen] = useState(false)
   const [hasUnread, setHasUnread] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+
   
   // Debug logs
   console.log('🔔 NotificationBell renderizado:', { 
@@ -231,13 +230,7 @@ export default function NotificationBell() {
         </div>
       )}
 
-      {/* Toast de notificação de novo pedido */}
-      {showToast && notifications.length > 0 && (
-        <OrderNotificationToast
-          notification={notifications[0]}
-          onClose={() => setShowToast(false)}
-        />
-      )}
+
     </div>
   )
 }
