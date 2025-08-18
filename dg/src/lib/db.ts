@@ -64,11 +64,11 @@ const dataSourceConfig = {
         // Entidades da agenda
         AgendaItem,
         
-        // Entidades DG (novo sistema)
+        // Entidades DG (novo sistema) - por último para evitar dependências circulares
+        EnderecoDG,
         ClienteDG,
         PedidoDG,
-        ItemPedidoDG,
-        EnderecoDG
+        ItemPedidoDG
     ],
     synchronize: true,
     logging: false,

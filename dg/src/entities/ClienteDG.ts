@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { PedidoDG } from './PedidoDG'
 import { EnderecoDG } from './EnderecoDG'
 
-export interface ClienteDG {
+export interface IClienteDG {
   id: number
   nome: string
   telefone: string

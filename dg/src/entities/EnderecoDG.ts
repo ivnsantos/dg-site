@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne } from 'typeorm'
 import { ClienteDG } from './ClienteDG'
 
-export interface EnderecoDG {
+export interface IEnderecoDG {
   id: number
   clienteId: number
   cep?: string
