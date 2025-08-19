@@ -82,7 +82,7 @@ export class EnderecoDG {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date
 
-  @ManyToOne(() => ClienteDG)
+  @ManyToOne(() => ClienteDG, { eager: false })
   @JoinColumn({ name: 'cliente_id' })
   cliente!: any
 }

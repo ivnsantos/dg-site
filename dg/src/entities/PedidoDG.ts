@@ -34,7 +34,7 @@ export class PedidoDG {
   @Column({ type: 'varchar', length: 20, nullable: true })
   telefoneDestinatario!: string
 
-  @ManyToOne  (() => ClienteDG, (cliente) => cliente.pedidos)
+  @ManyToOne(() => ClienteDG, (cliente) => cliente.pedidos, { eager: false })
   @JoinColumn({ name: 'cliente_id' })
   cliente!: any
 
@@ -50,7 +50,7 @@ export class PedidoDG {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date
 
-  @OneToMany(() => ItemPedidoDG, (item) => item.pedido)
+  @OneToMany(() => ItemPedidoDG, (item) => item.pedido, { eager: false })
   itens!: any[]
 }
 
@@ -74,7 +74,7 @@ export class ItemPedidoDG {
   @Column({ type: 'text', nullable: true })
   observacao!: string
 
-  @ManyToOne(() => PedidoDG)
+  @ManyToOne(() => PedidoDG, { eager: false })
   @JoinColumn({ name: 'pedido_id' })
   pedido!: any
 

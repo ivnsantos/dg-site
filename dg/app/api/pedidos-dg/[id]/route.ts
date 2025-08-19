@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDataSource } from '@/src/lib/db'
-import { PedidoDG } from '@/src/entities/PedidoDG'
+import { PedidoDG, EnderecoDG } from '@/src/entities'
 
 export async function GET(
   request: NextRequest,
@@ -24,7 +24,7 @@ export async function GET(
     }
 
     // Buscar endereços do cliente separadamente
-    const enderecos = await dataSource.getRepository('EnderecoDG').find({
+    const enderecos = await dataSource.getRepository(EnderecoDG).find({
       where: { clienteId: pedido.cliente.id, ativo: true }
     })
 
@@ -42,10 +42,10 @@ export async function GET(
         id: pedido.cliente.id,
         nome: pedido.cliente.nome,
         telefone: pedido.cliente.telefone,
-        email: pedido.cliente.email,
+
         enderecos: enderecos.map((endereco: any) => ({
           id: endereco.id,
-          logradouro: endereco.logradouro,
+          endereco: endereco.endereco,
           numero: endereco.numero,
           complemento: endereco.complemento,
           bairro: endereco.bairro,

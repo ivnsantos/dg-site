@@ -42,9 +42,9 @@ export class ClienteDG {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date
 
-  @OneToMany(() => PedidoDG, (pedido) => pedido.clienteId)
+  @OneToMany(() => PedidoDG, (pedido) => pedido.clienteId, { eager: false })
   pedidos!: any[]
 
-  @OneToMany(() => EnderecoDG, (endereco) => endereco.clienteId)
-  enderecos!: any[]
+  @OneToMany(() => EnderecoDG, (endereco) => endereco.clienteId, { eager: false })
+  enderecos!: EnderecoDG[]
 } 
