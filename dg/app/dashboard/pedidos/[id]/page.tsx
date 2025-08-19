@@ -18,6 +18,16 @@ interface PedidoDetalhado {
   formaPagamento: string
   observacoes: string
   createdAt: string
+  enderecoEntrega?: {
+    id: number
+    endereco: string
+    numero: string
+    complemento?: string
+    bairro: string
+    cidade: string
+    estado: string
+    cep: string
+  } | null
   cliente: {
     id: number
     nome: string
@@ -38,7 +48,7 @@ interface PedidoDetalhado {
   itens: Array<{
     id: number
     nomeProduto: string
-    quantidade: number
+    quantity: number
     precoUnitario: number
     precoTotal: number
     observacao: string
@@ -139,7 +149,7 @@ export default function PedidoDetalhadoPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <p className="text-gray-500">Pedido não encontrado</p>
-          <Button onClick={() => router.back()} className="mt-4">
+          <Button onClick={() => router.push('/dashboard/pedidos')} className="mt-4">
             Voltar
           </Button>
         </div>
@@ -154,7 +164,7 @@ export default function PedidoDetalhadoPage() {
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => router.back()}
+          onClick={() => router.push('/dashboard/pedidos')}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -241,7 +251,7 @@ export default function PedidoDetalhadoPage() {
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Qtd: {item.quantidade}</p>
+                      <p className="text-sm text-gray-600">Qtd: {item.quantity}</p>
                       <p className="text-sm text-gray-600">Unit: {formatPrice(item.precoUnitario)}</p>
                       <p className="font-semibold text-gray-900">{formatPrice(item.precoTotal)}</p>
                     </div>
@@ -294,6 +304,34 @@ export default function PedidoDetalhadoPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Endereço de Entrega */}
+          {pedido.formaEntrega === 'entrega' && pedido.enderecoEntrega && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-green-500" />
+                  Endereço de Entrega
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                  <p className="font-medium text-green-900">
+                    {pedido.enderecoEntrega.endereco}, {pedido.enderecoEntrega.numero}
+                  </p>
+                  {pedido.enderecoEntrega.complemento && (
+                    <p className="text-green-800">{pedido.enderecoEntrega.complemento}</p>
+                  )}
+                  <p className="text-green-800">
+                    {pedido.enderecoEntrega.bairro} - {pedido.enderecoEntrega.cidade}/{pedido.enderecoEntrega.estado}
+                  </p>
+                  {pedido.enderecoEntrega.cep && (
+                    <p className="text-green-700">{pedido.enderecoEntrega.cep}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Endereços */}
           {pedido.cliente.enderecos && pedido.cliente.enderecos.length > 0 && (

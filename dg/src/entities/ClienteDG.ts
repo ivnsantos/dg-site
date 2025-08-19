@@ -46,5 +46,5 @@ export class ClienteDG {
   pedidos!: any[]
 
   @OneToMany(() => EnderecoDG, (endereco) => endereco.clienteId, { eager: false })
-  enderecos!: EnderecoDG[]
-} 
+  enderecos!: any[]
+}

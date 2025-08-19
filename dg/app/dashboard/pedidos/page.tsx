@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import DoceGestaoLoading from '@/components/ui/DoceGestaoLoading'
 import { useSocketIO } from '@/hooks/useSocketIO'
+import { Package } from 'lucide-react'
 
 interface Pedido {
   id: number
@@ -39,6 +41,7 @@ interface Menu {
 }
 
 export default function PedidosPage() {
+  const router = useRouter()
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [menus, setMenus] = useState<Menu[]>([])
   const [selectedMenu, setSelectedMenu] = useState<string>('')
@@ -287,6 +290,40 @@ export default function PedidosPage() {
   }
 
   const filteredPedidos = getFilteredPedidos()
+
+  // Verificar se não há menus cadastrados
+  if (!menus || menus.length === 0) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Pedidos</h1>
+          <p className="text-gray-500 mt-2">Gerencie todos os pedidos dos seus menus</p>
+        </div>
+        
+        <div className="text-center max-w-md mx-auto py-16">
+          <div className="mb-6">
+            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Nenhum Menu Cadastrado
+            </h2>
+            <p className="text-gray-600">
+              Você precisa primeiro cadastrar um Menu Online para ter pedidos
+            </p>
+          </div>
+          
+          <Button 
+            onClick={() => router.push('/dashboard/menu-online/novo')}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Criar Menu Online
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">

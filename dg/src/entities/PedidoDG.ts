@@ -41,8 +41,37 @@ export class PedidoDG {
   @Column({ name: 'cliente_id' })
   clienteId!: number
 
+  @ManyToOne(() => EnderecoDG, { eager: false })
+  @JoinColumn({ name: 'endereco_id' })
+  endereco!: any
+
   @Column({ name: 'menu_id' })
   menuId!: number
+
+  @Column({ name: 'endereco_id', nullable: true })
+  enderecoId!: number | null
+
+  // Campos para salvar o endereço de entrega diretamente no pedido
+  @Column({ name: 'endereco_entrega', type: 'varchar', length: 200, nullable: true })
+  enderecoEntrega!: string
+
+  @Column({ name: 'numero_entrega', type: 'varchar', length: 20, nullable: true })
+  numeroEntrega!: string
+
+  @Column({ name: 'bairro_entrega', type: 'varchar', length: 100, nullable: true })
+  bairroEntrega!: string
+
+  @Column({ name: 'cidade_entrega', type: 'varchar', length: 100, nullable: true })
+  cidadeEntrega!: string
+
+  @Column({ name: 'estado_entrega', type: 'varchar', length: 2, nullable: true })
+  estadoEntrega!: string
+
+  @Column({ name: 'cep_entrega', type: 'varchar', length: 9, nullable: true })
+  cepEntrega!: string
+
+  @Column({ name: 'complemento_entrega', type: 'varchar', length: 100, nullable: true })
+  complementoEntrega!: string
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date

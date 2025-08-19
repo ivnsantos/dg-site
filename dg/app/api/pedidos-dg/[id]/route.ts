@@ -23,11 +23,6 @@ export async function GET(
       )
     }
 
-    // Buscar endereços do cliente separadamente
-    const enderecos = await dataSource.getRepository(EnderecoDG).find({
-      where: { clienteId: pedido.cliente.id, ativo: true }
-    })
-
     // Formatar os dados para retornar
     const pedidoFormatado = {
       id: pedido.id,
@@ -38,22 +33,20 @@ export async function GET(
       formaPagamento: pedido.formaPagamento,
       observacoes: pedido.observacoes,
       createdAt: pedido.createdAt,
+      enderecoEntrega: pedido.formaEntrega === 'entrega' ? {
+        id: 0, // ID fictício para compatibilidade
+        endereco: pedido.enderecoEntrega || '',
+        numero: pedido.numeroEntrega || '',
+        complemento: pedido.complementoEntrega || '',
+        bairro: pedido.bairroEntrega || '',
+        cidade: pedido.cidadeEntrega || '',
+        estado: pedido.estadoEntrega || '',
+        cep: pedido.cepEntrega || ''
+      } : null,
       cliente: {
         id: pedido.cliente.id,
         nome: pedido.cliente.nome,
-        telefone: pedido.cliente.telefone,
-
-        enderecos: enderecos.map((endereco: any) => ({
-          id: endereco.id,
-          endereco: endereco.endereco,
-          numero: endereco.numero,
-          complemento: endereco.complemento,
-          bairro: endereco.bairro,
-          cidade: endereco.cidade,
-          estado: endereco.estado,
-          cep: endereco.cep,
-          ativo: endereco.ativo
-        }))
+        telefone: pedido.cliente.telefone
       },
       itens: pedido.itens?.map(item => ({
         id: item.id,
