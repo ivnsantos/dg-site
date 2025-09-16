@@ -41,7 +41,7 @@ export default function OrcamentosClient() {
 
     const userId = session.user.id
 
-    // Buscar orçamentos
+    // Buscar orçamentos e configurações em uma única chamada
     fetch(`/api/orcamentos?userId=${userId}`)
       .then(res => {
         if (!res.ok) {
@@ -53,39 +53,27 @@ export default function OrcamentosClient() {
         return res.json()
       })
       .then(data => {
+        console.log('Dados recebidos:', data) // Debug
+        console.log('Orçamentos:', data.orcamentos) // Debug
+        console.log('Header:', data.header) // Debug
+        console.log('Footer:', data.footer) // Debug
         setOrcamentos(data.orcamentos || [])
+        setHeader(data.header)
+        setFooter(data.footer)
         setLoading(false)
+        setHeaderLoading(false)
       })
       .catch((error) => {
         console.error('Erro ao carregar orçamentos:', error)
         toast.error(error.message || 'Erro ao carregar orçamentos')
         setLoading(false)
-      })
-
-    // Buscar header/footer
-    fetch(`/api/orcamentos/configuracao?userId=${userId}`)
-      .then(res => {
-        if (!res.ok) {
-          if (res.status === 503) {
-            throw new Error('Erro de conexão. Tente novamente em alguns segundos.')
-          }
-          throw new Error('Erro ao carregar configurações')
-        }
-        return res.json()
-      })
-      .then(data => {
-        setHeader(data.header)
-        setFooter(data.footer)
-        setHeaderLoading(false)
-      })
-      .catch((error) => {
-        console.error('Erro ao carregar configurações:', error)
-        toast.error(error.message || 'Erro ao carregar configurações')
         setHeaderLoading(false)
       })
   }, [session])
 
   const headerFooterCadastrados = header && footer
+
+  console.log('Estado atual:', { orcamentos, loading, header, footer }) // Debug
 
   return (
     <div>
@@ -144,13 +132,15 @@ export default function OrcamentosClient() {
       </div>
       {loading ? (
         <DoceGestaoLoading />
-      ) : orcamentos.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-6 text-center text-muted-foreground">
-          Nenhum orçamento cadastrado ainda.
-        </div>
       ) : (
-        <div className="grid gap-6">
-          {orcamentos.map(orcamento => (
+        <div>
+          {orcamentos.length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-6 text-center text-muted-foreground">
+              Nenhum orçamento cadastrado ainda.
+            </div>
+          ) : (
+            <div className="grid gap-6">
+              {orcamentos.map(orcamento => (
             <div key={orcamento.id} className="bg-white rounded-2xl shadow-md p-6 flex flex-col md:flex-row items-center md:items-stretch justify-between gap-6 transition-all hover:shadow-lg border border-gray-100 group">
               <div className="flex-1 flex flex-col gap-2 justify-center md:justify-start md:items-start items-center text-center md:text-left">
                 <div className="flex items-center gap-2 mb-1">
@@ -191,7 +181,9 @@ export default function OrcamentosClient() {
                 </Link>
               </div>
             </div>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

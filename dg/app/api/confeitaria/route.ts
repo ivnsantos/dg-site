@@ -60,7 +60,6 @@ export async function GET(request: Request) {
         quantidadeFuncionarios: confeitaria.quantidadeFuncionarios,
         folhaPagamentoTotal: confeitaria.folhaPagamentoTotal,
         faturamentoMedio: confeitaria.faturamentoMedio,
-        faturamentoDesejado: confeitaria.faturamentoDesejado,
         regimeTributario: confeitaria.regimeTributario,
         porcentagemImposto: confeitaria.porcentagemImposto,
         custosFixos: confeitaria.custosFixos,
@@ -130,23 +129,34 @@ export async function POST(request: Request) {
       console.log('Dados anteriores da confeitaria deletados')
     }
 
-    // Cálculo do custo total mensal
-    const custoTotalMensal =
-      Number(data.folhaPagamentoTotal) +
-      Number(data.custosFixos) +
-      Number(data.proLabore) +
-      (data.pagaComissao ? (Number(data.faturamentoDesejado) * (Number(data.porcentagemComissao) / 100)) : 0) +
-      (Number(data.faturamentoDesejado) * (Number(data.taxaMaquininha) / 100))
-
-    console.log('Custo total mensal calculado:', custoTotalMensal)
-
-    // Cálculo do markup clássico (como fator)
-    const comissao = data.pagaComissao ? (Number(data.porcentagemComissao) / 100) : 0
-    const taxaMaquininha = Number(data.taxaMaquininha) / 100
-    const imposto = Number(data.porcentagemImposto) / 100
+    // Cálculo do markup seguindo a fórmula fornecida:
+    // 1 / (1 - (despesasAdm/Faturamento + maoObraIndireta/Faturamento + lucro + imposto + taxaMaquininha + outros))
+    const faturamentoBase = Number(data.faturamentoMedio)
+    const despesasAdministrativas = Number(data.custosFixos)
+    // Na planilha, Mão de Obra Indireta engloba folha + pró‑labore
+    const maoObraIndireta = Number(data.folhaPagamentoTotal) + Number(data.proLabore)
     const lucro = Number(data.porcentagemLucroDesejado) / 100
+    const imposto = data.regimeTributario === 'MEI' ? 0 : (Number(data.porcentagemImposto) / 100)
+    const taxaMaquininha = Number(data.taxaMaquininha) / 100
+    const outrosImpostosOuComissoes = data.pagaComissao ? (Number(data.porcentagemComissao) / 100) : 0
 
-    const despesasPercentuais = comissao + taxaMaquininha + imposto + lucro
+    if (!faturamentoBase || faturamentoBase <= 0) {
+      return NextResponse.json(
+        { error: 'Faturamento Médio deve ser maior que zero para calcular o markup.' },
+        { status: 400 }
+      )
+    }
+
+    const parcelaDespesasAdm = despesasAdministrativas / faturamentoBase
+    const parcelaMaoObraIndireta = maoObraIndireta / faturamentoBase
+
+    const despesasPercentuais =
+      parcelaDespesasAdm +
+      parcelaMaoObraIndireta +
+      lucro +
+      imposto +
+      taxaMaquininha +
+      outrosImpostosOuComissoes
 
     if (despesasPercentuais >= 1) {
       return NextResponse.json(

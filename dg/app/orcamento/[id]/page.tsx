@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import DoceGestaoLoading from '../../../components/ui/DoceGestaoLoading'
+import PDFGeneratorDirect from '../../../components/PDFGeneratorDirect'
 
 interface ItemOrcamento {
   id: number
@@ -60,25 +61,36 @@ export default function OrcamentoPublicoPage() {
   useEffect(() => {
     if (!id) return
 
-    // Buscar o orçamento
+    // Buscar o orçamento e configurações em uma única chamada
     fetch(`/api/orcamentos/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Orçamento não encontrado')
         return res.json()
       })
       .then(data => {
+        console.log('Dados do orçamento:', data) // Debug
         setOrcamento(data.orcamento)
         
-        // Buscar configurações (header/footer)
-        return fetch(`/api/orcamentos/configuracao?userId=${data.orcamento.userId || 1}`)
-      })
-      .then(res => res.json())
-      .then(data => {
-        setHeader(data.header)
-        setFooter(data.footer)
+        // Se não tiver header/footer, usar dados padrão
+        if (data.header && data.footer) {
+          setHeader(data.header)
+          setFooter(data.footer)
+        } else {
+          // Dados padrão se não houver configuração
+          setHeader({
+            nomeFantasia: 'Confeitaria',
+            telefone: '',
+            instagram: ''
+          })
+          setFooter({
+            formaPagamento: 'Pix ou cartão de crédito',
+            pix: ''
+          })
+        }
         setLoading(false)
       })
       .catch(err => {
+        console.error('Erro ao carregar orçamento:', err)
         setError(err.message)
         setLoading(false)
       })
@@ -104,7 +116,7 @@ export default function OrcamentoPublicoPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#BFE6DE] py-8 px-2">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-0 border border-[#BFE6DE] flex flex-col">
+      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-0 border border-[#BFE6DE] flex flex-col" id="orcamento-pdf">
         {/* Header */}
         <div className="px-8 pt-8 pb-4 border-b border-[#BFE6DE] bg-white rounded-t-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -125,6 +137,15 @@ export default function OrcamentoPublicoPage() {
             </div>
           </div>
           <div className="flex flex-col gap-3 text-sm md:text-base font-medium text-[#0B7A48] items-end mt-4 md:mt-0">
+            <div className="mb-2">
+              <PDFGeneratorDirect 
+                orcamento={orcamento}
+                header={header}
+                footer={footer}
+                filename={`orcamento-${orcamento.numero}.pdf`}
+                className="text-xs px-3 py-1"
+              />
+            </div>
             {header.telefone && (
               <div className="flex items-center gap-2">
                 <a href={`https://wa.me/${header.telefone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">

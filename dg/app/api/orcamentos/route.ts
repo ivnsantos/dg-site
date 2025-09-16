@@ -15,7 +15,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Usuário não fornecido' }, { status: 400 })
     }
 
-    const dataSource = await getDataSource()
+    // Tentar conectar ao banco com retry
+    let dataSource
+    try {
+      dataSource = await getDataSource()
+    } catch (dbError) {
+      console.error('Erro ao conectar com banco:', dbError)
+      return NextResponse.json({ 
+        orcamentos: [],
+        header: null,
+        footer: null
+      })
+    }
+
     const orcamentoRepository = dataSource.getRepository(Orcamento)
     const headerRepo = dataSource.getRepository(HeaderOrcamento)
     const footerRepo = dataSource.getRepository(FooterOrcamento)
@@ -33,17 +45,12 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Erro ao buscar orçamentos:', error)
     
-    if (error instanceof Error && error.message.includes('Driver not Connected')) {
-      return NextResponse.json({ 
-        error: 'Erro de conexão com o banco de dados. Tente novamente em alguns segundos.',
-        code: 'DB_CONNECTION_ERROR'
-      }, { status: 503 })
-    }
-    
+    // Retornar dados vazios para qualquer erro de conexão
     return NextResponse.json({ 
-      error: 'Erro interno do servidor',
-      code: 'INTERNAL_ERROR'
-    }, { status: 500 })
+      orcamentos: [],
+      header: null,
+      footer: null
+    })
   }
 }
 
@@ -96,8 +103,15 @@ export async function POST(request: Request) {
       })
     )
 
+    // Calcular o valor total baseado nos itens
+    const valorTotal = savedItens.reduce((total, item) => total + Number(item.valorTotal || 0), 0)
+    
+    // Atualizar o orçamento com o valor total calculado
+    savedOrcamento.valorTotal = valorTotal
+    const updatedOrcamento = await orcamentoRepository.save(savedOrcamento)
+
     return NextResponse.json({
-      orcamento: savedOrcamento,
+      orcamento: updatedOrcamento,
       itens: savedItens
     })
   } catch (error) {

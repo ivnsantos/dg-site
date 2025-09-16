@@ -29,7 +29,6 @@ export interface IConfeitaria {
   quantidadeFuncionarios?: number;
   folhaPagamentoTotal?: number;
   faturamentoMedio?: number;
-  faturamentoDesejado?: number;
   regimeTributario?: string;
   porcentagemImposto?: number;
   custosFixos?: number;

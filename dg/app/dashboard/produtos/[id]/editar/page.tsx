@@ -13,8 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
-import { Trash2, Search, Plus, Calculator } from 'lucide-react'
+import { Trash2, Search, Plus, Calculator, Package, Scale } from 'lucide-react'
 
 interface Ingredient {
   id: number
@@ -64,7 +65,8 @@ const schema = z.object({
   category: z.string().min(1, 'Categoria é obrigatória'),
   quantity: z.string().min(1, 'Quantidade é obrigatória'),
   description: z.string().optional(),
-  sellingPrice: z.string().min(1, 'Preço de venda é obrigatório')
+  sellingPrice: z.string().min(1, 'Preço de venda é obrigatório').optional(),
+  totalWeight: z.string().min(1, 'Peso do produto é obrigatório')
 })
 
 // Funções de conversão de unidades
@@ -288,7 +290,7 @@ export default function EditarProdutoPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm({
     resolver: zodResolver(schema)
   })
 
@@ -310,7 +312,8 @@ export default function EditarProdutoPage() {
         setValue('category', data.category)
         setValue('quantity', data.quantity.toString())
         setValue('description', data.description || '')
-        setValue('sellingPrice', data.sellingPrice.toString())
+        setValue('sellingPrice', (data.sellingPrice ?? 0).toString())
+        setValue('totalWeight', (data.totalWeight ?? 0).toString())
 
         // Configurar ingredientes selecionados
         const selectedIngs = data.fichaTecnicas.map((ft: FichaTecnica) => ({
@@ -356,10 +359,11 @@ export default function EditarProdutoPage() {
   }, [params.id, router, setValue])
 
   const calculateTotals = () => {
-    const totalWeight = selectedIngredients.reduce((sum, ing) => sum + Number(ing.quantity), 0)
     const totalCost = selectedIngredients.reduce((sum, ing) => sum + Number(ing.totalCost), 0)
-    return { totalWeight, totalCost }
+    return { totalCost }
   }
+
+  const [enableSellingPrice, setEnableSellingPrice] = useState(false)
 
   const onSubmit = async (data: any) => {
     if (selectedIngredients.length === 0) {
@@ -374,9 +378,9 @@ export default function EditarProdutoPage() {
       category: data.category,
       quantity: parseInt(data.quantity),
       description: data.description,
-      totalWeight: totals.totalWeight,
+      totalWeight: parseFloat(data.totalWeight),
       totalCost: totals.totalCost,
-      sellingPrice: parseFloat(data.sellingPrice),
+      sellingPrice: enableSellingPrice ? parseFloat(data.sellingPrice) || 0 : 0,
       ingredients: selectedIngredients.map(ing => ({
         name: `${ing.name}`,
         description: `O ingrediente ${ing.name} no produto ${data.name}`,
@@ -550,7 +554,7 @@ export default function EditarProdutoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="quantity">Rendimento (unidades)</Label>
+                <Label htmlFor="quantity">Unidades (rendimento)</Label>
                 <Input
                   id="quantity"
                   type="number"
@@ -563,14 +567,29 @@ export default function EditarProdutoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="sellingPrice">Preço de Venda (R$)</Label>
+                <Label htmlFor="totalWeight">Peso do produto (g)</Label>
+                <Input id="totalWeight" type="number" step="0.01" {...register('totalWeight')} />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="sellingPrice">Quanto costuma cobrar ?</Label>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span>Habilitar</span>
+                    <Switch id="toggleSellingPrice" checked={enableSellingPrice} onCheckedChange={setEnableSellingPrice} />
+                  </div>
+                </div>
                 <Input
                   id="sellingPrice"
                   {...register('sellingPrice')}
                   className={errors.sellingPrice ? 'border-red-500' : ''}
+                  disabled={!enableSellingPrice}
                 />
-                {errors.sellingPrice && (
+                {errors.sellingPrice && enableSellingPrice && (
                   <span className="text-sm text-red-500">{errors.sellingPrice.message as string}</span>
+                )}
+                {!enableSellingPrice && (
+                  <p className="text-xs text-gray-500">Opcional. Desabilitado: não será considerado no cálculo.</p>
                 )}
               </div>
 
@@ -641,11 +660,23 @@ export default function EditarProdutoPage() {
               {/* Totais */}
               {selectedIngredients.length > 0 && (
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Peso Total:</span>
-                    <span className="font-medium">{calcularPesoTotal(selectedIngredients)}g</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Package className="h-4 w-4" />
+                        <span>Rendimento</span>
+                      </div>
+                      <span className="font-medium">{String(watch('quantity') || 0)} un</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Scale className="h-4 w-4" />
+                        <span>Peso</span>
+                      </div>
+                      <span className="font-medium">{String(watch('totalWeight') || 0)}g</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm mt-2">
                     <span className="text-gray-600">Custo Total:</span>
                     <span className="font-medium">R$ {calcularCustoTotal(selectedIngredients)}</span>
                   </div>

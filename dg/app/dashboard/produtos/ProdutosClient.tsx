@@ -355,6 +355,13 @@ export default function ProdutosClient() {
                     ) : (
                       filteredProducts.map((product) => {
                         const { chartData, chartOptions } = createProductChart(product)
+                        const weightKg = product.totalWeight > 0 ? (product.totalWeight / 1000) : 0
+                        const sellingPerKg = weightKg ? (product.sellingPrice / weightKg) : 0
+                        const costPerKg = weightKg ? (product.totalCost / weightKg) : 0
+                        const suggestedPerKg = weightKg ? (product.suggestedPrice / weightKg) : 0
+                        const sellingPerUnit = product.quantity > 0 ? (product.sellingPrice / product.quantity) : 0
+                        const costPerUnit = product.quantity > 0 ? (product.totalCost / product.quantity) : 0
+                        const suggestedPerUnit = product.quantity > 0 ? (product.suggestedPrice / product.quantity) : 0
 
                         return (
                           <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${
@@ -466,28 +473,34 @@ export default function ProdutosClient() {
                                   <div className="flex justify-between items-center">
                                     <span className={`text-gray-600 ${
                                       expandedCharts[product.id] ? 'text-sm' : 'text-xs'
-                                    }`}>Custo</span>
+                                    }`}></span>
                                     <span className={`font-medium text-gray-900 ${
                                       expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                    }`}>R$ {product.totalCost.toFixed(2)}</span>
+                                    }`}></span>
                                   </div>
-                                  
-                                  <div className="flex justify-between items-center">
-                                    <span className={`text-gray-600 ${
-                                      expandedCharts[product.id] ? 'text-sm' : 'text-xs'
-                                    }`}>Preço Atual</span>
-                                    <span className={`font-medium text-gray-900 ${
-                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                    }`}>R$ {product.sellingPrice.toFixed(2)}</span>
+                                </div>
+
+                                {/* Tabela 3x3 clean (tipografia menor) */}
+                                <div className="mb-2 rounded-md bg-white">
+                                  <div className="grid grid-cols-3 text-[10px] text-gray-500 bg-gray-50 rounded-md">
+                                    <div className="px-2.5 py-1">Resumo</div>
+                                    <div className="px-2.5 py-1 text-right">kg</div>
+                                    <div className="px-2.5 py-1 text-right">unidade</div>
                                   </div>
-                                  
-                                  <div className="flex justify-between items-center">
-                                    <span className={`text-gray-600 ${
-                                      expandedCharts[product.id] ? 'text-sm' : 'text-xs'
-                                    }`}>Preço Sugerido</span>
-                                    <span className={`font-medium text-blue-600 ${
-                                      expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                    }`}>R$ {product.suggestedPrice.toFixed(2)}</span>
+                                  <div className="grid grid-cols-3 text-xs mt-1">
+                                    <div className="px-2.5 py-1 text-gray-600">Custo</div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {costPerKg.toFixed(2)}</div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {costPerUnit.toFixed(2)}</div>
+                                  </div>
+                                  <div className="grid grid-cols-3 text-xs">
+                                    <div className="px-2.5 py-1 text-gray-600">Preço atual</div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {sellingPerKg.toFixed(2)}</div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {sellingPerUnit.toFixed(2)}</div>
+                                  </div>
+                                  <div className="grid grid-cols-3 text-xs">
+                                    <div className="px-2.5 py-1 text-gray-600">Preço sugerido</div>
+                                    <div className="px-2.5 py-1 text-right font-semibold text-blue-600">R$ {suggestedPerKg.toFixed(2)}</div>
+                                    <div className="px-2.5 py-1 text-right font-semibold text-blue-600">R$ {suggestedPerUnit.toFixed(2)}</div>
                                   </div>
                                 </div>
 

@@ -98,6 +98,7 @@ export async function initializeDB(): Promise<DataSource> {
             return AppDataSource
         } catch (error) {
             console.warn('Connection test failed, reinitializing...')
+            // Não fechar a conexão, apenas marcar como inválida
             AppDataSource = null
             initializationPromise = null
         }
@@ -137,7 +138,16 @@ export async function getDataSource(): Promise<DataSource> {
     if (!AppDataSource || !AppDataSource.isInitialized) {
         return initializeDB()
     }
-    return AppDataSource
+    
+    // Testar se a conexão ainda está ativa
+    try {
+        await AppDataSource.query('SELECT 1')
+        return AppDataSource
+    } catch (error) {
+        console.warn('Connection lost, reinitializing...')
+        AppDataSource = null
+        return initializeDB()
+    }
 }
 
 // Função para fechar a conexão (apenas quando necessário)

@@ -35,8 +35,6 @@ export class Confeitaria implements IConfeitaria {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   faturamentoMedio?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  faturamentoDesejado?: number;
 
   @Column({ length: 50, nullable: true })
   regimeTributario?: string;

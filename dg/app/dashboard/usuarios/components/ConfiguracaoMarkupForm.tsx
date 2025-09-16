@@ -37,7 +37,6 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
     quantidadeFuncionarios: '',
     folhaPagamentoTotal: '',
     faturamentoMedio: '',
-    faturamentoDesejado: '',
     regimeTributario: '' as RegimeTributario,
     porcentagemImposto: '',
     custosFixos: '',
@@ -80,7 +79,6 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
           quantidadeFuncionarios: confeitaria.quantidadeFuncionarios?.toString() || '',
           folhaPagamentoTotal: confeitaria.folhaPagamentoTotal?.toString() || '',
           faturamentoMedio: confeitaria.faturamentoMedio?.toString() || '',
-          faturamentoDesejado: confeitaria.faturamentoDesejado?.toString() || '',
           regimeTributario: (confeitaria.regimeTributario as RegimeTributario) || '',
           porcentagemImposto: confeitaria.porcentagemImposto?.toString() || '',
           custosFixos: confeitaria.custosFixos?.toString() || '',
@@ -146,8 +144,7 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
           quantidadeFuncionarios: Number(formData.quantidadeFuncionarios),
           folhaPagamentoTotal: Number(formData.folhaPagamentoTotal),
           faturamentoMedio: Number(formData.faturamentoMedio),
-          faturamentoDesejado: Number(formData.faturamentoDesejado),
-          porcentagemImposto: Number(formData.porcentagemImposto),
+          porcentagemImposto: formData.regimeTributario === 'MEI' ? 0 : Number(formData.porcentagemImposto),
           custosFixos: Number(formData.custosFixos),
           proLabore: Number(formData.proLabore),
           diasTrabalhadosMes: Number(formData.diasTrabalhadosMes),
@@ -181,7 +178,7 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
               </>
             ) : (
               <p className="text-sm text-gray-500">
-                Este é o percentual que você deve aplicar sobre seus custos para atingir o faturamento desejado.
+                Este é o percentual a aplicar sobre seus custos para atingir sua meta.
               </p>
             )}
           </div>
@@ -358,20 +355,6 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
                 className={inputStyle}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="faturamentoDesejado" className={labelStyle}>Faturamento Desejado/Mês</Label>
-              <Input
-                type="number"
-                id="faturamentoDesejado"
-                name="faturamentoDesejado"
-                value={formData.faturamentoDesejado}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className={inputStyle}
-              />
-            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -391,21 +374,30 @@ export function ConfiguracaoMarkupForm({ onClose }: ConfiguracaoMarkupFormProps)
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="porcentagemImposto" className={labelStyle}>% de Imposto</Label>
-              <Input
-                type="number"
-                id="porcentagemImposto"
-                name="porcentagemImposto"
-                value={formData.porcentagemImposto}
-                onChange={handleChange}
-                required
-                min="0"
-                max="100"
-                step="0.01"
-                className={inputStyle}
-              />
-            </div>
+            {formData.regimeTributario !== 'MEI' ? (
+              <div className="space-y-2">
+                <Label htmlFor="porcentagemImposto" className={labelStyle}>% de Imposto</Label>
+                <Input
+                  type="number"
+                  id="porcentagemImposto"
+                  name="porcentagemImposto"
+                  value={formData.porcentagemImposto}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  className={inputStyle}
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label className={labelStyle}>Imposto (MEI)</Label>
+                <div className="text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-md p-2">
+                  Para MEI, o imposto não é percentual sobre o faturamento. Será desconsiderado no cálculo do markup.
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -8,6 +8,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import DoceGestaoLoading from '../../../../components/ui/DoceGestaoLoading'
 import Link from 'next/link'
+import PDFGeneratorDirect from '../../../../components/PDFGeneratorDirect'
 
 interface ItemOrcamento {
   id: number
@@ -44,6 +45,8 @@ export default function OrcamentoDetalhePage() {
   const params = useParams()
   const id = params?.id as string
   const [orcamento, setOrcamento] = useState<Orcamento | null>(null)
+  const [header, setHeader] = useState<any>(null)
+  const [footer, setFooter] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -51,6 +54,31 @@ export default function OrcamentoDetalhePage() {
       .then(res => res.json())
       .then(data => {
         setOrcamento(data.orcamento)
+        setHeader(data.header)
+        setFooter(data.footer)
+        
+        // Se o valor total estiver incorreto, corrigir automaticamente
+        if (data.orcamento.itens && data.orcamento.itens.length > 0) {
+          const valorCalculado = data.orcamento.itens.reduce((total: number, item: any) => 
+            total + Number(item.valorTotal || 0), 0
+          )
+          
+          if (Number(data.orcamento.valorTotal) !== valorCalculado) {
+            // Atualizar o valor total no banco
+            fetch(`/api/orcamentos/${id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                orcamento: { valorTotal: valorCalculado },
+                itens: data.orcamento.itens
+              })
+            }).then(() => {
+              // Atualizar o estado local
+              setOrcamento(prev => prev ? { ...prev, valorTotal: valorCalculado } : null)
+            }).catch(err => console.error('Erro ao corrigir valor total:', err))
+          }
+        }
+        
         setLoading(false)
       })
       .catch(() => {
@@ -89,10 +117,10 @@ export default function OrcamentoDetalhePage() {
   }
 
   return (
-    <div>
+    <div id="orcamento-details">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Orçamento #{orcamento.numero}</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant="outline"
             onClick={() => router.push('/dashboard/orcamentos')}
@@ -107,6 +135,13 @@ export default function OrcamentoDetalhePage() {
               Ver Orçamento Público
             </Button>
           </Link>
+          <PDFGeneratorDirect 
+            orcamento={orcamento}
+            header={header}
+            footer={footer}
+            filename={`orcamento-${orcamento.numero}.pdf`}
+            className="text-xs"
+          />
           <Button
             variant="outline"
             onClick={() => router.push(`/dashboard/orcamentos/${id}/editar`)}
@@ -167,7 +202,11 @@ export default function OrcamentoDetalhePage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Valor Total</p>
-                  <p className="font-medium">R$ {Number(orcamento.valorTotal).toFixed(2)}</p>
+                  <p className="font-medium">R$ {
+                    orcamento.itens && orcamento.itens.length > 0
+                      ? orcamento.itens.reduce((total, item) => total + Number(item.valorTotal || 0), 0).toFixed(2)
+                      : Number(orcamento.valorTotal).toFixed(2)
+                  }</p>
                 </div>
               </div>
             </div>

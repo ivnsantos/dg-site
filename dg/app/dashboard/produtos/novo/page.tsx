@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { Trash2, Search, Plus, Calculator, Plus as PlusCircle } from 'lucide-react'
+import { Trash2, Search, Plus, Calculator, Plus as PlusCircle, Package, Scale } from 'lucide-react'
 
 interface Ingredient {
   id: number
@@ -130,7 +131,8 @@ const formSchema = z.object({
   category: z.string().min(1, 'Categoria é obrigatória'),
   quantity: z.number().min(1, 'Quantidade deve ser maior que 0'),
   description: z.string().optional(),
-  sellingPrice: z.number().min(0, 'Preço de venda deve ser maior que 0'),
+  sellingPrice: z.number().min(0, 'Preço de venda deve ser maior que 0').optional(),
+  productWeightGrams: z.number().min(0.01, 'Informe o peso do produto em gramas'),
 })
 
 export const dynamic = 'force-dynamic'
@@ -154,9 +156,12 @@ export default function NovoProdutoPage() {
       category: '',
       quantity: 1,
       description: '',
-      sellingPrice: 0,
+      sellingPrice: undefined,
+      productWeightGrams: undefined,
     }
   })
+
+  const [enableSellingPrice, setEnableSellingPrice] = useState(false)
 
   // Carregar todos os ingredientes ao montar o componente
   useEffect(() => {
@@ -267,10 +272,10 @@ export default function NovoProdutoPage() {
       category: data.category,
       quantity: data.quantity,
       description: data.description,
-      totalWeight: totals.totalWeight,
+      totalWeight: data.productWeightGrams,
       totalCost: totals.totalCost,
       suggestedPrice: 0,
-      sellingPrice: data.sellingPrice,
+      sellingPrice: enableSellingPrice && typeof data.sellingPrice === 'number' ? data.sellingPrice : 0,
       profitMargin: 0,
       ingredients: selectedIngredients.map(ing => ({
         name: `${ing.name}`,
@@ -386,7 +391,7 @@ export default function NovoProdutoPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="quantity">Rendimento</Label>
+                    <Label htmlFor="quantity">Unidades (rendimento)</Label>
                     <Controller
                       name="quantity"
                       control={control}
@@ -406,7 +411,38 @@ export default function NovoProdutoPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="sellingPrice">Quanto costuma cobrar ?</Label>
+                    <Label htmlFor="productWeightGrams">Peso do produto (g)</Label>
+                    <Controller
+                      name="productWeightGrams"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          inputMode="decimal"
+                          pattern="[0-9]*[.,]?[0-9]*"
+                          placeholder="Ex: 1000"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(',', '.')
+                            const parsed = value === '' ? undefined : parseFloat(value)
+                            field.onChange(parsed)
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.productWeightGrams && (
+                      <span className="text-sm text-red-500">{errors.productWeightGrams.message as string}</span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="sellingPrice">Quanto costuma cobrar ?</Label>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <span>Habilitar</span>
+                        <Switch id="toggleSellingPrice" checked={enableSellingPrice} onCheckedChange={setEnableSellingPrice} />
+                      </div>
+                    </div>
                     <Controller
                       name="sellingPrice"
                       control={control}
@@ -417,11 +453,15 @@ export default function NovoProdutoPage() {
                           step="0.01"
                           placeholder="0,00"
                           onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          disabled={!enableSellingPrice}
                         />
                       )}
                     />
-                    {errors.sellingPrice && (
+                    {errors.sellingPrice && enableSellingPrice && (
                       <span className="text-sm text-red-500">{errors.sellingPrice.message}</span>
+                    )}
+                    {!enableSellingPrice && (
+                      <p className="text-xs text-gray-500">Opcional. Desabilitado: não será considerado no cálculo.</p>
                     )}
                   </div>
                 </div>
@@ -478,9 +518,21 @@ export default function NovoProdutoPage() {
                   ))}
 
                   <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium">Peso Total:</span>
-                      <span>{calculateTotals().totalWeight.toFixed(2)}g</span>
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Package className="h-4 w-4" />
+                          <span>Rendimento</span>
+                        </div>
+                        <span className="font-medium">{String(watch('quantity') || 0)} un</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Scale className="h-4 w-4" />
+                          <span>Peso</span>
+                        </div>
+                        <span className="font-medium">{calculateTotals().totalWeight.toFixed(2)}g</span>
+                      </div>
                     </div>
                     <div className="flex justify-between items-center text-lg font-medium">
                       <span>Custo Total:</span>

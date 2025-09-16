@@ -567,7 +567,7 @@ export default function AgendaPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="startDate" className="text-sm font-medium text-gray-900">Quando devo me preocupar *</Label>
+                      <Label htmlFor="startDate" className="text-sm font-medium text-gray-900"> Quando devo produzir *</Label>
                       <Input
                         id="startDate"
                         type="date"
@@ -578,7 +578,7 @@ export default function AgendaPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="endDate" className="text-sm font-medium text-gray-900">Data limite *</Label>
+                      <Label htmlFor="endDate" className="text-sm font-medium text-gray-900">Data da Retirada *</Label>
                       <Input
                         id="endDate"
                         type="date"
