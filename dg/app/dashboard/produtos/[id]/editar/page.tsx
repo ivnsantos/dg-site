@@ -54,6 +54,8 @@ interface Product {
   totalCost: number
   suggestedPrice: number
   sellingPrice: number
+  sellingPricePerUnit: number
+  sellingPricePerGram: number
   profitMargin: number
   idealMarkup: number
   lastUpdate: Date
@@ -65,9 +67,26 @@ const schema = z.object({
   category: z.string().min(1, 'Categoria é obrigatória'),
   quantity: z.string().min(1, 'Quantidade é obrigatória'),
   description: z.string().optional(),
-  sellingPrice: z.string().min(1, 'Preço de venda é obrigatório').optional(),
+  sellingPricePerUnit: z.string().optional(),
+  sellingPricePerGram: z.string().optional(),
   totalWeight: z.string().min(1, 'Peso do produto é obrigatório')
 })
+
+// Função para formatar valor monetário
+const formatCurrency = (value: string | number): string => {
+  const numericValue = typeof value === 'string' ? value.replace(/\D/g, '') : value.toString().replace(/\D/g, '')
+  const number = parseFloat(numericValue) / 100
+  return number.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
+// Função para converter valor formatado para número
+const parseCurrency = (value: string): number => {
+  const numericValue = value.replace(/\D/g, '')
+  return parseFloat(numericValue) / 100
+}
 
 // Funções de conversão de unidades
 const convertToBase = (value: number, fromUnit: string): number => {
@@ -273,10 +292,11 @@ const calcularPesoTotal = (ingredientes: SelectedIngredient[]) => {
 
 // Ajustar a função calcularCustoTotal também
 const calcularCustoTotal = (ingredientes: SelectedIngredient[]) => {
-  return ingredientes.reduce((total, ing) => {
+  const total = ingredientes.reduce((total, ing) => {
     const custo = parseFloat(ing.totalCost.toString()) || 0
     return total + custo
-  }, 0).toFixed(2)
+  }, 0)
+  return Number(total).toFixed(2)
 }
 
 export default function EditarProdutoPage() {
@@ -312,8 +332,12 @@ export default function EditarProdutoPage() {
         setValue('category', data.category)
         setValue('quantity', data.quantity.toString())
         setValue('description', data.description || '')
-        setValue('sellingPrice', (data.sellingPrice ?? 0).toString())
-        setValue('totalWeight', (data.totalWeight ?? 0).toString())
+        setValue('sellingPricePerUnit', formatCurrency(data.sellingPricePerUnit ?? 0))
+        setValue('sellingPricePerGram', formatCurrency(data.sellingPricePerGram ?? 0))
+        setValue('totalWeight', Number(data.totalWeight ?? 0).toFixed(0))
+        
+        // Habilitar o campo de preço de venda se já existe um valor
+        setEnableSellingPrice((data.sellingPricePerUnit ?? 0) > 0 || (data.sellingPricePerGram ?? 0) > 0)
 
         // Configurar ingredientes selecionados
         const selectedIngs = data.fichaTecnicas.map((ft: FichaTecnica) => ({
@@ -364,12 +388,34 @@ export default function EditarProdutoPage() {
   }
 
   const [enableSellingPrice, setEnableSellingPrice] = useState(false)
+  
+  const handleSellingPriceToggle = (checked: boolean) => {
+    setEnableSellingPrice(checked)
+    if (!checked) {
+      // Limpar os campos quando desabilitado
+      setValue('sellingPricePerUnit', '0,00')
+      setValue('sellingPricePerGram', '0,00')
+    }
+  }
 
   const onSubmit = async (data: any) => {
     if (selectedIngredients.length === 0) {
       toast.error('Adicione pelo menos um ingrediente')
       return
     }
+    
+    // Validação condicional dos preços de venda
+    const unitPrice = enableSellingPrice ? parseCurrency(data.sellingPricePerUnit || '0,00') : 0
+    const gramPrice = enableSellingPrice ? parseCurrency(data.sellingPricePerGram || '0,00') : 0
+    
+    if (enableSellingPrice && unitPrice <= 0 && gramPrice <= 0) {
+      toast.error('Pelo menos um preço de venda deve ser maior que zero quando habilitado')
+      return
+    }
+    
+    // Garantir que os preços de venda sejam números válidos
+    const sellingPricePerUnit = unitPrice
+    const sellingPricePerGram = gramPrice
 
     const totals = calculateTotals()
 
@@ -380,7 +426,9 @@ export default function EditarProdutoPage() {
       description: data.description,
       totalWeight: parseFloat(data.totalWeight),
       totalCost: totals.totalCost,
-      sellingPrice: enableSellingPrice ? parseFloat(data.sellingPrice) || 0 : 0,
+      sellingPrice: sellingPricePerUnit > 0 ? sellingPricePerUnit : sellingPricePerGram,
+      sellingPricePerUnit: sellingPricePerUnit,
+      sellingPricePerGram: sellingPricePerGram,
       ingredients: selectedIngredients.map(ing => ({
         name: `${ing.name}`,
         description: `O ingrediente ${ing.name} no produto ${data.name}`,
@@ -391,6 +439,8 @@ export default function EditarProdutoPage() {
         ingredientId: ing.id
       }))
     }
+    
+    console.log('Dados enviados para API:', productData)
 
     try {
       const response = await fetch(`/api/produtos/${params.id}`, {
@@ -507,9 +557,22 @@ export default function EditarProdutoPage() {
   return (
     <div className="p-6 space-y-6 max-w-3xl mx-auto">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Editar Produto</h1>
-          <p className="text-gray-500 mt-1">Atualize as informações do produto e seus ingredientes</p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/dashboard/produtos')}
+            className="flex items-center gap-2"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Voltar
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Editar Produto</h1>
+            <p className="text-gray-500 mt-1">Atualize as informações do produto e seus ingredientes</p>
+          </div>
         </div>
         <Dialog>
           <DialogTrigger asChild>
@@ -573,21 +636,53 @@ export default function EditarProdutoPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="sellingPrice">Quanto costuma cobrar ?</Label>
+                  <Label>Preços de Venda</Label>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <span>Habilitar</span>
-                    <Switch id="toggleSellingPrice" checked={enableSellingPrice} onCheckedChange={setEnableSellingPrice} />
+                    <Switch id="toggleSellingPrice" checked={enableSellingPrice} onCheckedChange={handleSellingPriceToggle} />
                   </div>
                 </div>
-                <Input
-                  id="sellingPrice"
-                  {...register('sellingPrice')}
-                  className={errors.sellingPrice ? 'border-red-500' : ''}
-                  disabled={!enableSellingPrice}
-                />
-                {errors.sellingPrice && enableSellingPrice && (
-                  <span className="text-sm text-red-500">{errors.sellingPrice.message as string}</span>
-                )}
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="sellingPricePerUnit">Por Unidade (R$)</Label>
+                    <Input
+                      id="sellingPricePerUnit"
+                      type="text"
+                      placeholder="0,00"
+                      {...register('sellingPricePerUnit')}
+                      className={errors.sellingPricePerUnit ? 'border-red-500' : ''}
+                      disabled={!enableSellingPrice}
+                      onChange={(e) => {
+                        const formatted = formatCurrency(e.target.value)
+                        setValue('sellingPricePerUnit', formatted)
+                      }}
+                    />
+                    {errors.sellingPricePerUnit && enableSellingPrice && (
+                      <span className="text-xs text-red-500">{errors.sellingPricePerUnit.message as string}</span>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="sellingPricePerGram">Por Grama (R$)</Label>
+                    <Input
+                      id="sellingPricePerGram"
+                      type="text"
+                      placeholder="0,00"
+                      {...register('sellingPricePerGram')}
+                      className={errors.sellingPricePerGram ? 'border-red-500' : ''}
+                      disabled={!enableSellingPrice}
+                      onChange={(e) => {
+                        const formatted = formatCurrency(e.target.value)
+                        setValue('sellingPricePerGram', formatted)
+                      }}
+                    />
+                    {errors.sellingPricePerGram && enableSellingPrice && (
+                      <span className="text-xs text-red-500">{errors.sellingPricePerGram.message as string}</span>
+                    )}
+                  </div>
+                </div>
+                
                 {!enableSellingPrice && (
                   <p className="text-xs text-gray-500">Opcional. Desabilitado: não será considerado no cálculo.</p>
                 )}
@@ -719,7 +814,7 @@ export default function EditarProdutoPage() {
                         </div>
                         <div className="text-right">
                           <div className="font-medium">
-                            R$ {ingredient.pricePerGram.toFixed(2)}
+                            R$ {Number(ingredient.pricePerGram).toFixed(2)}
                           </div>
                           <div className="flex items-center gap-2 mt-2">
                             <Input

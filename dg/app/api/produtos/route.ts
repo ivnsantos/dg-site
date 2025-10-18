@@ -45,6 +45,8 @@ export async function POST(request: Request) {
     product.totalCost = data.totalCost || 0
     product.suggestedPrice = data.totalCost * (user.markupIdeal)
     product.sellingPrice = data.sellingPrice
+    product.sellingPricePerUnit = data.sellingPricePerUnit || 0
+    product.sellingPricePerGram = data.sellingPricePerGram || 0
     product.profitMargin = ((product.sellingPrice - product.totalCost) / product.totalCost) * 100
     product.idealMarkup = user.markupIdeal
     product.lastUpdate = new Date()
@@ -115,6 +117,14 @@ export async function GET() {
       where: { user: { id: Number(session.user.id) } },
       order: { name: 'ASC' }
     })
+    
+    console.log('Produtos encontrados:', products.map(p => ({
+      id: p.id,
+      name: p.name,
+      sellingPrice: p.sellingPrice,
+      totalCost: p.totalCost,
+      profitMargin: p.profitMargin
+    })))
 
     return NextResponse.json(products)
   } catch (error) {

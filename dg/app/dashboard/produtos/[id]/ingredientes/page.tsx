@@ -150,7 +150,7 @@ export default function ProdutoIngredientesPage() {
             </div>
                          <div className="text-center p-4 bg-purple-50 rounded-lg">
                <p className="text-sm text-gray-500 mb-1">Peso Total</p>
-               <p className="text-lg font-bold text-purple-600">{Number(product.totalWeight).toFixed(0)}g</p>
+               <p className="text-lg font-bold text-purple-600">{Math.round(product.totalWeight)}g</p>
              </div>
                          <div className="text-center p-4 bg-orange-50 rounded-lg">
                <p className="text-sm text-gray-500 mb-1">Margem de Lucro</p>

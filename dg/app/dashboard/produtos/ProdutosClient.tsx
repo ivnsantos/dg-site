@@ -32,6 +32,8 @@ interface Product {
   totalCost: number
   suggestedPrice: number
   sellingPrice: number
+  sellingPricePerUnit: number
+  sellingPricePerGram: number
   profitMargin: number
   idealMarkup: number
   lastUpdate: Date
@@ -72,6 +74,8 @@ export default function ProdutosClient() {
       }
       
       const data = await response.json()
+      console.log('Produtos carregados:', data)
+      
       const formattedProducts = data.map((product: Product) => ({
         ...product,
         price: Number(product.price),
@@ -79,9 +83,13 @@ export default function ProdutosClient() {
         totalCost: Number(product.totalCost),
         suggestedPrice: Number(product.suggestedPrice),
         sellingPrice: Number(product.sellingPrice),
+        sellingPricePerUnit: Number(product.sellingPricePerUnit || 0),
+        sellingPricePerGram: Number(product.sellingPricePerGram || 0),
         profitMargin: Number(product.profitMargin),
         idealMarkup: Number(product.idealMarkup)
       }))
+      
+      console.log('Produtos formatados:', formattedProducts)
       setProducts(formattedProducts)
     } catch (error) {
       console.error('Erro ao carregar produtos:', error)
@@ -362,6 +370,12 @@ export default function ProdutosClient() {
                         const sellingPerUnit = product.quantity > 0 ? (product.sellingPrice / product.quantity) : 0
                         const costPerUnit = product.quantity > 0 ? (product.totalCost / product.quantity) : 0
                         const suggestedPerUnit = product.quantity > 0 ? (product.suggestedPrice / product.quantity) : 0
+                        
+                        console.log(`Produto ${product.name}:`, {
+                          sellingPrice: product.sellingPrice,
+                          sellingPerUnit: sellingPerUnit,
+                          quantity: product.quantity
+                        })
 
                         return (
                           <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${
@@ -467,7 +481,7 @@ export default function ProdutosClient() {
                                     </div>
                                     <span className={`font-medium text-gray-900 ${
                                       expandedCharts[product.id] ? 'text-base' : 'text-sm'
-                                    }`}>{product.totalWeight.toFixed(0)}g</span>
+                                    }`}>{Math.round(product.totalWeight)}g</span>
                                   </div>
                                   
                                   <div className="flex justify-between items-center">
@@ -494,8 +508,12 @@ export default function ProdutosClient() {
                                   </div>
                                   <div className="grid grid-cols-3 text-xs">
                                     <div className="px-2.5 py-1 text-gray-600">Preço atual</div>
-                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {sellingPerKg.toFixed(2)}</div>
-                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">R$ {sellingPerUnit.toFixed(2)}</div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">
+                                      {product.sellingPricePerGram > 0 ? `R$ ${product.sellingPricePerGram.toFixed(2)}` : 'R$ 0,00'}
+                                    </div>
+                                    <div className="px-2.5 py-1 text-right font-medium text-gray-900">
+                                      {product.sellingPricePerUnit > 0 ? `R$ ${product.sellingPricePerUnit.toFixed(2)}` : 'R$ 0,00'}
+                                    </div>
                                   </div>
                                   <div className="grid grid-cols-3 text-xs">
                                     <div className="px-2.5 py-1 text-gray-600">Preço sugerido</div>

@@ -531,7 +531,7 @@ export default function NovoProdutoPage() {
                           <Scale className="h-4 w-4" />
                           <span>Peso</span>
                         </div>
-                        <span className="font-medium">{calculateTotals().totalWeight.toFixed(2)}g</span>
+                        <span className="font-medium">{Math.round(calculateTotals().totalWeight)}g</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-lg font-medium">

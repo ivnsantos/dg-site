@@ -41,6 +41,8 @@ export async function PUT(
 
     // Obter dados do request
     const data = await request.json()
+    
+    console.log('Dados recebidos para atualização:', data)
 
     // Validar dados necessários
     if (!data.name || !data.category || !data.quantity) {
@@ -55,12 +57,30 @@ export async function PUT(
     existingProduct.totalWeight = data.totalWeight || 0
     existingProduct.totalCost = data.totalCost || 0
     existingProduct.suggestedPrice = data.totalCost * (user.markupIdeal || 2.5)
-    existingProduct.sellingPrice = data.sellingPrice
-    existingProduct.profitMargin = ((data.sellingPrice - data.totalCost) / data.totalCost) * 100
+    existingProduct.sellingPrice = data.sellingPrice || 0
+    existingProduct.sellingPricePerUnit = data.sellingPricePerUnit || 0
+    existingProduct.sellingPricePerGram = data.sellingPricePerGram || 0
+    existingProduct.profitMargin = data.totalCost > 0 ? ((data.sellingPrice - data.totalCost) / data.totalCost) * 100 : 0
     existingProduct.lastUpdate = new Date()
+    
+    console.log('Produto antes de salvar:', {
+      id: existingProduct.id,
+      name: existingProduct.name,
+      sellingPrice: existingProduct.sellingPrice,
+      totalCost: existingProduct.totalCost,
+      profitMargin: existingProduct.profitMargin
+    })
 
     // Salvar o produto atualizado
     const savedProduct = await productRepository.save(existingProduct)
+    
+    console.log('Produto salvo:', {
+      id: savedProduct.id,
+      name: savedProduct.name,
+      sellingPrice: savedProduct.sellingPrice,
+      totalCost: savedProduct.totalCost,
+      profitMargin: savedProduct.profitMargin
+    })
 
     // Remover fichas técnicas antigas
     await fichaTecnicaRepository.delete({ productId: savedProduct.id })
@@ -80,6 +100,14 @@ export async function PUT(
       return fichaTecnicaRepository.save(fichaTecnica)
     }))
 
+    console.log('Produto final retornado:', {
+      id: savedProduct.id,
+      name: savedProduct.name,
+      sellingPrice: savedProduct.sellingPrice,
+      totalCost: savedProduct.totalCost,
+      profitMargin: savedProduct.profitMargin
+    })
+    
     return NextResponse.json({
       product: savedProduct,
       fichasTecnicas
@@ -136,7 +164,7 @@ export async function GET(
         quantityUsed: Number(ft.quantityUsed || 0).toFixed(3)
       })),
       totalCost: Number(produto.totalCost || 0).toFixed(2),
-      totalWeight: Number(produto.totalWeight || 0).toFixed(3),
+      totalWeight: Number(produto.totalWeight || 0),
       sellingPrice: Number(produto.sellingPrice || 0).toFixed(2),
       suggestedPrice: Number(produto.suggestedPrice || 0).toFixed(2),
       profitMargin: Number(produto.profitMargin || 0).toFixed(2)

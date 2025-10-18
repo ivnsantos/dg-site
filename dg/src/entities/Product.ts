@@ -40,6 +40,12 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   sellingPrice!: number // Preço de venda real
 
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  sellingPricePerUnit!: number // Preço de venda por unidade
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  sellingPricePerGram!: number // Preço de venda por grama
+
   @Column('decimal', { precision: 10, scale: 2 })
   profitMargin!: number // Margem de lucro real em porcentagem
 
