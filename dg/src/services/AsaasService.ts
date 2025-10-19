@@ -151,7 +151,34 @@ export class AsaasService {
   }
 
   async tokenizeCreditCard(data: TokenizeCreditCardRequest): Promise<TokenizeCreditCardResponse> {
-    return this.request<TokenizeCreditCardResponse>('POST', '/creditCard/tokenizeCreditCard', data)
+    // Normalizar dados antes de enviar
+    const normalizedData = {
+      ...data,
+      creditCard: {
+        ...data.creditCard,
+        expiryYear: this.normalizeExpiryYear(data.creditCard.expiryYear)
+      }
+    }
+    
+    return this.request<TokenizeCreditCardResponse>('POST', '/creditCard/tokenizeCreditCard', normalizedData)
+  }
+
+  private normalizeExpiryYear(year: string): string {
+    const yearStr = String(year).trim()
+    
+    // Se já tem 4 dígitos, retorna como está
+    if (yearStr.length === 4) {
+      return yearStr
+    }
+    
+    // Se tem 2 dígitos, converte para 4
+    if (yearStr.length === 2) {
+      const yearNum = parseInt(yearStr)
+ 
+      return `20${yearNum}`
+    }
+    // Se não conseguir normalizar, retorna o valor original
+    return yearStr
   }
 }
 

@@ -18,7 +18,7 @@ Tokeniza um cartão de crédito no Asaas e retorna um token seguro.
     "holderName": "João Silva",
     "number": "1234567890123456",
     "expiryMonth": "09",
-    "expiryYear": "2028",
+    "expiryYear": "28", // Aceita 2 ou 4 dígitos (28 → 2028)
     "ccv": "123"
   },
   "creditCardHolderInfo": {
@@ -69,7 +69,7 @@ const tokenResponse = await fetch('/api/credit-card/tokenize', {
       holderName: "João Silva",
       number: "1234567890123456",
       expiryMonth: "09",
-      expiryYear: "2028",
+      expiryYear: "28", // Será convertido para 2028 automaticamente
       ccv: "123"
     },
     creditCardHolderInfo: {
@@ -100,6 +100,24 @@ Após a tokenização e criação da assinatura, os seguintes dados são salvos 
 - `creditCardNumber`: Últimos 4 dígitos do cartão (ex: "3456")
 - `creditCardBrand`: Bandeira do cartão (ex: "VISA", "MASTERCARD")
 - `creditCardToken`: Token seguro do cartão (ex: "cf4ebbe8-55ac-48bb-a654-9db327e6f088")
+
+## Normalização de Dados
+
+### Ano de Expiração
+O sistema normaliza automaticamente o ano de expiração do cartão:
+
+- **2 dígitos**: `"28"` → `"2028"`
+- **4 dígitos**: `"2028"` → `"2028"` (mantém como está)
+
+**Lógica de conversão:**
+- Anos < 30: Assume século 21 (2000+)
+- Anos ≥ 30: Assume século 20 (1900+)
+
+**Exemplos:**
+- `"28"` → `"2028"`
+- `"25"` → `"2025"`
+- `"35"` → `"1935"`
+- `"2028"` → `"2028"` (não altera)
 
 ## Segurança
 

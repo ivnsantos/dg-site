@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AsaasService } from '@/src/services/AsaasService'
 
+// Função para normalizar o ano de expiração
+function normalizeExpiryYear(year: string): string {
+  const yearStr = String(year).trim()
+  
+  // Se já tem 4 dígitos, retorna como está
+  if (yearStr.length === 4) {
+    return yearStr
+  }
+  
+  // Se tem 2 dígitos, converte para 4
+  if (yearStr.length === 2) {
+    const yearNum = parseInt(yearStr)
+    return `20${yearNum}`
+  }
+  
+  // Se não conseguir normalizar, retorna o valor original
+  return yearStr
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Não requer autenticação - usado durante registro/assinatura
@@ -46,7 +65,7 @@ export async function POST(request: NextRequest) {
         holderName: creditCard.holderName.trim(),
         number: String(creditCard.number).replace(/\D/g, ''),
         expiryMonth: String(creditCard.expiryMonth).padStart(2, '0'),
-        expiryYear: String(creditCard.expiryYear),
+        expiryYear: normalizeExpiryYear(String(creditCard.expiryYear)),
         ccv: String(creditCard.ccv).replace(/\D/g, '')
       },
       creditCardHolderInfo: {
