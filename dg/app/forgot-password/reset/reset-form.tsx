@@ -103,7 +103,7 @@ export function ResetForm() {
           <div className="flex justify-center mb-8">
             <Image
               src="/images/logo.png"
-              alt="Doce Gestão Logo"
+              alt="Confeitech Logo"
               width={110}
               height={110}
               className="animate-fade-in"
@@ -132,7 +132,7 @@ export function ResetForm() {
             <div className="md:hidden flex justify-center mb-8">
               <Image
                 src="/images/logo.png"
-                alt="Doce Gestão Logo"
+                alt="Confeitech Logo"
                 width={120}
                 height={120}
                 className="animate-fade-in"

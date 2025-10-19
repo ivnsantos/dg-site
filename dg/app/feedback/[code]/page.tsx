@@ -90,7 +90,7 @@ export default function FeedbackPublicPage() {
     }
   }
 
-  // Componente de Loading com Logo da Doce Gestão
+  // Componente de Loading com Logo da Confeitech
   const LoadingComponent = () => (
     <div 
       className="min-h-screen flex items-center justify-center p-4"
@@ -102,7 +102,7 @@ export default function FeedbackPublicPage() {
         <div className="animate-pulse mb-4">
           <Image
             src="/images/logo.png"
-            alt="Doce Gestão"
+            alt="Confeitech"
             width={80}
             height={80}
             className="mx-auto"
@@ -127,12 +127,12 @@ export default function FeedbackPublicPage() {
       >
         <Image
           src="/images/logo.png"
-          alt="Doce Gestão"
+          alt="Confeitech"
           width={20}
           height={20}
         />
         <p className="text-xs text-gray-500">
-          Criado com Doce Gestão
+          Criado com Confeitech
         </p>
       </a>
     </div>

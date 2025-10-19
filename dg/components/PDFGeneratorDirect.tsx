@@ -179,7 +179,7 @@ export default function PDFGeneratorDirect({
       const footerY = pageHeight - 20
       pdf.setFontSize(8)
       pdf.setFont('helvetica', 'normal')
-      pdf.text('© Doce Gestão - Sistema de Gestão para Confeitarias', pageWidth / 2, footerY, { align: 'center' })
+      pdf.text('© Confeitech - Sistema de Gestão para Confeitarias', pageWidth / 2, footerY, { align: 'center' })
 
       // Salvar o PDF
       pdf.save(filename)

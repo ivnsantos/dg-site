@@ -40,7 +40,7 @@ export default function DoceGestaoLoading({
       <div className="relative flex justify-center">
         <Image
           src="/images/logo.png"
-          alt="Doce Gestão Logo"
+          alt="Confeitech Logo"
           width={currentSize.logo}
           height={currentSize.logo}
           className="animate-pulse"
@@ -52,7 +52,7 @@ export default function DoceGestaoLoading({
       
       {/* Texto de carregamento */}
       <div className="space-y-2">
-        <h3 className={`font-bold text-white ${currentSize.text}`}>Doce Gestão</h3>
+        <h3 className={`font-bold text-white ${currentSize.text}`}>Confeitech</h3>
         <p className={`text-[#0B7A48] font-medium ${currentSize.subtitle}`}>{message}</p>
       </div>
       

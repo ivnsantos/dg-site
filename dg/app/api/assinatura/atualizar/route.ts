@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         value: valorPlano,
         nextDueDate: new Date().toISOString().split('T')[0],
         cycle: 'MONTHLY',
-        description: `Assinatura ${plano} - Doce Gestão`,
+        description: `Assinatura ${plano} - Confeitech`,
         maxPayments: 2,
         creditCard: {
           holderName: cartao.nome,

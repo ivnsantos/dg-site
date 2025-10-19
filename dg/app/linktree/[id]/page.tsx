@@ -417,10 +417,10 @@ export default function LinkTreePublicPage() {
         >
           <img 
             src="/images/logo.png" 
-            alt="Doce Gestão" 
+            alt="Confeitech" 
             className="w-4 h-4 sm:w-5 sm:h-5 object-contain"
           />
-          <span className="text-xs sm:text-sm font-medium">Criado com Doce Gestão</span>
+          <span className="text-xs sm:text-sm font-medium">Criado com Confeitech</span>
         </div>
       </div>
     </div>

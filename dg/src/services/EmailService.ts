@@ -73,7 +73,7 @@ class EmailService {
    * @returns Promise com o resultado do envio
    */
   async sendVerificationCode(to: string, code: string, recipientName?: string) {
-    const subject = "Código de Confirmação - Doce Gestão";
+    const subject = "Código de Confirmação - Confeitech";
     const htmlContent = ` Código de verificação: ${code}`;
     console.log(to, code, subject, recipientName);
     

@@ -9,7 +9,7 @@ interface WhatsAppFloatProps {
 export default function WhatsAppFloat({ position = 'right' }: WhatsAppFloatProps) {
   const handleWhatsAppClick = () => {
     const phoneNumber = '5511932589622' // Substitua pelo número correto
-    const message = 'Olá! Gostaria de saber mais sobre o Doce Gestão.'
+    const message = 'Olá! Gostaria de saber mais sobre o Confeitech.'
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }

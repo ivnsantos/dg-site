@@ -155,7 +155,7 @@ export function VerifyForm() {
           <div className="flex justify-center mb-8">
             <Image
               src="/images/logo.png"
-              alt="Doce Gestão Logo"
+              alt="Confeitech Logo"
               width={110}
               height={110}
               className="animate-fade-in"

@@ -145,7 +145,7 @@ export async function POST(request: Request) {
       const desconto = cupomValido ? cupomValido.desconto : 0
       const valorFinal = valorPlano * (1 - desconto / 100) // Calcula o valor final com desconto percentual
 
-      const descricaoAssinatura = `Assinatura ${planoEscolhido} - Doce Gestão: ${cupomValido ? ` (cupom: ${cupomValido.codigo} - ${cupomValido.desconto}% de desconto)` : ''}`
+      const descricaoAssinatura = `Assinatura ${planoEscolhido} - Confeitech: ${cupomValido ? ` (cupom: ${cupomValido.codigo} - ${cupomValido.desconto}% de desconto)` : ''}`
       
       subscription = await asaas.createSubscription({
         customer: customer.id,

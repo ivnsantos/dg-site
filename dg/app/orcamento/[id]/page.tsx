@@ -270,7 +270,7 @@ export default function OrcamentoPublicoPage() {
         {/* Footer */}
         <footer className="w-full flex flex-col items-center justify-center py-3 mt-4 border-t border-gray-200 bg-[#0B7A48] rounded-b-2xl text-white">
          
-          <span className="text-xs mt-1">© {new Date().getFullYear()} Doce Gestão. Todos os direitos reservados.</span>
+          <span className="text-xs mt-1">© {new Date().getFullYear()} Confeitech. Todos os direitos reservados.</span>
         </footer>
       </div>
     </div>

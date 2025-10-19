@@ -67,7 +67,7 @@ export default function LoginPage() {
             <div className="relative">
               <Image
                 src="/images/logo.png"
-                alt="Doce Gestão Logo"
+                alt="Confeitech Logo"
                 width={120}
                 height={120}
                 className="animate-pulse"
@@ -79,7 +79,7 @@ export default function LoginPage() {
             
             {/* Texto de carregamento */}
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-white">Doce Gestão</h3>
+              <h3 className="text-2xl font-bold text-white">Confeitech</h3>
               <p className="text-[#0B7A48] font-medium">Entrando no sistema...</p>
             </div>
             
@@ -117,7 +117,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-8">
             <Image
               src="/images/logo.png"
-              alt="Doce Gestão Logo"
+              alt="Confeitech Logo"
               width={110}
               height={110}
               className="animate-fade-in"
@@ -125,7 +125,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter">Doce Gestão Financeira</h1>
+            <h1 className="text-4xl font-bold tracking-tighter">Confeitech Financeira</h1>
             <p className="text-lg text-white/90">
               Gerencie suas receitas e finanças de forma eficiente e inteligente.
             </p>
@@ -150,7 +150,7 @@ export default function LoginPage() {
             <div className="md:hidden flex justify-center mb-8">
               <Image
                 src="/images/logo.png"
-                alt="Doce Gestão Logo"
+                alt="Confeitech Logo"
                 width={120}
                 height={120}
                 className="animate-fade-in"

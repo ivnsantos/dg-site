@@ -985,7 +985,7 @@ export default function RegisterPage() {
           <div className="flex justify-center mb-8">
             <Image
               src="/images/logo.png"
-              alt="Doce Gestão Logo"
+              alt="Confeitech Logo"
               width={120}
               height={120}
               className="animate-fade-in"
@@ -993,7 +993,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter">Doce Gestão - Sistema de Gestão para Confeitaria e afins</h1>
+            <h1 className="text-4xl font-bold tracking-tighter">Confeitech - Sistema de Gestão para Confeitaria e afins</h1>
             <p className="text-lg text-white/90">
               Comece agora a gerenciar suas receitas e finanças de forma profissional.
             </p>
@@ -1018,7 +1018,7 @@ export default function RegisterPage() {
             <div className="md:hidden flex justify-center mb-8">
               <Image
                 src="/images/logo.png"
-                alt="Doce Gestão Logo"
+                alt="Confeitech Logo"
                 width={120}
                 height={120}
                 className="animate-fade-in"

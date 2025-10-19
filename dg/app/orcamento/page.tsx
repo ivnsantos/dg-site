@@ -27,7 +27,7 @@ export default function OrcamentoPublicoPage() {
         {/* Header */}
         <div className="px-8 pt-8 pb-4 border-b border-[#BFE6DE] bg-white rounded-t-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex flex-col items-start">
-            <img src="/images/logo.png" alt="Logo Doce Gestão" className="h-14 w-auto mb-2" />
+            <img src="/images/logo.png" alt="Logo Confeitech" className="h-14 w-auto mb-2" />
             <div className="text-sm text-[#0B7A48] font-semibold tracking-wide mb-2">confeitaria</div>
           </div>
           <div className="flex flex-col gap-1 text-xs md:text-base font-medium text-[#0B7A48] items-end mt-4 md:mt-0">
@@ -82,7 +82,7 @@ export default function OrcamentoPublicoPage() {
         </div>
         {/* Footer */}
         <div className="flex items-center justify-center px-8 py-3 mt-2">
-          <img src="/images/logo.png" alt="Logo Doce Gestão" className="h-8 w-auto opacity-60" />
+          <img src="/images/logo.png" alt="Logo Confeitech" className="h-8 w-auto opacity-60" />
         </div>
       </div>
     </div>

@@ -65,13 +65,13 @@ const LogoFull = () => (
     <Link href="/dashboard" className="flex items-center">
       <Image
         src="/images/logo.png"
-        alt="Doce Gestão"
+        alt="Confeitech"
         width={40}
         height={40}
         className="rounded-lg"
         priority
       />
-      <span className="ml-2 text-lg font-semibold">Doce Gestão</span>
+      <span className="ml-2 text-lg font-semibold">Confeitech</span>
     </Link>
     
     {/* Sino de notificações no header da sidebar */}
@@ -84,13 +84,13 @@ const LogoMobile = () => (
     <Link href="/dashboard" className="flex items-center">
       <Image
         src="/images/logo.png"
-        alt="Doce Gestão"
+        alt="Confeitech"
         width={42}
         height={42}
         className="rounded-lg"
         priority
       />
-      <span className="ml-2 text-base font-semibold">Doce Gestão</span>
+      <span className="ml-2 text-base font-semibold">Confeitech</span>
     </Link>
     
     {/* Sino de notificações dentro da marcação azul */}

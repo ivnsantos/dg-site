@@ -164,7 +164,7 @@ export default function LinkTreePublicPage() {
             className="text-xs sm:text-sm opacity-70"
             style={{ color: linkTree.textColor }}
           >
-            Criado com Doce Gestão
+            Criado com Confeitech
           </p>
         </div>
       </div>

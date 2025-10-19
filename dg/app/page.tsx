@@ -27,7 +27,7 @@ export default function HomePage() {
           <div className="mb-6 md:mb-8 transform hover:scale-105 transition-transform duration-300">
             <Image
               src="/images/logo.png"
-              alt="Doce Gestão Logo"
+              alt="Confeitech Logo"
               width={150}
               height={150}
               className="animate-fade-in drop-shadow-2xl w-[150px] h-[150px] md:w-[200px] md:h-[200px]"
@@ -142,7 +142,7 @@ export default function HomePage() {
             <div className="step-card">
               <div className="text-[#0B7A48] text-4xl font-bold">6</div>
               <div>
-                <h3 className="text-xl font-bold mb-2 text-white">LinkTree Doce Gestão</h3>
+                <h3 className="text-xl font-bold mb-2 text-white">LinkTree Confeitech</h3>
                 <p className="text-gray-300">
                   Crie um LinkTree otimizado para o Instagram facilitando seu
                   compartilhamento com seus clientes.
@@ -222,7 +222,7 @@ export default function HomePage() {
                       <div className="relative">
                 <Image
                           src="/images/mari.jpeg"
-                          alt="Mari Tolentino - Embaixadora da Doce Gestão"
+                          alt="Mari Tolentino - Embaixadora da Confeitech"
                           width={240}
                           height={300}
                           className="w-[240px] h-[300px] lg:w-[320px] lg:h-[420px] object-cover rounded-2xl lg:rounded-3xl shadow-2xl group-hover:shadow-[#0B7A48]/30 transition-all duration-500"
@@ -244,7 +244,7 @@ export default function HomePage() {
                       </div>
                       <p className="text-[#0B7A48] font-bold text-base lg:text-xl mb-4 lg:mb-6 flex items-center justify-center lg:justify-start gap-2 lg:gap-3">
                         <span className="text-lg lg:text-2xl">🌟</span>
-                        <span className="text-sm lg:text-base">Embaixadora da Doce Gestão</span>
+                        <span className="text-sm lg:text-base">Embaixadora da Confeitech</span>
                         <span className="text-lg lg:text-2xl">🌟</span>
                       </p>
                       
@@ -456,7 +456,7 @@ export default function HomePage() {
                   </li>
                 <li className="flex items-center text-white/80">
                   <span className="text-[#0B7A48] mr-3">✓</span>
-                  <span>Linktree Doce Gestão</span>
+                  <span>Linktree Confeitech</span>
                 </li>
                   
                 {/* Seção Em Breve */}
@@ -620,7 +620,7 @@ export default function HomePage() {
                 className="mb-2 md:mb-4"
               />
               <h3 className="text-sm md:text-lg font-bold text-[#2D1810] mb-1 md:mb-2 line-clamp-3 md:line-clamp-none">
-                Como a Doce Gestão transforma a vida dos confeiteiros brasileiros
+                Como a Confeitech transforma a vida dos confeiteiros brasileiros
               </h3>
             </div>
 

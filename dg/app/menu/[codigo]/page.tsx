@@ -714,7 +714,7 @@ export default function MenuPublicoPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F3F6F4]">
         <div className="text-center flex flex-col items-center gap-4">
-          <img src="/images/logo.png" alt="Doce Gestão Logo" width={80} height={80} className="mx-auto animate-fade-in" />
+          <img src="/images/logo.png" alt="Confeitech Logo" width={80} height={80} className="mx-auto animate-fade-in" />
           <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0B7A48] mx-auto"></div>
           <p className="mt-2 text-[#0B7A48] text-lg font-semibold">Carregando...</p>
         </div>
@@ -924,9 +924,9 @@ export default function MenuPublicoPage() {
           ))}
         </div>
 
-        {/* Footer Doce Gestão */}
+        {/* Footer Confeitech */}
         <footer className="w-full flex flex-col items-center justify-center py-8 mt-16 border-t border-gray-200 bg-white/80">
-          <span className="text-sm text-gray-500">Feito com ♥ por <a href="https://docegestao.com.br" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0B7A48] hover:underline">Doce Gestão</a></span>
+          <span className="text-sm text-gray-500">Feito com ♥ por <a href="https://docegestao.com.br" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0B7A48] hover:underline">Confeitech</a></span>
         </footer>
       </div>
 
