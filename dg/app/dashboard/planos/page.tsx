@@ -382,8 +382,8 @@ export default function PlanosPage() {
                             <CustomIMaskInput
                               {...field}
                               id="cartao.ano"
-                              placeholder="AA"
-                              mask="00"
+                              placeholder="AAAA"
+                              mask="0000"
                               className="flex h-11 w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-gray-900 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           )}

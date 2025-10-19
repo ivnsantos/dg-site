@@ -902,12 +902,12 @@ export default function RegisterPage() {
                     name="cartao.validade"
                     type="text"
                     required
-                    placeholder="MM/AA"
+                    placeholder="MM/AAAA"
                     value={formData.cartao.validade}
                     onChange={handleChange}
                     disabled={loading}
                     className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    maxLength={5}
+                    maxLength={7}
                     autoComplete="cc-exp"
                   />
                 </div>
