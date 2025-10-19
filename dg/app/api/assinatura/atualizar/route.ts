@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getDataSource } from '@/src/lib/db'
 import { User, UserStatus } from '@/src/entities/User'
+import { Subscription } from '@/src/entities/Subscription'
 import { AsaasService } from '@/src/services/AsaasService'
 
 export async function POST(request: Request) {
@@ -56,6 +57,30 @@ export async function POST(request: Request) {
     }
 
     try {
+      // Tokenizar cartão de crédito
+      console.log("Tokenizando cartão de crédito...")
+      const tokenResponse = await asaasService.tokenizeCreditCard({
+        creditCard: {
+          holderName: cartao.nome,
+          number: cartao.numero.replace(/\D/g, ''),
+          expiryMonth: cartao.mes,
+          expiryYear: cartao.ano,
+          ccv: cartao.cvv
+        },
+        creditCardHolderInfo: {
+          name: cartao.nome,
+          email: email,
+          cpfCnpj: user.cpfOuCnpj.replace(/\D/g, ''),
+          postalCode: cep.replace(/\D/g, ''),
+          addressNumber: numero,
+          phone: telefone.replace(/\D/g, '')
+        },
+        customer: user.idCustomer,
+        remoteIp: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1'
+      })
+
+      console.log("Cartão tokenizado com sucesso:", tokenResponse)
+
       console.log("Criando assinatura no Asaas...")
       const subscriptionResponse = await asaasService.createSubscription({
         customer: user.idCustomer,
@@ -91,6 +116,35 @@ export async function POST(request: Request) {
       user.idAssinatura = subscriptionResponse.id
 
       await userRepository.save(user)
+
+      // Criar ou atualizar registro da assinatura na tabela subscriptions
+      const subscriptionRepository = dataSource.getRepository(Subscription)
+      let subscriptionRecord = await subscriptionRepository.findOne({
+        where: { userId: user.id }
+      })
+
+      if (!subscriptionRecord) {
+        subscriptionRecord = new Subscription()
+        subscriptionRecord.userId = user.id
+      }
+
+      subscriptionRecord.externalId = subscriptionResponse.id
+      subscriptionRecord.customerId = user.idCustomer
+      subscriptionRecord.value = valorPlano
+      subscriptionRecord.cycle = 'MONTHLY'
+      subscriptionRecord.description = `Assinatura ${plano} - Confeitech`
+      subscriptionRecord.billingType = 'CREDIT_CARD'
+      subscriptionRecord.status = subscriptionResponse.status
+      subscriptionRecord.dateCreated = new Date(subscriptionResponse.createdAt)
+      subscriptionRecord.nextDueDate = new Date(subscriptionResponse.nextDueDate)
+      subscriptionRecord.endDate = subscriptionResponse.endDate ? new Date(subscriptionResponse.endDate) : undefined
+      
+      // Salvar dados do cartão tokenizado
+      subscriptionRecord.creditCardNumber = tokenResponse.creditCardNumber
+      subscriptionRecord.creditCardBrand = tokenResponse.creditCardBrand
+      subscriptionRecord.creditCardToken = tokenResponse.creditCardToken
+
+      await subscriptionRepository.save(subscriptionRecord)
 
       console.log("Processo finalizado com sucesso")
       return NextResponse.json({

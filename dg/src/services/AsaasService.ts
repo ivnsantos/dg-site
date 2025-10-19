@@ -13,6 +13,32 @@ interface AsaasCustomerResponse {
   email: string
 }
 
+interface TokenizeCreditCardRequest {
+  creditCard: {
+    holderName: string
+    number: string
+    expiryMonth: string
+    expiryYear: string
+    ccv: string
+  }
+  creditCardHolderInfo: {
+    name: string
+    email: string
+    cpfCnpj: string
+    postalCode: string
+    addressNumber: string
+    phone: string
+  }
+  customer: string
+  remoteIp: string
+}
+
+interface TokenizeCreditCardResponse {
+  creditCardNumber: string
+  creditCardBrand: string
+  creditCardToken: string
+}
+
 interface CreateSubscriptionRequest {
   customer: string // customer id
   billingType: 'CREDIT_CARD' | 'BOLETO' | 'PIX'
@@ -122,6 +148,10 @@ export class AsaasService {
 
   async cancelarSubscription(data: string): Promise<AsaasSubscriptionResponse> {
     return this.request<AsaasSubscriptionResponse>('DELETE', '/subscriptions/' + data)
+  }
+
+  async tokenizeCreditCard(data: TokenizeCreditCardRequest): Promise<TokenizeCreditCardResponse> {
+    return this.request<TokenizeCreditCardResponse>('POST', '/creditCard/tokenizeCreditCard', data)
   }
 }
 

@@ -138,6 +138,27 @@ export async function POST(request: Request) {
         notificationDisabled: false
       })
 
+      // Tokenizar cartão de crédito
+      const tokenResponse = await asaas.tokenizeCreditCard({
+        creditCard: {
+          holderName: cartao.nome,
+          number: String(cartao.numero).replace(/\D/g, ''),
+          expiryMonth: cartao.mes,
+          expiryYear: cartao.ano,
+          ccv: cartao.cvv
+        },
+        creditCardHolderInfo: {
+          name: cartao.nome,
+          email,
+          cpfCnpj: cpfLimpo,
+          postalCode: String(cep).replace(/\D/g, ''),
+          addressNumber: String(numero),
+          phone: telefoneLimpo || ''
+        },
+        customer: customer.id,
+        remoteIp: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1'
+      })
+
       // valores do plano
       const planoEscolhido = (plano === 'PRO' ? TipoPlano.PRO : TipoPlano.BASICO)
       const valorPlano = planoEscolhido === TipoPlano.PRO ? 39.89 : 36.99
@@ -169,10 +190,10 @@ export async function POST(request: Request) {
           postalCode: String(cep).replace(/\D/g, ''),
           addressNumber: String(numero),
           phone: telefoneLimpo || ''
-        }
+        },
       })
 
-      // Sucesso no Asaas → criar o usuário agora
+      // Sucesso no Asaas → criar o usuário e a assinatura agora
       const hashedPassword = await bcrypt.hash(password, 10)
       const user = new User()
       user.name = name
@@ -188,6 +209,28 @@ export async function POST(request: Request) {
       user.valorPlano = valorPlano
 
       const savedUser = await userRepository.save(user)
+
+      // Criar registro da assinatura na tabela subscriptions
+      const subscriptionRepository = dataSource.getRepository(Subscription)
+      const subscriptionRecord = new Subscription()
+      subscriptionRecord.externalId = subscription.id
+      subscriptionRecord.customerId = customer.id
+      subscriptionRecord.value = valorFinal
+      subscriptionRecord.cycle = 'MONTHLY'
+      subscriptionRecord.description = descricaoAssinatura
+      subscriptionRecord.billingType = 'CREDIT_CARD'
+      subscriptionRecord.status = subscription.status
+      subscriptionRecord.dateCreated = new Date(subscription.createdAt)
+      subscriptionRecord.nextDueDate = new Date(subscription.nextDueDate)
+      subscriptionRecord.endDate = subscription.endDate ? new Date(subscription.endDate) : undefined
+      subscriptionRecord.userId = savedUser.id
+      
+      // Salvar dados do cartão tokenizado
+      subscriptionRecord.creditCardNumber = tokenResponse.creditCardNumber
+      subscriptionRecord.creditCardBrand = tokenResponse.creditCardBrand
+      subscriptionRecord.creditCardToken = tokenResponse.creditCardToken
+
+      await subscriptionRepository.save(subscriptionRecord)
 
       // Atualizar uso do cupom após salvar o usuário com sucesso
       if (cupomValido) {
