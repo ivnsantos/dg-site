@@ -8,7 +8,7 @@ import { Toaster as ReactHotToastToaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'DG - Gestão Financeira para Confeiteiros',
+  title: 'Confeitech - Gestão para Confeiteiros',
   description: 'Sistema de gestão financeira para Confeiteiros',
   icons: {
     icon: '/images/favicon.ico',
