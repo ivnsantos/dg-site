@@ -287,16 +287,16 @@ export default function RegisterPage() {
       
       // Se tiver pelo menos 2 dígitos, insere a barra após o mês
       if (numbers.length >= 2) {
-        formattedValue = numbers.substring(0, 2) + '/' + numbers.substring(2, 4);
-        formattedValue = formattedValue.substring(0, 5);
+        formattedValue = numbers.substring(0, 2) + '/' + numbers.substring(2, 6);
+        formattedValue = formattedValue.substring(0, 7);
         
         // Validação básica do mês (01-12)
         const month = parseInt(numbers.substring(0, 2));
         if (month > 12) {
-          formattedValue = '12/' + formattedValue.substring(3, 5);
+          formattedValue = '12/' + formattedValue.substring(3, 7);
         }
         if (month === 0) {
-          formattedValue = '01/' + formattedValue.substring(3, 5);
+          formattedValue = '01/' + formattedValue.substring(3, 7);
         }
       }
 
