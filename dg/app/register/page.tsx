@@ -416,6 +416,18 @@ export default function RegisterPage() {
       try {
         const [mes, ano] = formData.cartao.validade.split('/')
         
+        // Debug: verificar se os valores estão corretos
+        console.log('Validade:', formData.cartao.validade)
+        console.log('Mês:', mes)
+        console.log('Ano:', ano)
+        
+        // Validar se mês e ano são válidos
+        if (!mes || !ano || isNaN(parseInt(mes)) || isNaN(parseInt(ano))) {
+          setError('Data de validade inválida. Use o formato MM/AAAA')
+          setLoading(false)
+          return
+        }
+        
         const response = await fetch('/api/users', {
           method: 'POST',
           headers: {

@@ -193,6 +193,11 @@ export async function POST(request: Request) {
         },
       })
 
+      // Debug: verificar resposta do Asaas
+      console.log('Resposta do Asaas:', subscription)
+      console.log('nextDueDate do Asaas:', subscription.nextDueDate)
+      console.log('createdAt do Asaas:', subscription.createdAt)
+
       // Sucesso no Asaas → criar o usuário e a assinatura agora
       const hashedPassword = await bcrypt.hash(password, 10)
       const user = new User()
@@ -221,7 +226,7 @@ export async function POST(request: Request) {
       subscriptionRecord.billingType = 'CREDIT_CARD'
       subscriptionRecord.status = subscription.status
       subscriptionRecord.dateCreated = new Date(subscription.createdAt)
-      subscriptionRecord.nextDueDate = new Date(subscription.nextDueDate)
+      subscriptionRecord.nextDueDate = subscription.nextDueDate ? new Date(subscription.nextDueDate) : undefined
       subscriptionRecord.endDate = subscription.endDate ? new Date(subscription.endDate) : undefined
       subscriptionRecord.userId = savedUser.id
       
