@@ -78,6 +78,7 @@ interface AsaasSubscriptionResponse {
   description: string
   billingType: string
   status: string
+  dateCreated: string
   createdAt: string
   updatedAt: string
   endDate: string

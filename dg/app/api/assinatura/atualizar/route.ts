@@ -135,7 +135,7 @@ export async function POST(request: Request) {
       subscriptionRecord.description = `Assinatura ${plano} - Confeitech`
       subscriptionRecord.billingType = 'CREDIT_CARD'
       subscriptionRecord.status = subscriptionResponse.status
-      subscriptionRecord.dateCreated = new Date(subscriptionResponse.createdAt)
+      subscriptionRecord.dateCreated = new Date(subscriptionResponse.dateCreated)
       subscriptionRecord.nextDueDate = new Date(subscriptionResponse.nextDueDate)
       subscriptionRecord.endDate = subscriptionResponse.endDate ? new Date(subscriptionResponse.endDate) : undefined
       
