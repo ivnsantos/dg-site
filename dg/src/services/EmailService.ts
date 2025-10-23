@@ -33,7 +33,7 @@ class EmailService {
         body: JSON.stringify({
           sender: {
             name: "Atendimento",
-            email: "ivansantos.ivn@gmail.com"
+            email: "suporte@confeitech.com"
           },
           to: [
             {
