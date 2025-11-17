@@ -67,30 +67,46 @@ export default function EditarMenuPage() {
     try {
       let menuImageUrl = form.imageUrl
       if (form.imageFile) {
-        const path = `menus/${Date.now()}-${form.imageFile.name}`
-        menuImageUrl = await uploadFileViaAPI(form.imageFile, path)
+        try {
+          const path = `menus/${Date.now()}-${form.imageFile.name}`
+          menuImageUrl = await uploadFileViaAPI(form.imageFile, path)
+        } catch (uploadError: any) {
+          throw new Error(`Erro ao fazer upload da imagem principal: ${uploadError.message || 'Erro desconhecido'}`)
+        }
       }
 
       let menuImageBackgroundUrl = form.imageUrlBackground
       if (form.imageBackgroundFile) {
-        const path = `menus/backgrounds/${Date.now()}-${form.imageBackgroundFile.name}`
-        menuImageBackgroundUrl = await uploadFileViaAPI(form.imageBackgroundFile, path)
+        try {
+          const path = `menus/backgrounds/${Date.now()}-${form.imageBackgroundFile.name}`
+          menuImageBackgroundUrl = await uploadFileViaAPI(form.imageBackgroundFile, path)
+        } catch (uploadError: any) {
+          throw new Error(`Erro ao fazer upload da imagem de fundo: ${uploadError.message || 'Erro desconhecido'}`)
+        }
       }
 
       const sectionUploads = await Promise.all(
         form.sections.map(async (section: any, idx: number) => {
           let sectionImageUrl = section.imageUrl
           if (section.imageFile) {
-            const path = `menus/sections/${Date.now()}-${section.imageFile.name}`
-            sectionImageUrl = await uploadFileViaAPI(section.imageFile, path)
+            try {
+              const path = `menus/sections/${Date.now()}-${section.imageFile.name}`
+              sectionImageUrl = await uploadFileViaAPI(section.imageFile, path)
+            } catch (uploadError: any) {
+              throw new Error(`Erro ao fazer upload da imagem da seção "${section.name || section.title || `Seção ${idx + 1}`}": ${uploadError.message || 'Erro desconhecido'}`)
+            }
           }
 
           const itemUploads = await Promise.all(
-            section.items.map(async (item: any) => {
+            section.items.map(async (item: any, itemIdx: number) => {
               let itemImageUrl = item.imageUrl
               if (item.imageFile) {
-                const path = `menus/items/${Date.now()}-${item.imageFile.name}`
-                itemImageUrl = await uploadFileViaAPI(item.imageFile, path)
+                try {
+                  const path = `menus/items/${Date.now()}-${item.imageFile.name}`
+                  itemImageUrl = await uploadFileViaAPI(item.imageFile, path)
+                } catch (uploadError: any) {
+                  throw new Error(`Erro ao fazer upload da imagem do item "${item.name || `Item ${itemIdx + 1}`}" da seção "${section.name || section.title || `Seção ${idx + 1}`}": ${uploadError.message || 'Erro desconhecido'}`)
+                }
               }
               return {
                 ...item,
@@ -133,7 +149,31 @@ export default function EditarMenuPage() {
       router.push('/dashboard/menu-online')
     } catch (error: any) {
       console.error('Erro ao atualizar menu:', error)
-      showError(error.message || 'Erro ao atualizar menu')
+      
+      // Mensagem de erro mais clara e específica
+      let errorTitle = 'Erro ao Atualizar Menu'
+      let errorMessage = error.message || 'Erro ao atualizar menu'
+      
+      // Identificar o tipo de erro e ajustar a mensagem
+      if (errorMessage.includes('upload')) {
+        errorTitle = 'Erro no Upload de Imagem'
+        // A mensagem já vem específica do upload
+      } else if (errorMessage.includes('conexão') || errorMessage.includes('internet') || errorMessage.includes('Network')) {
+        errorTitle = 'Erro de Conexão'
+        errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet e tente novamente.'
+      } else if (errorMessage.includes('tamanho') || errorMessage.includes('grande') || errorMessage.includes('5MB')) {
+        errorTitle = 'Imagem Muito Grande'
+        errorMessage = 'Uma ou mais imagens são muito grandes. Por favor, use imagens com no máximo 5MB cada.'
+      } else if (errorMessage.includes('formato') || errorMessage.includes('tipo') || errorMessage.includes('imagem válida')) {
+        errorTitle = 'Formato de Imagem Inválido'
+        errorMessage = 'Uma ou mais imagens estão em formato inválido. Use apenas arquivos de imagem (JPG, PNG, etc.).'
+      } else if (errorMessage.includes('permissão') || errorMessage.includes('autorizado')) {
+        errorTitle = 'Erro de Permissão'
+        errorMessage = 'Você não tem permissão para realizar esta ação. Entre em contato com o suporte.'
+      }
+      
+      toast.error(errorMessage)
+      showError(errorMessage, errorTitle)
     } finally {
       setLoading(false)
     }

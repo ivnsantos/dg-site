@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table"
 import { toast } from 'sonner'
 import { Pencil, Trash2 } from 'lucide-react'
+import SuccessModal from '../../../components/ui/SuccessModal'
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,8 @@ export default function IngredientesClient() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [createdIngredientName, setCreatedIngredientName] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     unit: '',
@@ -115,12 +118,23 @@ export default function IngredientesClient() {
       })
       
       if (!response.ok) {
-        throw new Error('Erro ao salvar ingrediente')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao salvar ingrediente')
       }
 
-      toast.success(editingId ? 'Ingrediente atualizado com sucesso!' : 'Ingrediente adicionado com sucesso!')
+      const isEditing = !!editingId
+      setCreatedIngredientName(formData.name)
+      
+      // Limpar formulário
       setFormData({ name: '', unit: '', quantity: '', price: '', brand: '' })
       setEditingId(null)
+      
+      // Mostrar confirmação apenas para novos ingredientes
+      if (!isEditing) {
+        setShowSuccess(true)
+      }
+      
+      toast.success(isEditing ? 'Ingrediente atualizado com sucesso!' : 'Ingrediente adicionado com sucesso!')
       fetchIngredients()
     } catch (error) {
       toast.error('Erro ao salvar ingrediente')
@@ -349,6 +363,15 @@ export default function IngredientesClient() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Modal de Sucesso */}
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        title="Ingrediente Adicionado com Sucesso!"
+        message={createdIngredientName ? `O ingrediente "${createdIngredientName}" foi adicionado com sucesso!` : 'Ingrediente adicionado com sucesso!'}
+        confirmText="Entendi"
+      />
     </div>
   )
 } 

@@ -8,6 +8,14 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { PlusIcon, LinkIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Badge } from '../../../components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog'
 
 interface LinkTree {
   id: number
@@ -38,6 +46,9 @@ export default function LinkTreePage() {
   const { data: session } = useSession()
   const [linkTrees, setLinkTrees] = useState<LinkTree[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [linkTreeToDelete, setLinkTreeToDelete] = useState<number | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -99,26 +110,35 @@ export default function LinkTreePage() {
     }
   }
 
-  const handleDelete = async (linkTreeId: number) => {
-    if (!confirm('Tem certeza que deseja excluir este LinkTree?')) {
-      return
-    }
+  const handleDeleteClick = (linkTreeId: number) => {
+    setLinkTreeToDelete(linkTreeId)
+    setDeleteDialogOpen(true)
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!linkTreeToDelete) return
+
+    setDeleting(true)
     try {
-      const response = await fetch(`/api/linktree/${linkTreeId}`, {
+      const response = await fetch(`/api/linktree/${linkTreeToDelete}`, {
         method: 'DELETE'
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao excluir LinkTree')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao excluir LinkTree')
       }
 
       // Remove do estado local
-      setLinkTrees(prev => prev.filter(lt => lt.id !== linkTreeId))
+      setLinkTrees(prev => prev.filter(lt => lt.id !== linkTreeToDelete))
       toast.success('LinkTree excluído com sucesso!')
-    } catch (error) {
+      setDeleteDialogOpen(false)
+      setLinkTreeToDelete(null)
+    } catch (error: any) {
       console.error('Erro ao excluir LinkTree:', error)
-      toast.error('Erro ao excluir LinkTree')
+      toast.error(error.message || 'Erro ao excluir LinkTree')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -308,7 +328,7 @@ export default function LinkTreePage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDelete(linkTree.id)}
+                        onClick={() => handleDeleteClick(linkTree.id)}
                         className="text-red-600 hover:text-red-700 flex items-center gap-1 text-xs sm:text-sm"
                       >
                         <TrashIcon className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -322,6 +342,46 @@ export default function LinkTreePage() {
           })}
         </div>
       )}
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Excluir LinkTree</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja excluir este LinkTree? Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteDialogOpen(false)
+                setLinkTreeToDelete(null)
+              }}
+              disabled={deleting}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+            >
+              {deleting ? (
+                <span className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Excluindo...
+                </span>
+              ) : (
+                'Excluir'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

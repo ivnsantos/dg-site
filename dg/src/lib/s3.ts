@@ -65,9 +65,22 @@ export const uploadFileToS3 = async (file: File, path: string): Promise<string> 
     const publicUrl = generatePublicUrl(path);
     
     return publicUrl;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao fazer upload para S3:', error);
-    throw error;
+    
+    // Melhorar mensagens de erro específicas
+    if (error.name === 'NoSuchBucket' || error.message?.includes('Bucket')) {
+      throw new Error('Erro de configuração do servidor de armazenamento. Entre em contato com o suporte.');
+    } else if (error.name === 'AccessDenied' || error.message?.includes('Access Denied')) {
+      throw new Error('Sem permissão para fazer upload. Entre em contato com o suporte.');
+    } else if (error.name === 'NetworkError' || error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+      throw new Error('Erro de conexão com o servidor. Verifique sua internet e tente novamente.');
+    } else if (error.message) {
+      // Manter mensagens de erro já específicas
+      throw error;
+    } else {
+      throw new Error('Erro desconhecido ao fazer upload. Tente novamente.');
+    }
   }
 };
 
@@ -84,8 +97,25 @@ export const uploadFileViaAPI = async (file: File, path: string): Promise<string
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao fazer upload');
+      let errorMessage = 'Erro ao fazer upload da imagem';
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (parseError) {
+        // Se não conseguir parsear o JSON, usar mensagem baseada no status
+        if (response.status === 400) {
+          errorMessage = 'Arquivo inválido. Verifique o formato e tamanho da imagem.';
+        } else if (response.status === 413) {
+          errorMessage = 'A imagem é muito grande. Use uma imagem com no máximo 5MB.';
+        } else if (response.status === 503) {
+          errorMessage = 'Serviço temporariamente indisponível. Tente novamente em alguns instantes.';
+        } else if (response.status >= 500) {
+          errorMessage = 'Erro no servidor. Tente novamente mais tarde.';
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();

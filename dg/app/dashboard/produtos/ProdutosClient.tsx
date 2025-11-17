@@ -364,18 +364,42 @@ export default function ProdutosClient() {
                       filteredProducts.map((product) => {
                         const { chartData, chartOptions } = createProductChart(product)
                         const weightKg = product.totalWeight > 0 ? (product.totalWeight / 1000) : 0
-                        const sellingPerKg = weightKg ? (product.sellingPrice / weightKg) : 0
-                        const costPerKg = weightKg ? (product.totalCost / weightKg) : 0
-                        const suggestedPerKg = weightKg ? (product.suggestedPrice / weightKg) : 0
-                        const sellingPerUnit = product.quantity > 0 ? (product.sellingPrice / product.quantity) : 0
-                        const costPerUnit = product.quantity > 0 ? (product.totalCost / product.quantity) : 0
-                        const suggestedPerUnit = product.quantity > 0 ? (product.suggestedPrice / product.quantity) : 0
                         
-                        console.log(`Produto ${product.name}:`, {
+                        // Cálculo de custos
+                        const costPerKg = weightKg > 0 ? (product.totalCost / weightKg) : 0
+                        const costPerUnit = product.quantity > 0 ? (product.totalCost / product.quantity) : 0
+                        
+                        // Cálculo de preços atuais
+                        // Priorizar usar sellingPricePerGram se disponível, senão calcular do preço total
+                        let sellingPerKg = 0
+                        if (product.sellingPricePerGram > 0) {
+                          sellingPerKg = product.sellingPricePerGram * 1000
+                        } else if (product.sellingPrice > 0 && weightKg > 0) {
+                          sellingPerKg = product.sellingPrice / weightKg
+                        }
+                        
+                        // Priorizar usar sellingPricePerUnit se disponível, senão calcular do preço total
+                        let sellingPerUnit = 0
+                        if (product.sellingPricePerUnit > 0) {
+                          sellingPerUnit = product.sellingPricePerUnit
+                        } else if (product.sellingPrice > 0 && product.quantity > 0) {
+                          sellingPerUnit = product.sellingPrice / product.quantity
+                        }
+                        
+                        console.log('Cálculos de exibição:', {
+                          productName: product.name,
                           sellingPrice: product.sellingPrice,
-                          sellingPerUnit: sellingPerUnit,
-                          quantity: product.quantity
+                          sellingPricePerGram: product.sellingPricePerGram,
+                          sellingPricePerUnit: product.sellingPricePerUnit,
+                          weightKg,
+                          quantity: product.quantity,
+                          sellingPerKg,
+                          sellingPerUnit
                         })
+                        
+                        // Cálculo de preços sugeridos
+                        const suggestedPerKg = weightKg > 0 ? (product.suggestedPrice / weightKg) : 0
+                        const suggestedPerUnit = product.quantity > 0 ? (product.suggestedPrice / product.quantity) : 0
 
                         return (
                           <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${
@@ -509,10 +533,10 @@ export default function ProdutosClient() {
                                   <div className="grid grid-cols-3 text-xs">
                                     <div className="px-2.5 py-1 text-gray-600">Preço atual</div>
                                     <div className="px-2.5 py-1 text-right font-medium text-gray-900">
-                                      {product.sellingPricePerGram > 0 ? `R$ ${product.sellingPricePerGram.toFixed(2)}` : 'R$ 0,00'}
+                                      {sellingPerKg > 0 ? `R$ ${sellingPerKg.toFixed(2)}` : 'R$ 0,00'}
                                     </div>
                                     <div className="px-2.5 py-1 text-right font-medium text-gray-900">
-                                      {product.sellingPricePerUnit > 0 ? `R$ ${product.sellingPricePerUnit.toFixed(2)}` : 'R$ 0,00'}
+                                      {sellingPerUnit > 0 ? `R$ ${sellingPerUnit.toFixed(2)}` : 'R$ 0,00'}
                                     </div>
                                   </div>
                                   <div className="grid grid-cols-3 text-xs">

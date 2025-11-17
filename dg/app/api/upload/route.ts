@@ -47,9 +47,49 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Erro ao fazer upload:', error)
+    
+    // Mensagens de erro mais específicas
+    let errorMessage = 'Erro ao fazer upload da imagem'
+    let statusCode = 500
+    
+    if (error.message) {
+      // Erros conhecidos do S3
+      if (error.message.includes('Nenhum arquivo fornecido')) {
+        errorMessage = 'Nenhum arquivo foi selecionado. Por favor, escolha uma imagem.'
+        statusCode = 400
+      } else if (error.message.includes('deve ser uma imagem')) {
+        errorMessage = 'O arquivo selecionado não é uma imagem válida. Por favor, escolha um arquivo de imagem (JPG, PNG, etc.).'
+        statusCode = 400
+      } else if (error.message.includes('no máximo 5MB')) {
+        errorMessage = 'A imagem é muito grande. Por favor, escolha uma imagem com no máximo 5MB.'
+        statusCode = 400
+      } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.'
+        statusCode = 503
+      } else if (error.message.includes('timeout') || error.message.includes('Timeout')) {
+        errorMessage = 'O upload demorou muito. Tente novamente com uma imagem menor.'
+        statusCode = 504
+      } else if (error.message.includes('AccessDenied') || error.message.includes('Forbidden')) {
+        errorMessage = 'Erro de permissão no servidor. Entre em contato com o suporte.'
+        statusCode = 403
+      } else if (error.message.includes('Bucket') || error.message.includes('S3')) {
+        errorMessage = 'Erro no servidor de armazenamento. Tente novamente em alguns instantes.'
+        statusCode = 503
+      } else {
+        // Usar a mensagem original se for específica
+        errorMessage = error.message
+      }
+    } else if (error.name === 'NetworkError' || error.code === 'NETWORK_ERROR') {
+      errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.'
+      statusCode = 503
+    }
+    
     return NextResponse.json(
-      { error: 'Erro ao fazer upload da imagem' },
-      { status: 500 }
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: statusCode }
     )
   }
 }

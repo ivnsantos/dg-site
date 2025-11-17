@@ -44,10 +44,19 @@ export async function POST(request: Request) {
     product.totalWeight = data.totalWeight || 0
     product.totalCost = data.totalCost || 0
     product.suggestedPrice = data.totalCost * (user.markupIdeal)
-    product.sellingPrice = data.sellingPrice
+    product.sellingPrice = data.sellingPrice || 0
     product.sellingPricePerUnit = data.sellingPricePerUnit || 0
     product.sellingPricePerGram = data.sellingPricePerGram || 0
-    product.profitMargin = ((product.sellingPrice - product.totalCost) / product.totalCost) * 100
+    product.profitMargin = product.totalCost > 0 ? ((product.sellingPrice - product.totalCost) / product.totalCost) * 100 : 0
+    
+    console.log('Produto sendo salvo:', {
+      name: product.name,
+      sellingPrice: product.sellingPrice,
+      sellingPricePerUnit: product.sellingPricePerUnit,
+      sellingPricePerGram: product.sellingPricePerGram,
+      totalCost: product.totalCost,
+      profitMargin: product.profitMargin
+    })
     product.idealMarkup = user.markupIdeal
     product.lastUpdate = new Date()
     product.user = user

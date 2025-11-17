@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -42,6 +43,7 @@ interface Menu {
 
 export default function PedidosPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [menus, setMenus] = useState<Menu[]>([])
   const [selectedMenu, setSelectedMenu] = useState<string>('')
@@ -57,13 +59,18 @@ export default function PedidosPage() {
   const [dataInicio, setDataInicio] = useState<string>('')
   const [dataFim, setDataFim] = useState<string>('')
 
-  // Buscar menus disponíveis
+  // Buscar menus disponíveis do usuário logado
   useEffect(() => {
+    if (!session?.user?.id) {
+      return
+    }
+
     const fetchMenus = async () => {
       try {
-        console.log('🔍 Buscando todos os menus...')
+        const userId = session.user.id
+        console.log('🔍 Buscando menus do usuário:', userId)
         
-        const response = await fetch('/api/menus')
+        const response = await fetch(`/api/menus?userId=${userId}`)
         const data = await response.json()
         
         console.log('📡 Resposta da API de menus:', data)
@@ -89,7 +96,7 @@ export default function PedidosPage() {
     }
 
     fetchMenus()
-  }, [])
+  }, [session])
 
   // Buscar pedidos quando menu for selecionado
   useEffect(() => {

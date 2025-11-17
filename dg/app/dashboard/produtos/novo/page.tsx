@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Trash2, Search, Plus, Calculator, Plus as PlusCircle, Package, Scale } from 'lucide-react'
+import SuccessModal from '@/components/ui/SuccessModal'
 
 interface Ingredient {
   id: number
@@ -148,6 +149,8 @@ export default function NovoProdutoPage() {
   const [calculatorFromUnit, setCalculatorFromUnit] = useState('g')
   const [calculatorToUnit, setCalculatorToUnit] = useState('kg')
   const [calculatorResult, setCalculatorResult] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [createdProductName, setCreatedProductName] = useState('')
 
   const { control, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(formSchema),
@@ -266,16 +269,44 @@ export default function NovoProdutoPage() {
     }
 
     const totals = calculateTotals()
+    const totalWeight = data.productWeightGrams || 0
+    const quantity = data.quantity || 1
+    
+    // Obter o preço de venda informado pelo usuário
+    let sellingPrice = 0
+    if (enableSellingPrice && data.sellingPrice !== undefined && data.sellingPrice !== null) {
+      sellingPrice = typeof data.sellingPrice === 'number' ? data.sellingPrice : parseFloat(String(data.sellingPrice)) || 0
+    }
+    
+    console.log('Valores de preço:', {
+      enableSellingPrice,
+      sellingPriceRaw: data.sellingPrice,
+      sellingPrice,
+      quantity,
+      totalWeight
+    })
+    
+    // Calcular preços por unidade e por grama a partir do preço total
+    const sellingPricePerUnit = quantity > 0 && sellingPrice > 0 ? (sellingPrice / quantity) : 0
+    const sellingPricePerGram = totalWeight > 0 && sellingPrice > 0 ? (sellingPrice / totalWeight) : 0
+
+    console.log('Preços calculados:', {
+      sellingPrice,
+      sellingPricePerUnit,
+      sellingPricePerGram
+    })
 
     const productData = {
       name: data.name,
       category: data.category,
-      quantity: data.quantity,
+      quantity: quantity,
       description: data.description,
-      totalWeight: data.productWeightGrams,
+      totalWeight: totalWeight,
       totalCost: totals.totalCost,
       suggestedPrice: 0,
-      sellingPrice: enableSellingPrice && typeof data.sellingPrice === 'number' ? data.sellingPrice : 0,
+      sellingPrice: sellingPrice,
+      sellingPricePerUnit: sellingPricePerUnit,
+      sellingPricePerGram: sellingPricePerGram,
       profitMargin: 0,
       ingredients: selectedIngredients.map(ing => ({
         name: `${ing.name}`,
@@ -295,10 +326,15 @@ export default function NovoProdutoPage() {
         body: JSON.stringify(productData),
       })
 
-      if (!response.ok) throw new Error('Erro ao criar produto')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao criar produto')
+      }
       
+      const result = await response.json()
+      setCreatedProductName(data.name)
+      setShowSuccess(true)
       toast.success('Produto e ficha técnica criados com sucesso!')
-      router.push('/dashboard/produtos')
     } catch (error) {
       console.error('Erro ao criar produto:', error)
       toast.error('Erro ao criar produto')
@@ -324,25 +360,25 @@ export default function NovoProdutoPage() {
   )
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Novo Produto</h1>
-          <p className="text-gray-500">Crie um novo produto e sua ficha técnica</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Novo Produto</h1>
+          <p className="text-sm sm:text-base text-gray-500">Crie um novo produto e sua ficha técnica</p>
         </div>
-        <Button variant="outline" onClick={() => router.back()}>
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
           Voltar
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Coluna da Esquerda - Dados do Produto */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Dados do Produto</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Dados do Produto</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               <form id="productForm" className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome do Produto</Label>
@@ -367,7 +403,7 @@ export default function NovoProdutoPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Categoria</Label>
                     <Controller
@@ -435,10 +471,10 @@ export default function NovoProdutoPage() {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="sellingPrice">Quanto costuma cobrar ?</Label>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="space-y-2 sm:col-span-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <Label htmlFor="sellingPrice" className="text-sm sm:text-base">Quanto costuma cobrar ?</Label>
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                         <span>Habilitar</span>
                         <Switch id="toggleSellingPrice" checked={enableSellingPrice} onCheckedChange={setEnableSellingPrice} />
                       </div>
@@ -471,26 +507,26 @@ export default function NovoProdutoPage() {
 
           {/* Ingredientes Selecionados */}
           <Card>
-            <CardHeader>
-              <CardTitle>Ingredientes da Receita</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Ingredientes da Receita</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 sm:p-6 space-y-4">
               {selectedIngredients.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>Nenhum ingrediente selecionado</p>
-                  <p className="text-sm">Use a busca ao lado para adicionar ingredientes</p>
+                <div className="text-center py-6 sm:py-8 text-gray-500">
+                  <p className="text-sm sm:text-base">Nenhum ingrediente selecionado</p>
+                  <p className="text-xs sm:text-sm mt-1">Use a busca abaixo para adicionar ingredientes</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {selectedIngredients.map(ing => (
-                    <div key={ing.id} className="bg-white border rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{ing.name}</span>
-                            <span className="text-gray-500 text-sm">({ing.brand})</span>
+                    <div key={ing.id} className="bg-white border rounded-lg p-3 sm:p-4 shadow-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                            <span className="font-medium text-sm sm:text-base truncate">{ing.name}</span>
+                            <span className="text-gray-500 text-xs sm:text-sm">({ing.brand})</span>
                           </div>
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             {formatQuantity(ing.useQuantity, ing.useUnit)} × R$ {
                               calculatePricePerUnit(
                                 ing.pricePerGram,
@@ -501,14 +537,15 @@ export default function NovoProdutoPage() {
                             }
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <div className="font-medium">R$ {ing.totalCost.toFixed(2)}</div>
+                        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                          <div className="text-right sm:text-left">
+                            <div className="font-medium text-sm sm:text-base">R$ {ing.totalCost.toFixed(2)}</div>
                           </div>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleIngredientToggle(ing, false)}
+                            className="shrink-0"
                           >
                             <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
@@ -517,30 +554,30 @@ export default function NovoProdutoPage() {
                     </div>
                   ))}
 
-                  <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Package className="h-4 w-4" />
-                          <span>Rendimento</span>
+                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2 text-gray-600">
+                          <Package className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">Rendimento</span>
                         </div>
-                        <span className="font-medium">{String(watch('quantity') || 0)} un</span>
+                        <span className="font-medium text-xs sm:text-sm">{String(watch('quantity') || 0)} un</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Scale className="h-4 w-4" />
-                          <span>Peso</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2 text-gray-600">
+                          <Scale className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">Peso</span>
                         </div>
-                        <span className="font-medium">{Math.round(calculateTotals().totalWeight)}g</span>
+                        <span className="font-medium text-xs sm:text-sm">{Math.round(calculateTotals().totalWeight)}g</span>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center text-lg font-medium">
-                      <span>Custo Total:</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0 text-base sm:text-lg font-medium">
+                      <span className="text-sm sm:text-base">Custo Total:</span>
                       <span>R$ {calculateTotals().totalCost.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm text-gray-500 mt-2">
-                      <span>Preço Minimo Sugerido (1.2x):</span>
-                      <span>R$ {(calculateTotals().totalCost * 1.2).toFixed(2)}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm text-gray-500 mt-2">
+                      <span className="break-words">Preço Minimo Sugerido (1.2x):</span>
+                      <span className="whitespace-nowrap">R$ {(calculateTotals().totalCost * 1.2).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -550,14 +587,14 @@ export default function NovoProdutoPage() {
         </div>
 
         {/* Coluna da Direita - Busca de Ingredientes */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 text-base sm:text-lg">
                 <span>Buscar Ingredientes</span>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
                       <Calculator className="h-4 w-4 mr-2" />
                       Calculadora
                     </Button>
@@ -613,8 +650,8 @@ export default function NovoProdutoPage() {
                 </Dialog>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="mb-4">
+            <CardContent className="p-4 sm:p-6">
+              <div className="mb-3 sm:mb-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
@@ -626,44 +663,39 @@ export default function NovoProdutoPage() {
                 </div>
               </div>
 
-              <div className="border rounded-lg divide-y max-h-[600px] overflow-y-auto">
+              <div className="border rounded-lg divide-y max-h-[400px] sm:max-h-[600px] overflow-y-auto">
                 {filteredIngredients.map((ingredient) => {
                   const isSelected = selectedIngredients.some(ing => ing.id === ingredient.id)
                   return (
                     <div
                       key={ingredient.id}
-                      className={`p-4 hover:bg-gray-50 transition-colors ${
+                      className={`p-3 sm:p-4 hover:bg-gray-50 transition-colors ${
                         isSelected ? 'bg-gray-50' : ''
                       }`}
                     >
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-medium">{ingredient.name}</div>
-                            <div className="text-sm text-gray-500">{ingredient.brand}</div>
-                            <div className="text-sm text-gray-500">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm sm:text-base truncate">{ingredient.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 truncate">{ingredient.brand}</div>
+                            <div className="text-xs sm:text-sm text-gray-500">
                               Disponível: {formatQuantity(ingredient.quantity, ingredient.unit)}
                             </div>
-                            {quantities[ingredient.id] && parseFloat(quantities[ingredient.id].replace(',', '.')) > ingredient.quantity && (
-                              <div className="text-sm text-orange-600 font-medium mt-1">
-                                ⚠️ Quantidade maior que disponível
-                              </div>
-                            )}
                           </div>
-                          <div className="text-right">
-                            <div className="font-medium">
+                          <div className="text-left sm:text-right shrink-0">
+                            <div className="font-medium text-sm sm:text-base">
                               R$ {ingredient.pricePerGram.toFixed(2)}
                             </div>
                           </div>
                         </div>
                         
                         {!isSelected ? (
-                          <div className="mt-4 flex items-center gap-2">
+                          <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <div className="flex-1">
                               <Input
                                 type="text"
                                 inputMode="decimal"
-                                className="w-full"
+                                className="w-full text-sm sm:text-base"
                                 value={quantities[ingredient.id] || ''}
                                 onChange={(e) => {
                                   const value = e.target.value
@@ -686,7 +718,7 @@ export default function NovoProdutoPage() {
                                 handleIngredientToggle(ingredient, true)
                               }}
                               disabled={!quantities[ingredient.id] || quantities[ingredient.id] === ''}
-                              className="min-w-[120px]"
+                              className="w-full sm:w-auto sm:min-w-[120px]"
                             >
                               <PlusCircle className="h-4 w-4 mr-2" />
                               Adicionar
@@ -714,16 +746,31 @@ export default function NovoProdutoPage() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <Button
           type="submit"
           form="productForm"
-          className="flex-1"
+          className="flex-1 w-full text-sm sm:text-base py-2 sm:py-2.5"
           onClick={handleSubmit(onSubmit)}
         >
           Criar Produto
         </Button>
       </div>
+
+      {/* Modal de Sucesso */}
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => {
+          setShowSuccess(false)
+          router.push('/dashboard/produtos')
+        }}
+        title="Produto Criado com Sucesso!"
+        message={createdProductName ? `O produto "${createdProductName}" e sua ficha técnica foram criados com sucesso!` : 'Produto e ficha técnica criados com sucesso!'}
+        confirmText="Ver Produtos"
+        onConfirm={() => {
+          router.push('/dashboard/produtos')
+        }}
+      />
     </div>
   )
 } 

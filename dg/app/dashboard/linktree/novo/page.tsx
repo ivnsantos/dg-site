@@ -9,6 +9,7 @@ import IconImageSelector from '../../../../components/IconImageSelector'
 import LinkTreePreview from '../../../../components/LinkTreePreview'
 import LoadingOverlay from '../../../../components/ui/LoadingOverlay'
 import ErrorModal from '../../../../components/ui/ErrorModal'
+import SuccessModal from '../../../../components/ui/SuccessModal'
 import { useErrorModal } from '../../../../src/hooks/useErrorModal'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -40,6 +41,8 @@ interface LinkForm {
 
 export default function NovoLinkTreePage() {
   const { data: session } = useSession()
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [createdLinkTree, setCreatedLinkTree] = useState<any>(null)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [checkingCode, setCheckingCode] = useState(false)
@@ -255,26 +258,54 @@ export default function NovoLinkTreePage() {
         }
       }
 
+      const payload = {
+        ...formData,
+        imageUrl,
+        userId: session.user.id,
+        links: validLinks
+      }
+      
+      console.log('Enviando dados para API:', payload)
+
       const response = await fetch('/api/linktree', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          imageUrl,
-          userId: session.user.id,
-          links: validLinks
-        })
+        body: JSON.stringify(payload)
       })
 
+      console.log('Status da resposta:', response.status, response.statusText)
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erro ao criar LinkTree')
+        let errorMessage = 'Erro ao criar LinkTree'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+          console.error('Erro na resposta:', errorData)
+        } catch (parseError) {
+          console.error('Erro ao parsear resposta de erro:', parseError)
+          errorMessage = `Erro ${response.status}: ${response.statusText}`
+        }
+        throw new Error(errorMessage)
       }
 
+      let result
+      try {
+        result = await response.json()
+        console.log('LinkTree criado com sucesso:', result)
+      } catch (parseError) {
+        console.error('Erro ao parsear resposta de sucesso:', parseError)
+        throw new Error('Resposta inválida do servidor')
+      }
+      
+      // Salvar dados do LinkTree criado para mostrar na confirmação
+      setCreatedLinkTree(result.linkTree || { name: formData.name, code: formData.code })
+      
+      // Mostrar modal de sucesso
+      setShowSuccess(true)
+      
       toast.success('LinkTree criado com sucesso!')
-      router.push('/dashboard/linktree')
     } catch (error: any) {
       console.error('Erro ao criar LinkTree:', error)
       toast.error(error.message || 'Erro ao criar LinkTree')
@@ -819,6 +850,21 @@ export default function NovoLinkTreePage() {
         title={modalState.title}
         message={modalState.message}
         type={modalState.type}
+      />
+
+      {/* Modal de Sucesso */}
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => {
+          setShowSuccess(false)
+          router.push('/dashboard/linktree')
+        }}
+        title="LinkTree Criado com Sucesso!"
+        message={createdLinkTree ? `Seu LinkTree "${createdLinkTree.name}" foi criado com sucesso! Você pode acessá-lo através do código: ${createdLinkTree.code}` : 'Seu LinkTree foi criado com sucesso!'}
+        confirmText="Ver LinkTrees"
+        onConfirm={() => {
+          router.push('/dashboard/linktree')
+        }}
       />
     </div>
   )
