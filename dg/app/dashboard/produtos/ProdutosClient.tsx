@@ -370,12 +370,12 @@ export default function ProdutosClient() {
                         const costPerUnit = product.quantity > 0 ? (product.totalCost / product.quantity) : 0
                         
                         // Cálculo de preços atuais
-                        // Priorizar usar sellingPricePerGram se disponível, senão calcular do preço total
+                        // Priorizar o preço total informado; caso não exista, usar o valor por grama
                         let sellingPerKg = 0
-                        if (product.sellingPricePerGram > 0) {
-                          sellingPerKg = product.sellingPricePerGram * 1000
-                        } else if (product.sellingPrice > 0 && weightKg > 0) {
+                        if (product.sellingPrice > 0 && weightKg > 0) {
                           sellingPerKg = product.sellingPrice / weightKg
+                        } else if (product.sellingPricePerGram > 0) {
+                          sellingPerKg = product.sellingPricePerGram * 1000
                         }
                         
                         // Priorizar usar sellingPricePerUnit se disponível, senão calcular do preço total
@@ -400,6 +400,12 @@ export default function ProdutosClient() {
                         // Cálculo de preços sugeridos
                         const suggestedPerKg = weightKg > 0 ? (product.suggestedPrice / weightKg) : 0
                         const suggestedPerUnit = product.quantity > 0 ? (product.suggestedPrice / product.quantity) : 0
+                        const currentProfitMargin = product.sellingPrice > 0
+                          ? ((product.sellingPrice - product.totalCost) / product.sellingPrice) * 100
+                          : 0
+                        const suggestedProfitMargin = product.suggestedPrice > 0
+                          ? ((product.suggestedPrice - product.totalCost) / product.suggestedPrice) * 100
+                          : 0
 
                         return (
                           <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${
@@ -557,10 +563,10 @@ export default function ProdutosClient() {
                                       expandedCharts[product.id] ? 'p-3' : 'p-1.5'
                                     }`}>
                                       <p className="text-xs text-gray-500 mb-1">Lucro Atual</p>
-                                      <p className={`font-bold ${product.profitMargin >= 0 ? 'text-green-600' : 'text-red-600'} ${
+                                      <p className={`font-bold ${currentProfitMargin >= 0 ? 'text-green-600' : 'text-red-600'} ${
                                         expandedCharts[product.id] ? 'text-lg' : 'text-sm'
                                       }`}>
-                                        {product.profitMargin.toFixed(1)}%
+                                        {currentProfitMargin.toFixed(1)}%
                                       </p>
                                       <p className={`text-gray-600 ${
                                         expandedCharts[product.id] ? 'text-sm' : 'text-xs'
@@ -575,7 +581,7 @@ export default function ProdutosClient() {
                                       <p className={`font-bold text-blue-600 ${
                                         expandedCharts[product.id] ? 'text-lg' : 'text-sm'
                                       }`}>
-                                        {((product.suggestedPrice - product.totalCost) / product.totalCost * 100).toFixed(1)}%
+                                        {suggestedProfitMargin.toFixed(1)}%
                                       </p>
                                       <p className={`text-gray-600 ${
                                         expandedCharts[product.id] ? 'text-sm' : 'text-xs'
