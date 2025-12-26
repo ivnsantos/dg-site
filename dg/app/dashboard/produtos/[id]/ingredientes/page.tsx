@@ -40,6 +40,7 @@ interface Product {
   idealMarkup: number
   lastUpdate: Date
   fichaTecnicas: FichaTecnica[]
+  porcentagemLucroDesejado?: number | null
 }
 
 export default function ProdutoIngredientesPage() {
@@ -48,6 +49,7 @@ export default function ProdutoIngredientesPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [porcentagemLucroDesejado, setPorcentagemLucroDesejado] = useState<number | null>(null)
 
   useEffect(() => {
     loadProduct()
@@ -64,6 +66,10 @@ export default function ProdutoIngredientesPage() {
 
       const data = await response.json()
       setProduct(data)
+      // Atualizar porcentagem de lucro desejado se disponível
+      if (data.porcentagemLucroDesejado !== undefined) {
+        setPorcentagemLucroDesejado(data.porcentagemLucroDesejado)
+      }
     } catch (error) {
       console.error('Erro ao carregar produto:', error)
       setError(error instanceof Error ? error.message : 'Erro desconhecido')

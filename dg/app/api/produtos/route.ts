@@ -5,6 +5,7 @@ import { getDataSource } from '@/src/lib/db'
 import { Product } from '@/src/entities/Product'
 import { FichaTecnica } from '@/src/entities/FichaTecnica'
 import { User } from '@/src/entities/User'
+import { Confeitaria } from '@/src/entities/Confeitaria'
 
 export async function POST(request: Request) {
   try {
@@ -19,12 +20,18 @@ export async function POST(request: Request) {
     const productRepository = dataSource.getRepository(Product)
     const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
     const userRepository = dataSource.getRepository(User)
+    const confeitariaRepository = dataSource.getRepository(Confeitaria)
 
     // Buscar usuário para obter o markup ideal
     const user = await userRepository.findOne({ where: { id: Number(session.user.id) } })
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
+
+    // Buscar confeitaria para obter porcentagemLucroDesejado
+    const confeitaria = await confeitariaRepository.findOne({
+      where: { usuario: { id: user.id } }
+    })
 
     // Obter dados do request
     const data = await request.json()
@@ -127,6 +134,11 @@ export async function GET() {
       order: { name: 'ASC' }
     })
     
+    // Buscar confeitaria para obter porcentagemLucroDesejado
+    const confeitaria = await dataSource.getRepository(Confeitaria).findOne({
+      where: { usuario: { id: Number(session.user.id) } }
+    })
+    
     console.log('Produtos encontrados:', products.map(p => ({
       id: p.id,
       name: p.name,
@@ -135,7 +147,10 @@ export async function GET() {
       profitMargin: p.profitMargin
     })))
 
-    return NextResponse.json(products)
+    return NextResponse.json({
+      products,
+      porcentagemLucroDesejado: confeitaria?.porcentagemLucroDesejado || null
+    })
   } catch (error) {
     console.error('Erro ao buscar produtos:', error)
     

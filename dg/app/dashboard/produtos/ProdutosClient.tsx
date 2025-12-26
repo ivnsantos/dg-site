@@ -57,6 +57,8 @@ export default function ProdutosClient() {
     filterProducts()
   }, [searchTerm, products])
 
+  const [porcentagemLucroDesejado, setPorcentagemLucroDesejado] = useState<number | null>(null)
+
   const loadProducts = async () => {
     setIsLoading(true)
     try {
@@ -76,7 +78,12 @@ export default function ProdutosClient() {
       const data = await response.json()
       console.log('Produtos carregados:', data)
       
-      const formattedProducts = data.map((product: Product) => ({
+      // Atualizar porcentagem de lucro desejado
+      if (data.porcentagemLucroDesejado !== undefined) {
+        setPorcentagemLucroDesejado(data.porcentagemLucroDesejado)
+      }
+      
+      const formattedProducts = (data.products || data).map((product: Product) => ({
         ...product,
         price: Number(product.price),
         totalWeight: Number(product.totalWeight),
@@ -403,9 +410,12 @@ export default function ProdutosClient() {
                         const currentProfitMargin = product.sellingPrice > 0
                           ? ((product.sellingPrice - product.totalCost) / product.sellingPrice) * 100
                           : 0
-                        const suggestedProfitMargin = product.suggestedPrice > 0
-                          ? ((product.suggestedPrice - product.totalCost) / product.suggestedPrice) * 100
-                          : 0
+                        // Usar porcentagemLucroDesejado se disponível, senão calcular a partir do preço sugerido
+                        const suggestedProfitMargin = porcentagemLucroDesejado !== null && porcentagemLucroDesejado !== undefined
+                          ? Number(porcentagemLucroDesejado)
+                          : (product.suggestedPrice > 0
+                            ? ((product.suggestedPrice - product.totalCost) / product.suggestedPrice) * 100
+                            : 0)
 
                         return (
                           <Card key={product.id} className={`hover:shadow-lg transition-all duration-300 ${

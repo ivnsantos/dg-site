@@ -5,6 +5,7 @@ import { getDataSource } from '@/src/lib/db'
 import { Product } from '../../../../src/entities/Product'
 import { FichaTecnica } from '../../../../src/entities/FichaTecnica'
 import { User } from '../../../../src/entities/User'
+import { Confeitaria } from '../../../../src/entities/Confeitaria'
 
 export async function PUT(
   request: Request,
@@ -22,12 +23,18 @@ export async function PUT(
     const productRepository = dataSource.getRepository(Product)
     const fichaTecnicaRepository = dataSource.getRepository(FichaTecnica)
     const userRepository = dataSource.getRepository(User)
+    const confeitariaRepository = dataSource.getRepository(Confeitaria)
 
     // Buscar usuário para obter o markup ideal
     const user = await userRepository.findOne({ where: { id: Number(session.user.id) } })
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
+
+    // Buscar confeitaria para obter porcentagemLucroDesejado
+    const confeitaria = await confeitariaRepository.findOne({
+      where: { usuario: { id: user.id } }
+    })
 
     // Buscar produto existente
     const existingProduct = await productRepository.findOne({
@@ -156,6 +163,11 @@ export async function GET(
       )
     }
 
+    // Buscar confeitaria para obter porcentagemLucroDesejado
+    const confeitaria = await dataSource.getRepository(Confeitaria).findOne({
+      where: { usuario: { id: Number(session.user.id) } }
+    })
+
     const produtoFormatado = {
       ...produto,
       fichaTecnicas: produto.fichaTecnicas.map(ft => ({
@@ -167,7 +179,8 @@ export async function GET(
       totalWeight: Number(produto.totalWeight || 0),
       sellingPrice: Number(produto.sellingPrice || 0).toFixed(2),
       suggestedPrice: Number(produto.suggestedPrice || 0).toFixed(2),
-      profitMargin: Number(produto.profitMargin || 0).toFixed(2)
+      profitMargin: Number(produto.profitMargin || 0).toFixed(2),
+      porcentagemLucroDesejado: confeitaria?.porcentagemLucroDesejado || null
     }
 
     return NextResponse.json(produtoFormatado)
